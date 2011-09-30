@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: Wordpress-CCK
-Description: Plugin for ZfJS
+Description: Wordpress Plugin to manage connten-types and relations
 Author: Daniel Schwarz and the ._______.
 Version: 1.0
 */
