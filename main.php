@@ -7,13 +7,7 @@ Author: Daniel Schwarz and the ._______.
 Version: 1.0
 */
 
-require_once "helper.php";
-
-require_once "__GenericMain.php";
-
-require_once "content_types/__GenericContentType.php";
-require_once "relationships/__GenericRelationship.php";
-require_once "metaboxes/__GenericMetabox.php";
+require_once "core/__GenericMain.php";
 
 global $wpc_version;
 global $wpc_db_version;

@@ -89,4 +89,23 @@ function endsWith ($haystack, $needle) {
     return (substr($haystack, $start) === $needle);
 }
 
+function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {	
+	foreach (glob(__DIR__ . "/../$path/*.js") as $filename) {
+		$js_name = preg_replace("/\/?[^\/]+\/|\.js/", "", $filename);
+		
+		$js_name_dependecies	= explode(".", $js_name);
+		array_pop($js_name_dependecies);
+		
+		wp_enqueue_script("$id_prefix-$js_name", plugins_url("/$path/$js_name.js", __DIR__ ) );
+	}
+}
+
+function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
+	foreach (glob(__DIR__ . "/../$path/*.css") as $filename) {
+		$css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
+	
+		wp_enqueue_style("$id_prefix-$css_name", plugins_url("/$path/$css_name.css", __DIR__ ) );
+	}
+}
+
 ?>
