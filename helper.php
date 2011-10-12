@@ -54,6 +54,13 @@ function _var_dump (&$var) {
 	echo "</pre><br/>";
 }
 
+function _compile($file) {
+    ob_start();
+
+    require $file;
+
+    return ob_get_clean();
+}
 
 function normalizeString ($string) {
 	$string = trim($string);

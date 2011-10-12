@@ -60,6 +60,19 @@ class __GenericContentType {
 
 		add_action ('admin_print_scripts',			array($this, "custom_print_scripts") );
 		add_action ('admin_print_styles',			array($this, "custom_print_styles") );
+		
+		
+		add_filter( "the_content",  array($this, "the_content") );
+	}
+
+	function the_content ($content) {
+		global $post;
+		
+		foreach (glob(__DIR__ . "/../content_overrides/" . $post->post_type . ".php") as $filename) {
+			$content = _compile($filename);
+		}
+		
+		return $content;
 	}
 
 	function custom_print_scripts () {
