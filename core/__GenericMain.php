@@ -2,6 +2,7 @@
 
 require_once "helper.php";
 
+require_once "__GenericField.php";
 require_once "__GenericContentType.php";
 require_once "__GenericRelationship.php";
 require_once "__GenericMetabox.php";
@@ -22,30 +23,29 @@ class __GenericMain {
 		$this->custom_wp_print_scripts();
 		$this->custom_wp_print_styles();
 		
+//	LOAD FIELS 
+		foreach (glob(__DIR__ . "/fields/*.php") as $filename) {
+			require_once $filename;
+		}
+		
 //	LOAD CONTENT TYPES 
 		foreach (glob(__DIR__ . "/../content_types/*.php") as $filename) {
 			$class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
+			require_once $filename;
 
-			if ( !startsWith($class_name, "__") ) {
-				require_once $filename;
-
-				$instance_name	= lcfirst($class_name);
-				$$instance_name	= new $instance_name();
-			}
+			$instance_name	= lcfirst($class_name);
+			$$instance_name	= new $instance_name();
 		}
 
 //	LOAD RELATIONSHIPS 
 		foreach (glob(__DIR__ . "/../relationships/*.php") as $filename) {
 			$class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
+			require_once $filename;
 
-			if ( !startsWith($class_name, "__") ) {
-				require_once $filename;
-
-				$instance_name	= lcfirst($class_name);
-				$$instance_name	= new $instance_name();
-			}
+			$instance_name	= lcfirst($class_name);
+			$$instance_name	= new $instance_name();
 		}
 
 //	CREATE AJAX-CALLBACKS

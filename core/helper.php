@@ -1,6 +1,6 @@
 <?php
 
-function debug_var (&$var){
+function _debug_var (&$var){
 	if(WP_DEBUG === true){
 		if(is_array($var) || is_object($var)){
 			error_log(print_r($var, true));
@@ -26,7 +26,7 @@ function _die () {
 }
 
 function _log ($var){
-	debug_var($var);
+	_debug_var($var);
 }
 
 function _ping ($amount = 1){

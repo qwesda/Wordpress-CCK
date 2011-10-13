@@ -5,7 +5,7 @@ $wpc_content_types = array();
 
 class __GenericContentType {
 	public $id					= NULL;
-	public $fields				= NULL;
+	public $fields				= array();
 	
 	public $label				= "";
 	public $slug				= "";
