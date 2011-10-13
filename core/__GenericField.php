@@ -32,7 +32,7 @@ class __GenericField {
 		_var_dump($field);
 	}
 
-	function echo_field_with_label_above($post_data, $label = "") { ?>
+	function echo_field_with_label_above ($post_data, $label = "") { ?>
 		<div class="wpc_form_field">
 			<label class="wpc_label_top" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->label ?></label>
 			<?php $this->echo_field_core ($post_data); ?>

@@ -120,7 +120,7 @@ class __GenericContentType {
 		$this->load_post_data($post);
 
 //	ADD METABOXES		
-		foreach (glob(__DIR__ . "/../metaboxes/" . $this->slug . "_*.php") as $filename) {
+		foreach (glob(__DIR__ . "/../custom/metaboxes/" . $this->slug . "_*.php") as $filename) {
 			$metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 			$metabox_class_id	= $metabox_class_name;
 

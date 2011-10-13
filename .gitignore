@@ -1,14 +1,13 @@
 .DS_Store
 
-admin_libraries/*.js
-admin_scripts/*.js
-admin_styles/*.css
-frontend_libraries/*.js
-frontend_scripts/*.js
-frontend_styles/*.css
-
-content_overrides/*.php
-content_types/*.php
-metaboxes/*.php
-relationships/*.php
-templates/*.php
+custom/admin_libraries/*.js
+custom/admin_scripts/*.js
+custom/admin_styles/*.css
+custom/frontend_libraries/*.js
+custom/frontend_scripts/*.js
+custom/frontend_styles/*.css
+custom/content_overrides/*.php
+custom/content_types/*.php
+custom/metaboxes/*.php
+custom/relationships/*.php
+custom/templates/*.php

@@ -29,7 +29,7 @@ class __GenericMain {
 		}
 		
 //	LOAD CONTENT TYPES 
-		foreach (glob(__DIR__ . "/../content_types/*.php") as $filename) {
+		foreach (glob(__DIR__ . "/../custom/content_types/*.php") as $filename) {
 			$class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
 			require_once $filename;
@@ -39,7 +39,7 @@ class __GenericMain {
 		}
 
 //	LOAD RELATIONSHIPS 
-		foreach (glob(__DIR__ . "/../relationships/*.php") as $filename) {
+		foreach (glob(__DIR__ . "/../custom/relationships/*.php") as $filename) {
 			$class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
 			require_once $filename;
