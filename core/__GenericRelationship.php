@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 global $wpc_relationships;
@@ -7,7 +7,7 @@ $wpc_relationships = array();
 class __GenericRelationship {
 	public $id					= "";
 	public $fields				= NULL;
-	
+
 	public $label				= "";
 
 	public $post_type_from_id	= "";
@@ -56,9 +56,9 @@ class __GenericRelationship {
 		$post_type_dest		= get_post_type_object($id_dest);
 
 		$available_items 	= __GenericRelationship::get_post_type_items_for_relation((object)array("post_type" => $id_source));
-		
+
 ?><h4 class="relation_heading"><?php echo "Available ".$post_type_source->labels->name ?></h4>
-<ul id="<?php echo "source_$this->id" ?>" class="relation_soucre_list">
+<ul id="<?php echo "source_$this->id" ?>" class="relation_source_list">
 	<?php foreach ($available_items->results as $available_item_post): ?>
 		<li data-post_id="<?php echo $available_item_post->ID ?>"><a href="#" class="<?php echo "$this->id source_item" ?>"><?php echo $available_item_post->post_title ?></a></li>
 	<?php endforeach ?>
@@ -75,9 +75,9 @@ class __GenericRelationship {
 		jQuery('#<?php echo "add_box_$this->id" ?>').remove();
 
 		source_list.after(
-			'<div id="<?php echo "add_box_$this->id" ?>" class="relation_item_add_box">' + 
-				'<label for="<?php echo "add_$this->id" ?>">add <b>' + this.innerText + '</b></label>' + 
-				'<a id="<?php echo "add_link_$this->id" ?>" data-post_id="' + source_list_item.data('post_id') + '" class="button button_right" href="#">add</a>' + 
+			'<div id="<?php echo "add_box_$this->id" ?>" class="relation_item_add_box">' +
+				'<label for="<?php echo "add_$this->id" ?>">add <b>' + this.innerText + '</b></label>' +
+				'<a id="<?php echo "add_link_$this->id" ?>" data-post_id="' + source_list_item.data('post_id') + '" class="button button_right" href="#">add</a>' +
 			'</div>'
 		);
     });
@@ -141,7 +141,7 @@ class __GenericRelationship {
 		$ret = __GenericRelationship::add_relation($req);
 
 		echo json_encode($ret);
-		
+
 		die();
 	}
 
@@ -161,7 +161,7 @@ class __GenericRelationship {
 
 		if ($req->from_id == 0)	$ret->errors[] = "from_id has invalid value '$req->from_id'";
 		if ($req->to_id == 0)	$ret->errors[] = "to_id has invalid value '$req->to_id'";
-		
+
 
 		return $ret;
 	}
@@ -195,10 +195,10 @@ class __GenericRelationship {
 				}
 
 
-				if ( !isset($req->limit) ) 
+				if ( !isset($req->limit) )
 					$req->limit = 100;
 
-				if ( !isset($req->offset) ) 
+				if ( !isset($req->offset) )
 					$req->offset = 0;
 
 				if ( absint($req->limit) > 0 ) {
@@ -206,7 +206,7 @@ class __GenericRelationship {
 				}
 
 
-				if ( !isset($req->order_by) ) 
+				if ( !isset($req->order_by) )
 					$req->order_by = "NULL";
 
 				if ( ( isset($req->order_by) && in_array ($req->order_by, array ("id",  "title", "NULL")) )
@@ -218,14 +218,14 @@ class __GenericRelationship {
 				}
 
 				$available_count	= $wpdb->get_var 	( "SELECT COUNT(*) $prepared_sql_filter $prepared_sql_like" );
-				$results			= $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title 
+				$results			= $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title
 $prepared_sql_filter
 $prepared_sql_like
 $prepared_sql_order
 $prepared_sql_limit" );
 
-/*				_log("SELECT  $wpdb->posts.ID,  $wpdb->posts.post_title 
-$prepared_sql_filter 
+/*				_log("SELECT  $wpdb->posts.ID,  $wpdb->posts.post_title
+$prepared_sql_filter
 $prepared_sql_like
 $prepared_sql_order
 $prepared_sql_limit");
@@ -250,7 +250,7 @@ $prepared_sql_limit");
 		$ret = __GenericRelationship::get_post_type_items_for_relation($req);
 
 		echo json_encode($ret);
-		
+
 		die();
 	}
 }
