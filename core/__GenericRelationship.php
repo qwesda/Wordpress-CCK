@@ -211,7 +211,7 @@ class __GenericRelationship {
                 if ( event.keyCode == 13 ) {
                     event.preventDefault();
 
-                    if ( event.type == "keypress" ) {
+                    if ( event.type == "keydown" ) {
                         add_relation ();
                     }
                 }
