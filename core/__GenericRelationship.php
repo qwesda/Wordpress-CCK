@@ -138,14 +138,19 @@ class __GenericRelationship {
 		}
 
 		$req = (object)$_REQUEST;
-		$ret = __GenericRelationship::add_relation($req);
+
+		$from_id = absint($req->from_id);
+		$to_id   = absint($req->to_id);
+
+
+		$ret = __GenericRelationship::add_relation($from_id, $to_id);
 
 		echo json_encode($ret);
 
 		die();
 	}
 
-	static function add_relation ($req) {
+	static function add_relation ($from_id, $to_id) {
 		global $wpdb;
 		global $wpc_relationships;
 		global $wpc_content_types;
@@ -156,11 +161,9 @@ class __GenericRelationship {
 			"results" => array (),
 		);
 
-		$from_id = absint($req->from_id);
-		$to_id   = absint($req->to_id);
+		if ($from_id == 0)	$ret->errors[] = "from_id has invalid value '$from_id'";
+		if ($to_id == 0)	$ret->errors[] = "to_id has invalid value '$to_id'";
 
-		if ($req->from_id == 0)	$ret->errors[] = "from_id has invalid value '$req->from_id'";
-		if ($req->to_id == 0)	$ret->errors[] = "to_id has invalid value '$req->to_id'";
 
 
 		return $ret;
