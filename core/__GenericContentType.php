@@ -19,13 +19,13 @@ class __GenericContentType {
 		global $wpc_content_types;
 
 //	SET DEFAULTS
-        if (empty($this->id) )				$this->id    			= strtolower(get_class($this));
+        if ( empty($this->id) )				$this->id    			= strtolower ( get_class($this) );
 
-		if (empty($this->label) )			$this->label 			= $this->id . "s";
-		if (empty($this->singular_label) )	$this->singular_label	= $this->id;
-		if (empty($this->slug) )			$this->slug				= $this->id;
+		if ( empty($this->label) )			$this->label 			= $this->id . "s";
+		if ( empty($this->singular_label) )	$this->singular_label	= $this->id;
+		if ( empty($this->slug) )			$this->slug				= $this->id;
 
-		if (empty($this->supports) )		$this->supports			= array ('title','editor');
+		if ( empty($this->supports) )		$this->supports			= array ('title','editor');
 
 
 		if ( in_array($this->id, get_post_types()) ) {
@@ -90,21 +90,20 @@ class __GenericContentType {
 			<script type="text/javascript">
 				function check_text_input_value(event) {
 					var input = jQuery(this);
-					var label = jQuery("label.wpc_hint[for='" + input.attr('id') + "']")
-					
+					var label = jQuery("label.wpc_hint[for='" + input.attr('id') + "']");
+
 					if ( !(event.type == "keydown" && event.keyCode != 9) && input.val() == "" ){
 						label.addClass("show_full");
-					} else label.removeClass("show_full");
+					} else if (    event.keyCode >= 48
+								&& event.keyCode != 91
+								&& event.keyCode != 93) {
+						label.removeClass("show_full");
+					}
 				}
 
 				jQuery(document).ready(function () {
 					jQuery("body").delegate(".wpc_input_text", "focus keydown keyup change", check_text_input_value);
-					jQuery(".wpc_input_text").each(check_text_input_value	);
-				});
-
-
-				jQuery("#the_editor_content_selector").live("change", function() {
-					alert("s");
+					jQuery(".wpc_input_text").each(check_text_input_value);
 				});
 
 			</script>
@@ -144,20 +143,20 @@ class __GenericContentType {
 			}
 		}
 
+
 		foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
 			if ($this->id == $wpc_relationship->post_type_from_id || $this->id == $wpc_relationship->post_type_to_id) {
 				add_meta_box(
-					$wpc_relationship->id, 
-					$wpc_relationship->label, 
-					array($wpc_relationship, ( ($this->id == $wpc_relationship->post_type_from_id) ? "echo_metabox_from" : "echo_metabox_to") ), 
-					$this->id, 
-					"side", 
-					"default", 
-					$wpc_relationship
+					"$this->id-relationship", 
+					"Relationships", 
+					array("__GenericRelationship", "echo_relations_metabox" ), 
+					$this->id
 				);
+
+				break;
 			}
-			
 		}
+		
 	}
 	
 	function admin_init() {

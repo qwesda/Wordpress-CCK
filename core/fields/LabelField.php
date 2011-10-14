@@ -10,8 +10,8 @@ class LabelField extends __GenericField {
 	}
 
 
-	function echo_field_core ($post_data) {	?>
-		<label class="wpc_input_label"><?php echo $post_data[$this->id] ?></label>
+	function echo_field_core ($post_data = array ()) {	?>
+		<label class="wpc_input_label"><?php if ( !empty($post_data) ) echo $post_data[$this->id] ?></label>
 	<?php }
 }
 

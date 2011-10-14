@@ -1,4 +1,6 @@
-/* @override https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/zfjs/admin_styles/backend_styles.css?ver=3.2.1 */
+/* @override 
+	https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/core/admin_styles/backend_styles.css?ver=3.3-beta1
+*/
 
 div.wpc_form_row_header {
 	clear: both;
@@ -64,9 +66,13 @@ a.button_right {
 	float: right;
 }
 
-ul.relation_soucre_list {
+ul#relation_src_list {
 	border: 1px solid rgba(0,0,0,0.15);
 	margin: 0px;
+	
+	height: 140px;
+	
+	overflow: scroll;
 }
 
 div.relation_item_add_box {
@@ -91,14 +97,51 @@ h4.relation_heading {
 }
 
 
+ul#relation_src_list li.selected:before {
+	content: "▶";
+	padding-right: 4px;
+	opacity: 0.5;
+	top: 1px;
+	position: relative;
+}
 
-ul.relation_soucre_list li {
+ul#relation_src_list li.selected {
+	margin-left: 0px;
+	padding-left: 6px;
+	font-weight: bold;
+}
+
+div#add_src_box_header {
+	margin: 0px -10px;
+	padding: 4px;
+	background: rgba(0,0,0,0.1);
+	
+}
+div#add_src_box {
+	margin: 10px 0px;
+	padding: 0px 10px;
+	
+	background: rgba(255,255,255,0.6);
+	border: 1px solid rgba(0,0,0,0.15);
+}
+
+div#add_src_box_buttons {
+	margin: 10px;
+}
+
+input#relation_src_search {
+	width: 100%;
+	margin-left: 0px;
+}
+
+ul#relation_src_list li {
 	background-color: rgba(0,0,0,0.02);
 	padding: 4px;
 	margin: 0px;
+	padding-left: 20px;
 }
 
-ul.relation_soucre_list li:nth-child(even) {
+ul#relation_src_list li:nth-child(even) {
 	background-color: rgba(0,0,0,0.05);
 }
 

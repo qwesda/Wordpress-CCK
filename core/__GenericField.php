@@ -27,20 +27,20 @@ class __GenericField {
 
 	}
 
-	function echo_field_core ($post_data) {		
+	function echo_field_core ($post_data = array() ) {		
 		echo "unhandeled field <b>$this->id</b> of type <i>$field->type</i>";
 		_var_dump($field);
 	}
 
-	function echo_field_with_label_above ($post_data, $label = "") { ?>
+	function echo_field_with_label_above ($post_data = array(), $label = "") { ?>
 		<div class="wpc_form_field">
 			<label class="wpc_label_top" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->label ?></label>
-			<?php $this->echo_field_core ($post_data); ?>
+			<?php $this->echo_field_core ($post_data = array()); ?>
 		</div><?php
 	}
 	function echo_field($post_data) { ?>
 		<div class="wpc_form_field">
-			<?php $this->echo_field_core ($post_data); ?>
+			<?php $this->echo_field_core ($post_data = array()); ?>
 		</div><?php
 	}
 	
