@@ -192,6 +192,7 @@ class __GenericRelationship {
                 add_relation ();
             });
             jQuery('body').delegate('a#cancel_src_link', 'click', function(event) {
+                event.preventDefault();
                 jQuery('#add_src_box').hide();
                 jQuery('#relation_src_list').show();
 
