@@ -349,18 +349,31 @@ class __GenericRelationship {
         }
 
         $req = (object)$_REQUEST;
-        $ret = __GenericRelationship::add_relation($req);
+
+        $from_id = absint($req->from_id);
+        $to_id   = absint($req->to_id);
+
+        $metadata = array();
+        $relationstr = $req->rel_id;
+        $ajax_relationstr = 'wpc_'.$relationstr;
+
+        # this is certainly not right. let's see later what $_REQUEST looks like...
+        foreach ($_REQUEST as $f=>$k) {
+          if (substr($f, 0, strlen($ajax_relationstr)) == $ajax_relationstr)
+            $metadata[substr($f, strlen($ajax_relationstr))] = $k;
+        }
+
+        $ret = __GenericRelationship::add_relation($to_id, $from_id, $relationstr, $metadata);
 
         echo json_encode($ret);
 
         die();
     }
 
-    static function add_relation ($req) {
+    static function add_relation ($to_id, $from_id, $relationstr, $metadata = array()) {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
-
 
         $ret = (object)array(
              "errors" => array (),
@@ -368,12 +381,21 @@ class __GenericRelationship {
             "results" => array (),
         );
 
-        $from_id = absint($req->from_id);
-        $to_id   = absint($req->to_id);
+        if ($from_id <= 0)
+          $ret->errors[] = "from_id has invalid value '$from_id'";
+        else if ($to_id <= 0)
+          $ret->errors[] = "to_id has invalid value '$to_id'";
+        else {
+          # there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
+          $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $from_id, $to_id, $relationstr));
+          $id = $wpdb->insert_id;
 
-        if ($req->from_id == 0) $ret->errors[] = "from_id has invalid value '$req->from_id'";
-        if ($req->to_id == 0)   $ret->errors[] = "to_id has invalid value '$req->to_id'";
-        
+          if (count($metadata)) {
+            $sql = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES (%d, %s, %s);';
+            foreach ($metadata as $k=>$v)
+              $wpdb->query($wpdb->prepare ($sql, $id, $k, $v));
+          }
+        }
 
         return $ret;
     }
