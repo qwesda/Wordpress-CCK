@@ -7,7 +7,7 @@ $wpc_relationships = array();
 class __GenericRelationship {
     public $id                  = "";
     public $fields              = NULL;
-    
+
     public $label               = "";
 
     public $post_type_from_id   = "";
@@ -86,7 +86,7 @@ class __GenericRelationship {
                 ><?php echo $wpc_relationship->label ?></option><?php
             }
         }
-        
+
         ?><select>
 
 
@@ -101,7 +101,7 @@ class __GenericRelationship {
         </div>
 
         <ul id="relation_src_list">
-            
+
         </ul>
 
         <div id="add_src_box" class="hidden">
@@ -203,7 +203,7 @@ class __GenericRelationship {
 
                 add_selected_item ( jQuery(this) );
             });
-             
+
             jQuery('#add_src_box').delegate('.wpc_input', 'keydown keypress', function(event) {
                 if ( event.keyCode == 13 ) {
                     event.preventDefault();
@@ -251,7 +251,7 @@ class __GenericRelationship {
                     }
 
                     event.preventDefault();
-                }  
+                }
 
                 if (jQuery('#relation_src_list li.selected').prev().length == 1) { 
                     jQuery('#relation_src_list li.selected').prev()[0].scrollIntoView();
@@ -287,7 +287,7 @@ class __GenericRelationship {
                             },
                             success: function (data) {
                                 var html_to_append = "";
-                                
+
                                 for (var i = data.results.length - 1; i >= 0; i--) {
                                     var result = data.results[i];
 
@@ -404,10 +404,10 @@ class __GenericRelationship {
                 }
 
 
-                if ( !isset($req->limit) ) 
+                if ( !isset($req->limit) )
                     $req->limit = 100;
 
-                if ( !isset($req->offset) ) 
+                if ( !isset($req->offset) )
                     $req->offset = 0;
 
                 if ( absint($req->limit) > 0 ) {
@@ -415,7 +415,7 @@ class __GenericRelationship {
                 }
 
 
-                if ( !isset($req->order_by) ) 
+                if ( !isset($req->order_by) )
                     $req->order_by = "NULL";
 
                 if ( ( isset($req->order_by) && in_array ($req->order_by, array ("id",  "title", "NULL")) )
@@ -427,7 +427,7 @@ class __GenericRelationship {
                 }
 
                 $available_count    = $wpdb->get_var    ( "SELECT COUNT(*) $prepared_sql_filter $prepared_sql_like" );
-                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title 
+                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title
 $prepared_sql_filter
 $prepared_sql_like
 $prepared_sql_order
@@ -455,7 +455,7 @@ $prepared_sql_limit" );
         $ret = __GenericRelationship::get_post_type_items_for_relation($req);
 
         echo json_encode($ret);
-        
+
         die();
     }
 }
