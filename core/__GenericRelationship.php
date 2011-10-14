@@ -278,7 +278,7 @@ class __GenericRelationship {
                             url: ajaxurl,
                             dataType: "json",
                             data : {
-                                action      : "get_post_type_items_for_relation",
+                                action      : "get_post_type_items",
                                 nonce       : "<?php echo wp_create_nonce('relations_ajax'); ?>",
                                 post_type   : relation_data.srcId,
                                 filter      : filter_value,
@@ -293,7 +293,7 @@ class __GenericRelationship {
                                 for (var i = data.results.length - 1; i >= 0; i--) {
                                     var result = data.results[i];
 
-                                    html_to_append = "<li data-post-id='"+result.ID+"'><a href='#' class='relation_ource_item'>"+result.post_title+"</a></li>\n" + html_to_append;
+                                    html_to_append = "<li data-post-id='"+result.ID+"'><a href='#' class='relation_source_item'>"+result.post_title+"</a></li>\n" + html_to_append;
                                 };
 
                                 jQuery('#relation_src_list').empty().append(html_to_append);
@@ -332,7 +332,7 @@ class __GenericRelationship {
 
 
     static function hookup_ajax_functions () {
-        add_action('wp_ajax_get_post_type_items_for_relation',  array('__GenericRelationship', 'get_post_type_items_for_relation_ajax'));
+        add_action('wp_ajax_get_post_type_items',               array('__GenericRelationship', 'get_post_type_items_ajax'));
         add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
     }
 
@@ -352,7 +352,7 @@ class __GenericRelationship {
         $ret = __GenericRelationship::add_relation($req);
 
         echo json_encode($ret);
-        
+
         die();
     }
 
@@ -360,6 +360,7 @@ class __GenericRelationship {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
+
 
         $ret = (object)array(
              "errors" => array (),
@@ -450,7 +451,7 @@ $prepared_sql_limit" );
 
         return $ret;
     }
-    static function get_post_type_items_for_relation_ajax () {
+    static function get_post_type_items_ajax() {
         header('Content-type: text/javascript');
 
         $req = (object)$_REQUEST;
