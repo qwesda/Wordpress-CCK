@@ -109,6 +109,9 @@ class __GenericRelationship {
 
         </div>
 
+        <div id='relationlist'>
+        </div>
+
         <script type="text/javascript">
             var last_filter_value  = "";
 
@@ -117,6 +120,34 @@ class __GenericRelationship {
                 var relation_data = selected_relation.data()
 
                 jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.srcLabel + ' to add');
+            }
+
+            function set_connected_items () {
+                var selected_relation   = jQuery("#relation_selector option:selected");
+                var relation_data       = selected_relation.data();
+
+                var data = {
+                        action         : "get_connected_items",
+                        nonce          : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                        rel_id         : relation_data.relId,
+                        src_type_id    : relation_data.srcId,
+                        dst_type_id    : relation_data.dstId,
+                    };
+
+                if (relation_data.relDir == "to_from") {
+                    data.to_id = relation_data.postId;
+                } else {
+                    data.from_id = relation_data.postId;
+                }
+
+                jQuery.ajax({
+                    url: ajaxurl,
+                    dataType: "html",
+                    data : data,
+                    success: function (data) {
+                        jQuery('#relationlist').html(data)
+                    }
+                });
             }
 
             function add_selected_item (item_to_add) {
@@ -227,6 +258,7 @@ class __GenericRelationship {
             }
 
             set_selected_relation();
+            set_connected_items();
             jQuery('body').delegate('#relation_selector', 'change', set_selected_relation);
 
             jQuery('body').delegate('a#add_src_link', 'click', function(event) {
