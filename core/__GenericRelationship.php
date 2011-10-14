@@ -98,6 +98,7 @@ class __GenericRelationship {
         <div>
             <input type="text" class="wpc_input_text" id="relation_src_search" >
             <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">type to search for items to add</label>
+            <a id='relation_search_add_new' href='#'>Add as new post</a>
         </div>
 
         <ul id="relation_src_list">
@@ -138,6 +139,47 @@ class __GenericRelationship {
                 jQuery("#add_src_box .wpc_input_text").each(check_text_input_value);
                 jQuery("#add_src_box .wpc_input:first").focus();
 
+            }
+
+            function add_relation_with_new_post () {
+                var selected_relation   = jQuery("#relation_selector option:selected");
+                var relation_data       = selected_relation.data();
+                var new_post_title      = jQuery('#relation_src_search').val();
+
+                var metadata_fields     = jQuery('#add_src_box .wpc_input');
+
+                var data = {
+                        action         : "add_relation_with_new_post",
+                        nonce          : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                        rel_id         : relation_data.relId,
+                        src_type_id    : relation_data.srcId,
+                        dst_type_id    : relation_data.dstId,
+                        new_post_title : new_post_title,
+
+                        metadata     : {}
+                    };
+                if (relation_data.relDir == "to_from") {
+                    data.from_id = relation_data.postId;
+                } else {
+                    data.to_id = relation_data.postId;
+                }
+
+                for (var i = metadata_fields.length - 1; i >= 0; i--) {
+                    var metadata_field = jQuery(metadata_fields[i]);
+
+                    data.metadata[metadata_field.attr('id')] = metadata_field.val();
+                }
+
+                console.log(data);
+
+                jQuery.ajax({
+                    url: ajaxurl,
+                    dataType: "json",
+                    data : data,
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
             }
 
             function add_relation () {
@@ -190,6 +232,10 @@ class __GenericRelationship {
             jQuery('body').delegate('a#add_src_link', 'click', function(event) {
                 event.preventDefault();
                 add_relation ();
+            });
+            jQuery('body').delegate('a#relation_search_add_new', 'click', function(event) {
+                event.preventDefault();
+                add_relation_with_new_post();
             });
             jQuery('body').delegate('a#cancel_src_link', 'click', function(event) {
                 event.preventDefault();
@@ -335,6 +381,7 @@ class __GenericRelationship {
     static function hookup_ajax_functions () {
         add_action('wp_ajax_get_post_type_items',               array('__GenericRelationship', 'get_post_type_items_ajax'));
         add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
+        add_action('wp_ajax_add_relation_with_new_post',        array('__GenericRelationship', 'add_relation_ajax'));
     }
 
     static function add_relation_ajax () {
@@ -350,9 +397,22 @@ class __GenericRelationship {
         }
 
         $req = (object)$_REQUEST;
+        _log($req);
 
-        $from_id = absint($req->from_id);
-        $to_id   = absint($req->to_id);
+        $from_id = isset($_REQUEST["from_id"])? $_REQUEST["from_id"] : 0;
+        $to_id = isset($_REQUEST["to_id"])? $_REQUEST["to_id"] : 0;
+
+
+        // if one id is missing, create a new post with name in new_post_title
+        if (($from_id xor $to_id) and isset($req->new_post_title)) {
+          $type = $from_id ? $req->dst_type_id : $req->src_type_id;
+          $id = wp_insert_post (array('post_title'=>$req->new_post_title));
+          _log ("add_relation_ajax: created post $id");
+          if ($from_id)
+            $to_id = $id;
+          else
+            $from_id = $id;
+        }
 
         $metadata = array();
         $relationstr = $req->rel_id;
