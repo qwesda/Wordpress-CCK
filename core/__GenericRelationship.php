@@ -188,6 +188,7 @@ class __GenericRelationship {
             jQuery('body').delegate('#relation_selector', 'change', set_selected_relation);
 
             jQuery('body').delegate('a#add_src_link', 'click', function(event) {
+                event.preventDefault();
                 add_relation ();
             });
             jQuery('body').delegate('a#cancel_src_link', 'click', function(event) {
@@ -196,7 +197,8 @@ class __GenericRelationship {
 
                 jQuery('#add_src_box').empty();
             });
-            jQuery('body').delegate('a.relation_ource_item', 'click', function(event) {
+            jQuery('body').delegate('a.relation_source_item', 'click', function(event) {
+                event.preventDefault();
                 jQuery('#relation_src_list li.selected').removeClass('selected');
 
                 jQuery(this).parent().addClass('selected');
@@ -253,7 +255,7 @@ class __GenericRelationship {
                     event.preventDefault();
                 }
 
-                if (jQuery('#relation_src_list li.selected').prev().length == 1) { 
+                if (jQuery('#relation_src_list li.selected').prev().length == 1) {
                     jQuery('#relation_src_list li.selected').prev()[0].scrollIntoView();
                 } else if (jQuery('#relation_src_list li.selected').length == 1) {
                     jQuery('#relation_src_list li.selected')[0].scrollIntoView();
