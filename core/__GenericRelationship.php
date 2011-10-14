@@ -415,23 +415,23 @@ class __GenericRelationship {
         }
 
         $metadata = array();
-        $relationstr = $req->rel_id;
-        $ajax_relationstr = 'wpc_'.$relationstr;
+        $rel_id = $req->rel_id;
+        $ajax_rel_id = 'wpc_'.$rel_id;
 
         # this is certainly not right. let's see later what $_REQUEST looks like...
         foreach ($_REQUEST as $f=>$k) {
-          if (substr($f, 0, strlen($ajax_relationstr)) == $ajax_relationstr)
-            $metadata[substr($f, strlen($ajax_relationstr))] = $k;
+          if (substr($f, 0, strlen($ajax_rel_id)) == $ajax_rel_id)
+            $metadata[substr($f, strlen($ajax_rel_id))] = $k;
         }
 
-        $ret = __GenericRelationship::add_relation($to_id, $from_id, $relationstr, $metadata);
+        $ret = __GenericRelationship::add_relation($to_id, $from_id, $rel_id, $metadata);
 
         echo json_encode($ret);
 
         die();
     }
 
-    static function add_relation ($to_id, $from_id, $relationstr, $metadata = array()) {
+    static function add_relation ($to_id, $from_id, $rel_id, $metadata = array()) {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
@@ -448,7 +448,7 @@ class __GenericRelationship {
           $ret->errors[] = "to_id has invalid value '$to_id'";
         else {
           # there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
-          $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $from_id, $to_id, $relationstr));
+          $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $from_id, $to_id, $rel_id));
           $id = $wpdb->insert_id;
 
           if (count($metadata)) {
