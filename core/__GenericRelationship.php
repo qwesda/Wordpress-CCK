@@ -109,6 +109,9 @@ class __GenericRelationship {
 
         </div>
 
+        <div id='relationlist'>
+        </div>
+
         <script type="text/javascript">
             var last_filter_value  = "";
 
@@ -117,6 +120,34 @@ class __GenericRelationship {
                 var relation_data = selected_relation.data()
 
                 jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.srcLabel + ' to add');
+            }
+
+            function set_connected_items () {
+                var selected_relation   = jQuery("#relation_selector option:selected");
+                var relation_data       = selected_relation.data();
+
+                var data = {
+                        action         : "get_connected_items",
+                        nonce          : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                        rel_id         : relation_data.relId,
+                        src_type_id    : relation_data.srcId,
+                        dst_type_id    : relation_data.dstId,
+                    };
+
+                if (relation_data.relDir == "to_from") {
+                    data.to_id = relation_data.postId;
+                } else {
+                    data.from_id = relation_data.postId;
+                }
+
+                jQuery.ajax({
+                    url: ajaxurl,
+                    dataType: "html",
+                    data : data,
+                    success: function (data) {
+                        jQuery('#relationlist').html(data)
+                    }
+                });
             }
 
             function add_selected_item (item_to_add) {
@@ -227,6 +258,7 @@ class __GenericRelationship {
             }
 
             set_selected_relation();
+            set_connected_items();
             jQuery('body').delegate('#relation_selector', 'change', set_selected_relation);
 
             jQuery('body').delegate('a#add_src_link', 'click', function(event) {
@@ -382,6 +414,8 @@ class __GenericRelationship {
         add_action('wp_ajax_get_post_type_items',               array('__GenericRelationship', 'get_post_type_items_ajax'));
         add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
         add_action('wp_ajax_add_relation_with_new_post',        array('__GenericRelationship', 'add_relation_ajax'));
+        add_action('wp_ajax_get_connected_items',               array('__GenericRelationship', 'get_connected_items_ajax'));
+
     }
 
     static function add_relation_ajax () {
@@ -431,6 +465,30 @@ class __GenericRelationship {
         die();
     }
 
+    static function get_connected_items_ajax () {
+      header('Content-type: text/html');
+
+      $req = (object)$_REQUEST;
+
+      if( empty($req->rel_id) || !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+        _log("wp_verify_nonce('".$req->nonce."', '".$req->rel_id."') failed");
+        _die();
+      } else
+        _log("wp_verify_nonce('".$req->nonce."', '".$req->rel_id."') succeded");
+
+      $from_id = isset($req->from_id) ? $req->from_id : -1;
+      $to_id = isset($req->to_id) ? $req->to_id : -1;
+      $rel_id = $req->rel_id;
+
+      $rows = self::get_connected_items($rel_id, $to_id, $from_id);
+
+      echo '<ul>';
+      foreach ($rows as $item) {
+        echo "<li> $item->post_title $item->ID</li>";
+      }
+      echo '</ul>';
+    }
+
     static function add_relation ($to_id, $from_id, $rel_id, $metadata = array()) {
         global $wpdb;
         global $wpc_relationships;
@@ -460,6 +518,31 @@ class __GenericRelationship {
 
         return $ret;
     }
+
+    static function get_connected_items ($rel_id, $id_from=-1, $id_to=-1) {
+      global $wpdb;
+
+      if ($id_from >= 0) {
+        $id = $id_from;
+        $col = 'post_from_id';
+      } else {
+        $id = $id_to;
+        $col = 'post_to_id';
+      }
+
+      if (!isset($id)) {
+        die ('neither id_from nor id_to set');
+      }
+
+      $sql = "SELECT * FROM wp_wpc_relations
+        LEFT JOIN wp_wpc_relations_meta ON wp_wpc_relations.relation_id = wp_wpc_relations_meta.relation_id
+        JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$col
+        WHERE $col = %d AND relationship_id = %s";
+      $ret = $wpdb->get_results($wpdb->prepare($sql, $id, $rel_id));
+
+      return $ret;
+    }
+
 
     static function get_post_type_items_for_relation ($req) {
         global $wpdb;
