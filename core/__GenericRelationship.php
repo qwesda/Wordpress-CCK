@@ -60,11 +60,11 @@ class __GenericRelationship {
             if ($post->post_type == $wpc_relationship->post_type_from_id || $post->post_type == $wpc_relationship->post_type_to_id) {
                 $rel_direction = $post->post_type == $wpc_relationship->post_type_from_id ? "to_from" : "from_to";
 
-                $src_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_from_id : $wpc_relationship->post_type_to_id;
-                $dst_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_to_id   : $wpc_relationship->post_type_from_id;
+                $src_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_to_id   : $wpc_relationship->post_type_from_id;
+                $dst_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_from_id : $wpc_relationship->post_type_to_id;
 
-                $src    = $rel_direction == "from_to" ? $wpc_relationship->post_type_from   : $wpc_relationship->post_type_to;
-                $dst    = $rel_direction == "from_to" ? $wpc_relationship->post_type_to     : $wpc_relationship->post_type_from;
+                $src    = $rel_direction == "from_to" ? $wpc_relationship->post_type_to     : $wpc_relationship->post_type_from;
+                $dst    = $rel_direction == "from_to" ? $wpc_relationship->post_type_from   : $wpc_relationship->post_type_to;
 
                 ?>
                 <option value = "<?php echo $wpc_relationship->id ?>"
