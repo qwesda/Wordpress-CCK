@@ -437,6 +437,7 @@ class __GenericRelationship {
         add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
         add_action('wp_ajax_add_relation_with_new_post',        array('__GenericRelationship', 'add_relation_ajax'));
         add_action('wp_ajax_get_connected_items',               array('__GenericRelationship', 'get_connected_items_ajax'));
+        add_action('wp_ajax_delete_relation',                      array('__GenericRelationship', 'delete_relation_ajax'));
 
     }
 
@@ -512,6 +513,22 @@ class __GenericRelationship {
       echo '</ul>';
     }
 
+    static function delete_relation_ajax () {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+
+        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+            _log ("wp_verify_nonce($req->nonce) failed.");
+            _die();
+        }
+
+        $ret = self::delete_relation($req->relation_id);
+
+        _log("".$ret);
+        echo $ret;
+    }
+
     static function add_relation ($to_id, $from_id, $rel_id, $metadata = array()) {
         global $wpdb;
         global $wpc_relationships;
@@ -564,6 +581,21 @@ class __GenericRelationship {
       $ret = $wpdb->get_results($wpdb->prepare($sql, $id, $rel_id));
 
       return $ret;
+    }
+
+    static function delete_relation ($relation_id) {
+        global $wpdb;
+
+        // delete row itself
+        $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
+        $ret = $wpdb->query($wpdb->prepare($sql, $relation_id));
+
+        // delete metadata
+        $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
+        $wpdb->query($wpdb->prepare($sql, $relation_id));
+
+        // return how many relations have been deleted (i.e. one or zero)
+        return $ret;
     }
 
 
