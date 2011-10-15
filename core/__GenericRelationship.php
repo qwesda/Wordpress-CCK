@@ -213,6 +213,23 @@ class __GenericRelationship {
                 });
             }
 
+            function delete_relation (relation_id) {
+                var data = {
+                        action      : "delete_relation",
+                        nonce       : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                        relation_id : relation_id
+                    };
+
+                jQuery.ajax({
+                    url: ajaxurl,
+                    dataType: "json",
+                    data : data,
+                    success: function (data) {
+                        set_connected_items();
+                    }
+                });
+            }
+
             function add_relation () {
                 jQuery('#add_src_box').hide();
                 jQuery('#relation_src_list').show();
@@ -264,6 +281,11 @@ class __GenericRelationship {
             jQuery('body').delegate('a#add_src_link', 'click', function(event) {
                 event.preventDefault();
                 add_relation ();
+            });
+            jQuery('body').delegate('.connected_item_delete', 'click', function (event) {
+                event.preventDefault();
+                var relation_id = jQuery(this).data('relation_id');
+                delete_relation(relation_id);
             });
             jQuery('body').delegate('a#relation_search_add_new', 'click', function(event) {
                 event.preventDefault();
@@ -484,7 +506,8 @@ class __GenericRelationship {
 
       echo '<ul>';
       foreach ($rows as $item) {
-        echo "<li> $item->post_title $item->ID</li>";
+          echo "<li> $item->relation_id $item->post_title
+              <a href='#' id='relation-$item->relation_id' class='connected_item_delete' data-relation_id='$item->relation_id'>delete</a></li>\n";
       }
       echo '</ul>';
     }
