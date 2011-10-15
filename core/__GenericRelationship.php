@@ -433,12 +433,12 @@ class __GenericRelationship {
         $req = (object)$_REQUEST;
         _log($req);
 
-        $from_id = isset($_REQUEST["from_id"])? $_REQUEST["from_id"] : 0;
-        $to_id = isset($_REQUEST["to_id"])? $_REQUEST["to_id"] : 0;
+        $from_id = isset($_REQUEST["from_id"])? $_REQUEST["from_id"] : -1;
+        $to_id = isset($_REQUEST["to_id"])? $_REQUEST["to_id"] : -1;
 
 
         // if one id is missing, create a new post with name in new_post_title
-        if (($from_id xor $to_id) and isset($req->new_post_title)) {
+        if (($from_id >=0 xor $to_id >=0) and isset($req->new_post_title)) {
           $type = $from_id ? $req->dst_type_id : $req->src_type_id;
           $id = wp_insert_post (array('post_title'=>$req->new_post_title));
           _log ("add_relation_ajax: created post $id");
