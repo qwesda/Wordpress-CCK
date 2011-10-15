@@ -462,8 +462,10 @@ class __GenericRelationship {
 
         // if one id is missing, create a new post with name in new_post_title
         if (($from_id >=0 xor $to_id >=0) and isset($req->new_post_title)) {
-          $type = $from_id ? $req->dst_type_id : $req->src_type_id;
-          $id = wp_insert_post (array('post_title'=>$req->new_post_title));
+          // this from_to-business is messy.
+          // seems, that if i want to insert a to_id, it will be of type src_type_id...
+          $type = ! $from_id ? $req->dst_type_id : $req->src_type_id;
+          $id = wp_insert_post (array('post_title'=>$req->new_post_title, 'post_type'=>$type));
           _log ("add_relation_ajax: created post $id");
           if ($from_id)
             $to_id = $id;
