@@ -565,20 +565,28 @@ class __GenericRelationship {
       if ($id_from >= 0) {
         $id = $id_from;
         $col = 'post_from_id';
+        $othercol = 'post_to_id';
       } else {
         $id = $id_to;
         $col = 'post_to_id';
+        $othercol = 'post_from_id';
       }
 
       if (!isset($id)) {
         die ('neither id_from nor id_to set');
       }
 
-      $sql = "SELECT * FROM wp_wpc_relations
-        LEFT JOIN wp_wpc_relations_meta ON wp_wpc_relations.relation_id = wp_wpc_relations_meta.relation_id
-        JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$col
+      $sql = "SELECT wp_posts.post_title, wp_posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
+        JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$othercol
         WHERE $col = %d AND relationship_id = %s";
       $ret = $wpdb->get_results($wpdb->prepare($sql, $id, $rel_id));
+
+      // add metadata
+      $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
+        WHERE relation_id = %d";
+      foreach ($ret as &$row) {
+        $row->metadata = $wpdb->get_results($wpdb->prepare($sql, $row->relation_id));
+      }
 
       return $ret;
     }
