@@ -38,6 +38,13 @@ class __GenericField {
             <?php $this->echo_field_core ($post_data); ?>
         </div><?php
     }
+
+    function echo_field_with_label_left ($post_data = array(), $label = "") { ?>
+        <div class="wpc_form_field">
+            <label class="wpc_label_left" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->label ?></label>
+            <?php $this->echo_field_core ($post_data); ?>
+        </div><?php
+    }
     function echo_field($post_data) { ?>
         <div class="wpc_form_field">
             <?php $this->echo_field_core ($post_data); ?>
