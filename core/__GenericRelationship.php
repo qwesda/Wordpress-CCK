@@ -531,6 +531,17 @@ class __GenericRelationship {
         echo $ret;
     }
 
+    static function get_post_type_items_ajax() {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+        $ret = self::get_post_type_items_for_relation($req);
+
+        echo json_encode($ret);
+
+        die();
+    }
+
     static function add_relation ($to_id, $from_id, $rel_id, $metadata = array()) {
         global $wpdb;
         global $wpc_relationships;
@@ -681,16 +692,6 @@ $prepared_sql_limit" );
         }
 
         return $ret;
-    }
-    static function get_post_type_items_ajax() {
-        header('Content-type: text/javascript');
-
-        $req = (object)$_REQUEST;
-        $ret = __GenericRelationship::get_post_type_items_for_relation($req);
-
-        echo json_encode($ret);
-
-        die();
     }
 }
 
