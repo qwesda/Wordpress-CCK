@@ -42,13 +42,13 @@ function wpc_install() {
 
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-      
+
     $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations` (
                 `relation_id` bigint(20) unsigned NOT NULL auto_increment,
                 `post_from_id` bigint(20) unsigned NOT NULL,
                 `post_to_id` bigint(20) unsigned NOT NULL,
                 `relationship_id` varchar(255) NOT NULL default '',
-                PRIMARY KEY `relation_id` (`relation_id`),
+                PRIMARY KEY  `relation_id` (`relation_id`),
                 KEY `post_from_id`  (`post_from_id`),
                 KEY `post_to_id` (`post_to_id`),
                 KEY `relationship_id` (`relationship_id`)
@@ -61,7 +61,7 @@ function wpc_install() {
                 `relation_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(255) default NULL,
                 `meta_value` longtext,
-                PRIMARY KEY `meta_id` (`meta_id`),
+                PRIMARY KEY  `meta_id` (`meta_id`),
                 KEY `relation_id` (`relation_id`),
                 KEY `meta_key` (`meta_key`)
             );
