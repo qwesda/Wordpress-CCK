@@ -88,337 +88,650 @@ class __GenericRelationship {
         }
 
         ?><select>
+        <div id="relation_edit_boxes">
+            <script type="text/javascript" charset="utf-8">
+                function goto_box (to_box_id, from_box_id, direction) {
+                    var selected_relation       = jQuery("#relation_selector option:selected");
+                    var selected_relation_data  = selected_relation.data()
+                    
+                    switch (from_box_id) {
+                        case "relation_add_search_box":
+                            if (to_box_id != "relation_connect_existing_box") {
+                                jQuery('#relation_src_search').val('');
+                                jQuery('#relation_src_list').empty();
+                            }
+                            break;
+                        case "relation_connect_existing_box" :
+                            jQuery('#relation_connect_existing_metadata_box').empty();
+                            break;
+                        case "relation_edit_connected_box" :
+                            jQuery('#relation_edit_connected_metadata_box').empty();
+                            break;
+                        case "relation_connect_new_box" :
+                            jQuery('#new_item_title').val('');
+                            jQuery('#relation_connect_new_metadata_box').empty();
+                            break;
+                    }
+                    
+                    jQuery('#relation_edit_boxes > div > div.relation_nav_bar').empty();
+                    
+    
+                    if (direction == "back") {
+                        jQuery('#relation_edit_boxes > div:visible').hide();
+                        jQuery('#'+to_box_id).show();
+                    } else if (direction == "forward") {
+                        jQuery('#relation_edit_boxes > div:visible').hide();
+                        jQuery('#'+to_box_id).show();
+                    } else {
+                        jQuery('#relation_edit_boxes > div:visible').hide();
+                        jQuery('#'+to_box_id).show();
+                    }
 
 
-        <ul id="relation_conected_list">
-            <i>connected</i>
-        </ul>
+                    switch (to_box_id) {
+                        case "relation_connected_box" :
+                            set_connected_items();
+                            
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected '+selected_relation.data('dst-label')+'</div>');
+                            break;
+                        case "relation_add_search_box":
+                            jQuery('#relation_src_search').focus();
+                            
+                            jQuery('#relation_connected_add_new').text('connect new ' + selected_relation.data('dst-singular-label'));
+                            
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search for '+selected_relation.data('dst-label')+'</div>');
+                            break;
+                        case "relation_connect_existing_box" :
+                            var selected_item           = jQuery('#relation_src_list li.selected a');
+                                                        
+                            if (selected_relation_data.editBox == "") { 
+                                jQuery('#relation_connect_existing_metadata_box').empty().hide();
+                                
+                                jQuery('#relation_connect_existing_add').focus();
+                            } else {
+                                jQuery('#relation_connect_existing_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
+                                
+                                jQuery("#relation_connect_existing_metadata_box .wpc_input_text").each(check_text_input_value);
+                                jQuery("#relation_connect_existing_metadata_box .wpc_input:first").focus();
+                            }
+                        
+                            
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search</div><div>Add '+selected_item.text()+'</div>');
+                            break;
+                        case "relation_edit_connected_box" :
+                            var selected_item           = jQuery('#relation_conected_list li.selected a');
+                            var selected_item_data      = jQuery('#relation_conected_list li.selected').data();
+     
+                            if (selected_relation_data.editBox == "") { 
+                                jQuery('#relation_edit_connected_metadata_box').empty().hide();
+                                
+                                jQuery('#relation_edit_connected_update').focus();
+                            } else {
+                                jQuery('#relation_edit_connected_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
+                                
+                                jQuery("#relation_edit_connected_metadata_box .wpc_input_text").each(check_text_input_value);
+                                jQuery("#relation_edit_connected_metadata_box .wpc_input:first").focus();
 
-        <div class="clear" />
-        <div>
-            <input type="text" class="wpc_input_text" id="relation_src_search" >
-            <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">type to search for items to add</label>
-            <a id='relation_search_add_new' href='#'>Add as new post</a>
-        </div>
+                                for (var metadata_key in selected_item_data.data.metadata){
+                                    jQuery('#wpc_'+selected_relation_data.relId+'_'+metadata_key).val(selected_item_data.data.metadata[metadata_key]);
+                                }
+                            }
+                            
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Edit '+selected_item.text()+'</div>');
+                            break;
+                        case "relation_connect_new_box" :                               
+                            if (selected_relation_data.editBox == "") { 
+                                jQuery('#relation_connect_new_metadata_box').empty().hide();
+                            } else {
+                                jQuery('#relation_connect_new_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
+                                
+                                jQuery("#relation_connect_new_metadata_box .wpc_input_text").each(check_text_input_value);
+                            }   
+                               
+                            jQuery("#new_item_title").focus();
+                            
+                            jQuery('#new_item_title').text('title for new ' + selected_relation.data('dst-singular-label'));
+                            
+                            
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search</div><div>Add new '+selected_relation.data('dst-singular-label')+'</div>');
+                            break;
+                    }
 
-        <ul id="relation_src_list">
+                    
+                }
+            </script>
+            
+            <div id="relation_connected_box">
+                <div class="relation_nav_bar"></div><div class="clear"></div>
+                
+                <ul id="relation_conected_list">
 
-        </ul>
+                </ul>
+    
+                <div id="relation_buttons_box" class="relation_buttons_box">
+                    <a id='relation_connected_add' class="button" href='#'>add connection</a>
+                </div>
+                
+                <script type="text/javascript" charset="utf-8">
+                    jQuery('body').delegate('a.relation_connected_item', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        jQuery(this).parent().addClass("selected");
 
-        <div id="add_src_box" class="hidden">
+                        goto_box('relation_edit_connected_box', 'relation_connected_box', 'forward');
+                    });
+                    jQuery('body').delegate('a#relation_connected_add', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        goto_box('relation_add_search_box', 'relation_connected_box', 'forward');
+                    });
+                </script>
+            </div>
 
-        </div>
+            <div id="relation_add_search_box" class="hidden">
+                <div class="relation_nav_bar"></div><div class="clear"></div>
+                
+                <div>
+                    <input type="text" class="wpc_input_text" id="relation_src_search" >
+                    <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">search for existing item</label> or
+                    <a id='relation_connected_add_new' class="button" href='#'>connect new item</a>
+                </div>
 
-        <div id='relationlist'>
+                <ul id="relation_src_list">
+
+                </ul>
+    
+                <div id="relation_add_buttons_box" class="relation_buttons_box">
+                    <a id='relation_add_search_cancel' class="button" href='#'>back</a>
+                </div>
+                
+                <script type="text/javascript" charset="utf-8">
+                    var last_filter_value  = "";
+        
+                    jQuery('body').delegate('#relation_src_search', 'keydown keypress', function(event) {
+                        var selected = jQuery('#relation_src_list li.selected');
+
+                        if ( event.keyCode == 13 && event.type == "keypress") {
+                            event.preventDefault();
+                            
+                            add_selected_item(selected);
+                        }
+                        if ( event.keyCode == 40) {
+                            selected.removeClass('selected')
+                            selected.next().addClass('selected');
+
+                            if (selected.next().length == 0) {
+                                jQuery('#relation_src_list li:first').addClass('selected');
+                            }
+
+                            event.preventDefault();
+                        }
+                        if ( event.keyCode == 27) {
+                            event.preventDefault();
+        
+                            goto_box('relation_connected_box', 'relation_add_search_box', 'back');
+                        }
+                        if ( event.keyCode == 38) {
+                            selected.removeClass('selected')
+                            selected.prev().addClass('selected');
+
+                            if (selected.prev().length == 0) {
+                                jQuery('#relation_src_list li:last').addClass('selected');
+                            }
+
+                            event.preventDefault();
+                        }
+                        if ( event.keyCode == 23) {
+                            selected.removeClass('selected')
+                            selected.prev().addClass('selected');
+
+                            if (selected.prev().length == 0) {
+                                jQuery('#relation_src_list li:last').addClass('selected');
+                            }
+
+                            event.preventDefault();
+                        }
+
+                        if (jQuery('#relation_src_list li.selected').prev().length == 1) {
+                            jQuery('#relation_src_list li.selected').prev()[0].scrollIntoView();
+                        } else if (jQuery('#relation_src_list li.selected').length == 1) {
+                            jQuery('#relation_src_list li.selected')[0].scrollIntoView();
+                        }
+                    });
+                    jQuery('body').delegate('#relation_src_search', 'keyup', function(event) {
+                        var selected_relation   = jQuery("#relation_selector option:selected");
+                        var relation_data       = selected_relation.data()
+
+                        var relation_src_search = jQuery(this);
+                        var filter_value        = relation_src_search.val();
+
+                        if (filter_value != last_filter_value) {
+                            last_filter_value = filter_value;
+
+                            if (filter_value.length >= 2) {
+
+                                var html_to_append = "<div class='relations_info'><img src='<?php echo admin_url('images/wpspin_light.gif') ?>'> searching for "+relation_data.dstLabel+" like \""+filter_value+"\"<br></div>";
+                                jQuery('#relation_src_list').empty().append(html_to_append);
+                                
+                                jQuery.ajax({
+                                    url: ajaxurl,
+                                    dataType: "json",
+                                    cache : false,
+                                    data : {
+                                        action      : "get_post_type_items",
+                                        nonce       : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                                        post_type   : relation_data.srcId,
+                                        filter      : filter_value,
+                                        offset      : 0,
+                                        limit       : 100,
+                                        order       : "asc",
+                                        order_by    : "title"
+                                    },
+                                    success: function (data) {
+                                        var html_to_append = "";
+
+                                        for (var i = data.results.length - 1; i >= 0; i--) {
+                                            var result = data.results[i];
+
+                                            html_to_append = "<li data-post-id='"+result.ID+"'><a href='#' class='relation_source_item'>"+result.post_title+"</a></li>\n" + html_to_append;
+                                        }
+
+                                        if (data.results.length == 0) {
+                                            html_to_append = "<div class='relations_info'>no "+relation_data.dstLabel+" like \""+filter_value+"\" found<br></div>";
+                                        };
+
+                                        jQuery('#relation_src_list').empty().append(html_to_append);
+
+                                        jQuery('#relation_src_list li:first').addClass('selected');
+                                    }
+                                });
+                            } else jQuery('#relation_src_list').empty();
+                        }
+                    });
+                    jQuery('body').delegate('a#relation_add_search_cancel', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        relation_add_search_cancel();
+                    });
+                    jQuery('body').delegate('a.relation_source_item', 'click', function(event) {
+                        event.preventDefault();
+                        jQuery('#relation_src_list li.selected').removeClass('selected');
+
+                        jQuery(this).parent().addClass('selected');
+
+                        add_selected_item ();
+                    });
+                    
+                    jQuery('body').delegate('a#relation_connected_add_new', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        goto_box('relation_connect_new_box', 'relation_connected_box', 'forward');
+
+                    });
+                    function relation_add_search_cancel () {
+                        goto_box('relation_connected_box', 'relation_add_search_box', 'back');
+                    }
+        
+                    function add_selected_item () {
+                        goto_box('relation_connect_existing_box', 'relation_add_search_box', 'forward');
+                    }
+                </script>
+            </div>
+
+            <div id="relation_edit_connected_box" class="hidden">   
+                <div class="relation_nav_bar"></div><div class="clear"></div>
+                        
+                <div id="relation_edit_connected_metadata_box">
+                
+                </div>
+            
+                <div id="relation_edit_connected_buttons_box" class="relation_buttons_box">
+                    <a id='relation_edit_connected_cancel' class="button" href='#'>cancel</a>
+                    <a id='relation_edit_connected_delete' class="button" href='#'>delete</a>
+                    <a id='relation_edit_connected_update' class="button-primary" href='#'>save</a>
+                </div>
+                
+                <script type="text/javascript" charset="utf-8">
+                    function relation_edit_connected_cancel () {
+                        goto_box('relation_connected_box', 'relation_edit_connected', 'back');
+                    }
+                    function relation_edit_connected_update () {
+                        var selected_relation   = jQuery("#relation_selector option:selected");
+                        var relation_data       = selected_relation.data();
+                        var selected_item       = jQuery('#relation_conected_list li.selected');
+                        var selected_item_data  = jQuery('#relation_conected_list li.selected').data();
+
+                        var metadata_fields     = jQuery('#relation_edit_connected_metadata_box .wpc_input');
+
+                        var data = {
+                                action       : "update_relation",
+                                nonce        : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                                rel_id       : relation_data.relId,
+                                relation_id  : selected_item_data.data.relation_id,
+                                from_id      : selected_item_data.data.post_from_id,
+                                to_id        : selected_item_data.data.post_to_id,
+                                metadata     : {}
+                            };
+
+                        for (var i = metadata_fields.length - 1; i >= 0; i--) {
+                            var metadata_field = jQuery(metadata_fields[i]);
+
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+
+                            data.metadata[metadata_key] = metadata_field.val();
+                        };
+
+                        jQuery.ajax({
+                            url: ajaxurl,
+                            dataType: "json",
+                            data : data,
+                            cache : false,
+                            success: function (data) {          
+                                goto_box('relation_connected_box', 'relation_edit_connected', 'back');
+                            }
+                        });
+                    }
+                    function relation_edit_connected_delete () {
+                        var selected_relation   = jQuery("#relation_selector option:selected");
+                        var relation_data       = selected_relation.data();
+                        var selected_item       = jQuery('#relation_conected_list li.selected');
+                        var selected_item_data  = jQuery('#relation_conected_list li.selected').data();
+
+                        var metadata_fields     = jQuery('#relation_edit_connected_metadata_box .wpc_input');
+
+                        var data = {
+                                action       : "delete_relation",
+                                nonce        : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                                rel_id       : relation_data.relId,
+                                relation_id  : selected_item_data.data.relation_id
+                            };
+
+                        jQuery.ajax({
+                            url: ajaxurl,
+                            dataType: "json",
+                            data : data,
+                            cache : false,
+                            success: function (data) {          
+                                goto_box('relation_connected_box', 'relation_edit_connected', 'back');
+                            }
+                        });
+                    }
+                
+                    jQuery('body').delegate('a#relation_edit_connected_cancel', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        relation_edit_connected_cancel();
+                    });
+                    jQuery('body').delegate('a#relation_edit_connected_update', 'click', function(event) {
+                        event.preventDefault();
+
+                        relation_edit_connected_update();
+                    });
+                    jQuery('body').delegate('a#relation_edit_connected_delete', 'click', function(event) {
+                        event.preventDefault();
+
+                        relation_edit_connected_delete();
+                    });
+
+                    jQuery('#relation_edit_connected_box').delegate('.wpc_input', 'keydown keypress', function(event) {
+                        if ( event.keyCode == 13 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_edit_connected_update ();
+                            }
+                        }
+                        if ( event.keyCode == 27 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_edit_connected_cancel ();
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <div id="relation_connect_existing_box" class="hidden"> 
+                <div class="relation_nav_bar"></div><div class="clear"></div>
+                        
+                <div id="relation_connect_existing_metadata_box">
+                
+                </div>
+            
+                <div id="relation_connect_existing_buttons_box" class="relation_buttons_box">
+                    <a id='relation_connect_existing_cancel' class="button" href='#'>cancel</a>
+                    <a id='relation_connect_existing_add' class="button-primary" href='#'>add</a>
+                </div>
+                
+                <script type="text/javascript" charset="utf-8">
+                    function relation_connect_existing_add () {
+                        var selected_relation   = jQuery("#relation_selector option:selected");
+                        var relation_data       = selected_relation.data();
+                        var selected_item       = jQuery('#relation_src_list li.selected');
+
+                        var metadata_fields     = jQuery('#relation_connect_existing_box .wpc_input');
+
+                        var data = {
+                                action       : "add_relation",
+                                nonce        : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                                rel_id       : relation_data.relId,
+                                from_id      : relation_data.relDir == "to_from" ? relation_data.postId : selected_item.data('post-id'),
+                                to_id        : relation_data.relDir == "to_from" ? selected_item.data('post-id') : relation_data.postId,
+
+                                metadata     : {}
+                            };
+
+                        for (var i = metadata_fields.length - 1; i >= 0; i--) {
+                            var metadata_field = jQuery(metadata_fields[i]);
+
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+
+                            data.metadata[metadata_key] = metadata_field.val();
+                        };
+        
+                        jQuery.ajax({
+                            url: ajaxurl,
+                            dataType: "json",
+                            data : data,
+                            cache : false,
+                            success: function (data) {          
+                                goto_box('relation_add_search_box', 'relation_connect_existing_box', 'back');
+                            }
+                        });
+                    }
+                    function relation_connect_existing_cancel () {
+                        goto_box('relation_add_search_box', 'relation_connect_existing_box', 'back');
+                    }
+                
+                    jQuery('body').delegate('a#relation_connect_existing_cancel', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        relation_connect_existing_cancel();
+                    });
+        
+                    jQuery('body').delegate('a#relation_connect_existing_add', 'click', function(event) {
+                        event.preventDefault();
+
+                        relation_connect_existing_add();
+                    });
+        
+                    jQuery('#relation_connect_existing_box').delegate('.wpc_input', 'keydown keypress', function(event) {
+                        if ( event.keyCode == 13 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_connect_existing_add ();
+                            }
+                        }
+                        if ( event.keyCode == 27 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_connect_existing_cancel ();
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <div id="relation_connect_new_box" class="hidden"> 
+                <div class="relation_nav_bar"></div><div class="clear"></div>
+                
+                <div>
+                    <input type="text" class="wpc_input wpc_input_text" id="new_item_title" >
+                    <label class="wpc_hint" for="new_item_title" id="wpc_input_text_hint">title for the new item</label>
+                </div>
+                        
+                <div id="relation_connect_new_metadata_box">
+                
+                </div>
+            
+                <div id="relation_connect_new_buttons_box" class="relation_buttons_box">
+                    <a id='relation_connect_new_cancel' class="button" href='#'>cancel</a>
+                    <a id='relation_connect_new_add' class="button-primary" href='#'>add</a>
+                </div>
+                
+                <script type="text/javascript" charset="utf-8">
+                    function relation_connect_new_add () {
+                        var selected_relation   = jQuery("#relation_selector option:selected");
+                        var relation_data       = selected_relation.data();
+                        var selected_item       = jQuery('#relation_src_list li.selected');
+
+                        var metadata_fields     = jQuery('#relation_connect_new_box .wpc_input');
+
+                        var data = {
+                                action       : "add_relation",
+                                nonce        : "<?php echo wp_create_nonce('relations_ajax'); ?>",
+                                rel_id       : relation_data.relId,
+                                new_post_title : jQuery('#new_item_title').val(),
+
+                                metadata     : {}
+                            };
+
+                        for (var i = metadata_fields.length - 1; i >= 0; i--) {
+                            var metadata_field = jQuery(metadata_fields[i]);
+
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+
+                            if ( metadata_key != "new_item_title") {
+                                data.metadata[metadata_key] = metadata_field.val();
+                            }
+                        };
+                        
+                        if (relation_data.relDir == "to_from") {
+                            data.from_id = relation_data.postId;
+                        } else {
+                            data.to_id = relation_data.postId;
+                        }
+
+                        jQuery.ajax({
+                            url: ajaxurl,
+                            dataType: "json",
+                            data : data,
+                            success: function (data) {          
+                                goto_box('relation_connected_box', 'relation_connect_new_box', 'back');
+                            }
+                        });
+                    }
+                    function relation_connect_new_cancel () {
+                        goto_box('relation_add_search_box', 'relation_connect_new_box', 'back');
+                    }
+                
+                    jQuery('body').delegate('a#relation_connect_new_cancel', 'click', function(event) {
+                        event.preventDefault();
+                        
+                        relation_connect_new_cancel();
+                    });
+                    jQuery('body').delegate('a#relation_connect_new_add', 'click', function(event) {
+                        event.preventDefault();
+
+                        relation_connect_new_add();
+                    });
+        
+                    jQuery('#relation_connect_new_box').delegate('.wpc_input', 'keydown keypress', function(event) {
+                        if ( event.keyCode == 13 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_connect_new_add ();
+                            }
+                        }
+                        if ( event.keyCode == 27 ) {
+                            event.preventDefault();
+
+                            if ( event.type == "keydown" ) {
+                                relation_connect_new_cancel ();
+                            }
+                        }
+                    });
+                </script>
+            </div>
         </div>
 
         <script type="text/javascript">
-            var last_filter_value  = "";
+            set_selected_relation();
+
+            jQuery('body').delegate('#relation_selector', 'change', set_selected_relation);
 
             function set_selected_relation () {
                 var selected_relation = jQuery("#relation_selector option:selected");
                 var relation_data = selected_relation.data()
 
                 jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.srcLabel + ' to add');
+                
+                
+                goto_box('relation_connected_box','','');
             }
-
             function set_connected_items () {
                 var selected_relation   = jQuery("#relation_selector option:selected");
                 var relation_data       = selected_relation.data();
 
                 var data = {
                         action         : "get_connected_items",
-                        nonce          : "<?php echo wp_create_nonce('relations_ajax'); ?>",
-                        rel_id         : relation_data.relId,
-                        src_type_id    : relation_data.srcId,
-                        dst_type_id    : relation_data.dstId,
+                        rel_id         : relation_data.relId
                     };
 
-                if (relation_data.relDir == "to_from") {
+                if (relation_data.relDir == "from_to") {
                     data.to_id = relation_data.postId;
                 } else {
                     data.from_id = relation_data.postId;
                 }
 
-                jQuery.ajax({
-                    url: ajaxurl,
-                    dataType: "html",
-                    data : data,
-                    success: function (data) {
-                        jQuery('#relationlist').html(data)
-                    }
-                });
-            }
-
-            function add_selected_item (item_to_add) {
-                var selected_relation = jQuery("#relation_selector option:selected");
-                var relation_data = selected_relation.data()
-
-                jQuery('#add_src_box').empty().append(
-                    '<div id="add_src_box_header"><label for="add_src_link">add <b>' + item_to_add.text() + '</b></label></div>'
-                  + htmlspecialchars_decode(relation_data.editBox)
-                  + '<div id="add_src_box_buttons">'+
-                        '<a id="add_src_link" class="button button_right button-primary" href="#">add</a>' +
-                        '<a id="cancel_src_link" class="button button_right" href="#">cancel</a>' +
-                        '<div class="clear"></div>' +
-                    '</div>'
-                );
-
-                jQuery('#add_src_box').show();
-                jQuery('#relation_src_list').hide();
-
-                jQuery("#add_src_box .wpc_input_text").each(check_text_input_value);
-                jQuery("#add_src_box .wpc_input:first").focus();
-
-            }
-
-            function add_relation_with_new_post () {
-                var selected_relation   = jQuery("#relation_selector option:selected");
-                var relation_data       = selected_relation.data();
-                var new_post_title      = jQuery('#relation_src_search').val();
-
-                var metadata_fields     = jQuery('#add_src_box .wpc_input');
-
-                var data = {
-                        action         : "add_relation_with_new_post",
-                        nonce          : "<?php echo wp_create_nonce('relations_ajax'); ?>",
-                        rel_id         : relation_data.relId,
-                        src_type_id    : relation_data.srcId,
-                        dst_type_id    : relation_data.dstId,
-                        new_post_title : new_post_title,
-
-                        metadata     : {}
-                    };
-                if (relation_data.relDir == "to_from") {
-                    data.from_id = relation_data.postId;
-                } else {
-                    data.to_id = relation_data.postId;
-                }
-
-                for (var i = metadata_fields.length - 1; i >= 0; i--) {
-                    var metadata_field = jQuery(metadata_fields[i]);
-
-                    data.metadata[metadata_field.attr('id')] = metadata_field.val();
-                }
-
-                console.log(data);
+                var html_to_append = "<div class='relations_info'><img src='<?php echo admin_url('images/wpspin_light.gif') ?>'> loading connected "+relation_data.dstLabel+"<br></div>";
+                jQuery('#relation_conected_list').empty().append(html_to_append);
 
                 jQuery.ajax({
                     url: ajaxurl,
                     dataType: "json",
                     data : data,
-                    success: function (data) {
-                        console.log(data);
+                    cache : false,
+                    success: function (ret) {
+                        var html_to_append = "";
+
+                        for (var i = ret.results.length - 1; i >= 0; i--) {
+                            var result = ret.results[i];
+
+                            html_to_append = "<li data-relation_id='"+result.relation_id+"'  data-data='"+json_encode(result)+"'><a href='#' class='relation_connected_item'>"+result.post_title+"</a> <a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a></li>\n" + html_to_append;
+                        }
+
+                        if (ret.results.length == 0) {
+                            html_to_append = "<div class='relations_info'>no "+relation_data.dstLabel+" connected yet<br>click on \"add connection\" to get started</div>";
+                        }
+
+                        jQuery('#relation_conected_list').empty().append(html_to_append);
                     }
                 });
+/**/
             }
-
-            function delete_relation (relation_id) {
-                var data = {
-                        action      : "delete_relation",
-                        nonce       : "<?php echo wp_create_nonce('relations_ajax'); ?>",
-                        relation_id : relation_id
-                    };
-
-                jQuery.ajax({
-                    url: ajaxurl,
-                    dataType: "json",
-                    data : data,
-                    success: function (data) {
-                        set_connected_items();
-                    }
-                });
-            }
-
-            function add_relation () {
-                jQuery('#add_src_box').hide();
-                jQuery('#relation_src_list').show();
-
-                var selected_relation   = jQuery("#relation_selector option:selected");
-                var relation_data       = selected_relation.data()
-                var selected_item       = jQuery('#relation_src_list li.selected');
-
-                var metadata_fields     = jQuery('#add_src_box .wpc_input');
-
-                var data = {
-                        action       : "add_relation",
-                        nonce        : "<?php echo wp_create_nonce('relations_ajax'); ?>",
-                        rel_id       : relation_data.relId,
-                        src_type_id  : relation_data.srcId,
-                        dst_type_id  : relation_data.dstId,
-                        from_id      : relation_data.relDir == "to_from" ? relation_data.postId : selected_item.data('post-id'),
-                        to_id        : relation_data.relDir == "to_from" ? selected_item.data('post-id') : relation_data.postId,
-
-                        metadata     : {}
-                    };
-
-                for (var i = metadata_fields.length - 1; i >= 0; i--) {
-                    var metadata_field = jQuery(metadata_fields[i]);
-
-                    data.metadata[metadata_field.attr('id')] = metadata_field.val();
-                };
-
-                console.log(data);
-
-                jQuery.ajax({
-                    url: ajaxurl,
-                    dataType: "json",
-                    data : data,
-                    success: function (data) {
-                        console.log(data);
-                    }
-                });
-
-                jQuery('#add_src_box').empty();
-
-                jQuery("#relation_src_search").focus();
-            }
-
-            set_selected_relation();
-            set_connected_items();
-            jQuery('body').delegate('#relation_selector', 'change', set_selected_relation);
-
-            jQuery('body').delegate('a#add_src_link', 'click', function(event) {
-                event.preventDefault();
-                add_relation ();
-            });
-            jQuery('body').delegate('.connected_item_delete', 'click', function (event) {
-                event.preventDefault();
-                var relation_id = jQuery(this).data('relation_id');
-                delete_relation(relation_id);
-            });
-            jQuery('body').delegate('a#relation_search_add_new', 'click', function(event) {
-                event.preventDefault();
-                add_relation_with_new_post();
-            });
-            jQuery('body').delegate('a#cancel_src_link', 'click', function(event) {
-                event.preventDefault();
-                jQuery('#add_src_box').hide();
-                jQuery('#relation_src_list').show();
-
-                jQuery('#add_src_box').empty();
-            });
-            jQuery('body').delegate('a.relation_source_item', 'click', function(event) {
-                event.preventDefault();
-                jQuery('#relation_src_list li.selected').removeClass('selected');
-
-                jQuery(this).parent().addClass('selected');
-
-                add_selected_item ( jQuery(this) );
-            });
-
-            jQuery('#add_src_box').delegate('.wpc_input', 'keydown keypress', function(event) {
-                if ( event.keyCode == 13 ) {
-                    event.preventDefault();
-
-                    if ( event.type == "keydown" ) {
-                        add_relation ();
-                    }
-                }
-            });
-
-            jQuery('body').delegate('#relation_src_search', 'keydown keypress', function(event) {
-                var selected = jQuery('#relation_src_list li.selected');
-
-                if ( event.keyCode == 13 && event.type == "keypress") {
-                    event.preventDefault();
-
-                    add_selected_item(selected);
-                }
-                if ( event.keyCode == 40) {
-                    selected.removeClass('selected')
-                    selected.next().addClass('selected');
-
-                    if (selected.next().length == 0) {
-                        jQuery('#relation_src_list li:first').addClass('selected');
-                    }
-
-                    event.preventDefault();
-                }
-                if ( event.keyCode == 38) {
-                    selected.removeClass('selected')
-                    selected.prev().addClass('selected');
-
-                    if (selected.prev().length == 0) {
-                        jQuery('#relation_src_list li:last').addClass('selected');
-                    }
-
-                    event.preventDefault();
-                }
-                if ( event.keyCode == 23) {
-                    selected.removeClass('selected')
-                    selected.prev().addClass('selected');
-
-                    if (selected.prev().length == 0) {
-                        jQuery('#relation_src_list li:last').addClass('selected');
-                    }
-
-                    event.preventDefault();
-                }
-
-                if (jQuery('#relation_src_list li.selected').prev().length == 1) {
-                    jQuery('#relation_src_list li.selected').prev()[0].scrollIntoView();
-                } else if (jQuery('#relation_src_list li.selected').length == 1) {
-                    jQuery('#relation_src_list li.selected')[0].scrollIntoView();
-                }
-            });
-
-            jQuery('body').delegate('#relation_src_search', 'keyup', function(event) {
-                var selected_relation   = jQuery("#relation_selector option:selected");
-                var relation_data       = selected_relation.data()
-
-                var relation_src_search = jQuery(this);
-                var filter_value        = relation_src_search.val();
-
-                if (filter_value != last_filter_value) {
-                    last_filter_value = filter_value;
-
-                    if (filter_value.length >= 2) {
-
-                        jQuery.ajax({
-                            url: ajaxurl,
-                            dataType: "json",
-                            data : {
-                                action      : "get_post_type_items",
-                                nonce       : "<?php echo wp_create_nonce('relations_ajax'); ?>",
-                                post_type   : relation_data.srcId,
-                                filter      : filter_value,
-                                offset      : 0,
-                                limit       : 100,
-                                order       : "asc",
-                                order_by    : "title"
-                            },
-                            success: function (data) {
-                                var html_to_append = "";
-
-                                for (var i = data.results.length - 1; i >= 0; i--) {
-                                    var result = data.results[i];
-
-                                    html_to_append = "<li data-post-id='"+result.ID+"'><a href='#' class='relation_source_item'>"+result.post_title+"</a></li>\n" + html_to_append;
-                                };
-
-                                jQuery('#relation_src_list').empty().append(html_to_append);
-
-                                jQuery('#relation_src_list li:first').addClass('selected');
-                            }
-                        });
-                    } else jQuery('#relation_src_list').empty();
-                }
-            });
-
-
         </script>
 
         <?php
-
-
-
     }
 
     function echo_item_metabox () {
         return "";
     }
-
     function echo_item_metabox_str () {
         ob_start();
 
@@ -431,196 +744,248 @@ class __GenericRelationship {
         return htmlspecialchars($html_str);
     }
 
-
     static function hookup_ajax_functions () {
         add_action('wp_ajax_get_post_type_items',               array(__CLASS__, 'get_post_type_items_ajax'));
         add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
         add_action('wp_ajax_add_relation_with_new_post',        array(__CLASS__, 'add_relation_ajax'));
+        add_action('wp_ajax_update_relation',                   array(__CLASS__, 'update_relation_ajax'));
         add_action('wp_ajax_get_connected_items',               array(__CLASS__, 'get_connected_items_ajax'));
         add_action('wp_ajax_delete_relation',                   array(__CLASS__, 'delete_relation_ajax'));
-
     }
 
-    static function add_relation_ajax () {
-        header('Content-type: text/javascript');
-
-        _ping();
-
-        if( empty($_REQUEST['rel_id']) || !wp_verify_nonce($_REQUEST['nonce'], 'relations_ajax') ) {
-            _log("wp_verify_nonce('".$_REQUEST['nonce']."', '".$_REQUEST['rel_id']."') failed");
-            _die();
-        } else {
-            _log("wp_verify_nonce('".$_REQUEST['nonce']."', '".$_REQUEST['rel_id']."') succeded");
-        }
-
-        $req = (object)$_REQUEST;
-        _log($req);
-
-        $from_id = isset($_REQUEST["from_id"])? $_REQUEST["from_id"] : -1;
-        $to_id = isset($_REQUEST["to_id"])? $_REQUEST["to_id"] : -1;
-
-
-        // if one id is missing, create a new post with name in new_post_title
-        if (($from_id >=0 xor $to_id >=0) and isset($req->new_post_title)) {
-          // this from_to-business is messy.
-          // seems, that if i want to insert a to_id, it will be of type src_type_id...
-          $type = ! $from_id ? $req->dst_type_id : $req->src_type_id;
-          $id = wp_insert_post (array('post_title'=>$req->new_post_title, 'post_type'=>$type));
-          _log ("add_relation_ajax: created post $id");
-          if ($from_id)
-            $to_id = $id;
-          else
-            $from_id = $id;
-        }
-
-        $metadata = array();
-        $rel_id = $req->rel_id;
-        $ajax_rel_id = 'wpc_'.$rel_id;
-
-        # this is certainly not right. let's see later what $_REQUEST looks like...
-        foreach ($_REQUEST as $f=>$k) {
-          if (substr($f, 0, strlen($ajax_rel_id)) == $ajax_rel_id)
-            $metadata[substr($f, strlen($ajax_rel_id))] = $k;
-        }
-
-        $ret = self::add_relation($to_id, $from_id, $rel_id, $metadata);
-
-        echo json_encode($ret);
-
-        die();
-    }
-
-    static function get_connected_items_ajax () {
-      header('Content-type: text/html');
-
-      $req = (object)$_REQUEST;
-
-      if( empty($req->rel_id) || !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
-        _log("wp_verify_nonce('".$req->nonce."', '".$req->rel_id."') failed");
-        _die();
-      } else
-        _log("wp_verify_nonce('".$req->nonce."', '".$req->rel_id."') succeded");
-
-      $from_id = isset($req->from_id) ? $req->from_id : -1;
-      $to_id = isset($req->to_id) ? $req->to_id : -1;
-      $rel_id = $req->rel_id;
-
-      $rows = self::get_connected_items($rel_id, $to_id, $from_id);
-
-      echo '<ul>';
-      foreach ($rows as $item) {
-          echo "<li> $item->relation_id $item->post_title
-              <a href='#' id='relation-$item->relation_id' class='connected_item_delete' data-relation_id='$item->relation_id'>delete</a></li>\n";
-      }
-      echo '</ul>';
-    }
-
-    static function delete_relation_ajax () {
-        header('Content-type: text/javascript');
-
-        $req = (object)$_REQUEST;
-
-        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
-            _log ("wp_verify_nonce($req->nonce) failed.");
-            _die();
-        }
-
-        $ret = self::delete_relation($req->relation_id);
-
-        _log("".$ret);
-        echo $ret;
-    }
-
-    static function get_post_type_items_ajax() {
-        header('Content-type: text/javascript');
-
-        $req = (object)$_REQUEST;
-        $ret = self::get_post_type_items_for_relation($req);
-
-        echo json_encode($ret);
-
-        die();
-    }
-
-    static function add_relation ($to_id, $from_id, $rel_id, $metadata = array()) {
+    static function add_relation ($req) {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
 
+        $req = (object)$_REQUEST;
         $ret = (object)array(
              "errors" => array (),
              "status" => array (),
             "results" => array (),
         );
 
-        if ($from_id <= 0)
-          $ret->errors[] = "from_id has invalid value '$from_id'";
-        else if ($to_id <= 0)
-          $ret->errors[] = "to_id has invalid value '$to_id'";
-        else {
-          # there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
-          $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $from_id, $to_id, $rel_id));
-          $id = $wpdb->insert_id;
+        if ( (!isset($req->from_id) xor !isset($req->to_id)) and !empty($req->new_post_title) && !empty($wpc_relationships[$req->rel_id]) ) {
+            $relation = $wpc_relationships[$req->rel_id];
+            
+            if ( !isset($req->to_id) ) {
+                $new_post_id = wp_insert_post ( 
+                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_to_id) 
+                );
+                
+                $req->to_id   = $new_post_id;
+            } else {
+                $new_post_id = wp_insert_post (
+                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_from_id) 
+                );
 
-          if (count($metadata)) {
-            $sql = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES (%d, %s, %s);';
-            foreach ($metadata as $k=>$v)
-              $wpdb->query($wpdb->prepare ($sql, $id, $k, $v));
-          }
+                $req->from_id = $new_post_id;
+            }
+
+            _log ("add_relation_ajax: created post $new_post_id");
+        }
+        
+        if ($req->from_id <= 0)
+            $ret->errors[] = "from_id has invalid value '$req->from_id'";
+        else if ($req->to_id <= 0)
+            $ret->errors[] = "to_id has invalid value '$req->to_id'";
+        if (empty($wpc_relationships[$req->rel_id]))
+            $ret->errors[] = "rel_id has invalid value '$req->rel_id'";
+        else {
+            #ibotty: there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
+            #qwesda: don't understand you mean ...
+
+            $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $req->from_id, $req->to_id, $req->rel_id));
+            $id = $wpdb->insert_id;
+          
+            if ( !empty($req->metadata) ) {
+                $sql = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES (%d, %s, %s);';
+
+                foreach ($req->metadata as $key => $value) {
+                    $wpdb->query($wpdb->prepare ($sql, $id, $key, $value));
+                }
+            }
         }
 
         return $ret;
     }
+    static function add_relation_ajax () {
+        header('Content-type: text/javascript');
 
-    static function get_connected_items ($rel_id, $id_from=-1, $id_to=-1) {
-      global $wpdb;
+        $req = (object)$_REQUEST;
 
-      if ($id_from >= 0) {
-        $id = $id_from;
-        $col = 'post_from_id';
-        $othercol = 'post_to_id';
-      } else {
-        $id = $id_to;
-        $col = 'post_to_id';
-        $othercol = 'post_from_id';
-      }
+        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+            _ping();
+            _log ("wp_verify_nonce($req->nonce) failed.");
+            _die();
+        }
+        
+        _log($req);
+        
+        $ret = self::add_relation($req);
+        
+        echo json_encode($ret);
 
-      if (!isset($id)) {
-        die ('neither id_from nor id_to set');
-      }
-
-      $sql = "SELECT wp_posts.post_title, wp_posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
-        JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$othercol
-        WHERE $col = %d AND relationship_id = %s";
-      $ret = $wpdb->get_results($wpdb->prepare($sql, $id, $rel_id));
-
-      // add metadata
-      $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
-        WHERE relation_id = %d";
-      foreach ($ret as &$row) {
-        $row->metadata = $wpdb->get_results($wpdb->prepare($sql, $row->relation_id));
-      }
-
-      return $ret;
+        die();
     }
 
-    static function delete_relation ($relation_id) {
+    static function update_relation ($rel) {
         global $wpdb;
+        global $wpc_relationships;
+        global $wpc_content_types;
 
-        // delete row itself
-        $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
-        $ret = $wpdb->query($wpdb->prepare($sql, $relation_id));
+        $req = (object)$_REQUEST;
+        $ret = (object)array(
+             "errors" => array (),
+             "status" => array (),
+            "results" => array (),
+        );
 
-        // delete metadata
-        $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
-        $wpdb->query($wpdb->prepare($sql, $relation_id));
+        if ($rel->from_id <= 0) {
+            $ret->errors[] = "from_id has invalid value '$rel->from_id'";
+        } else if ($rel->to_id <= 0) {
+            $ret->errors[] = "to_id has invalid value '$rel->to_id'";
+        } else if (empty($wpc_relationships[$rel->rel_id])) {
+            $ret->errors[] = "rel_id has invalid value '$rel->rel_id'";
+        } else if (empty($rel->relation_id)) {
+            $ret->errors[] = "relation_id has invalid value '$rel->relation_id'";
+        } else {
+            #ibotty: there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
+            #qwesda: don't understand you mean ...
+            
+            $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
+            
+            if ( !empty($req->metadata) ) {
+                $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
 
-        // return how many relations have been deleted (i.e. one or zero)
+                foreach ($req->metadata as $key => $value) {
+                    $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
+                }
+            }
+        }
+        
         return $ret;
     }
+    static function update_relation_ajax () {
+        header('Content-type: text/javascript');
 
+        $req = (object)$_REQUEST;
 
-    static function get_post_type_items_for_relation ($req) {
+        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+            _ping();
+            _log ("wp_verify_nonce($req->nonce) failed.");
+            _die();
+        }
+        
+        $ret = self::update_relation($req);
+        
+        echo json_encode($ret);
+
+        die();
+    }
+
+    static function get_connected_items ($req) {
+        global $wpdb;   
+
+        $ret = (object)array(
+                     "errors" => array (),
+                     "status" => array (),
+                    "results" => array (),
+                );
+                
+        if ( empty($req->rel_id) ) {
+            $ret->errors[] = "rel_id was not specified";
+        } else if ( !empty($req->from_id) ) {
+            $id         = $req->from_id;
+            $col        = 'post_from_id';
+            $othercol   = 'post_to_id';
+        } else if ( !empty($req->to_id) ) {
+            $id         = $req->to_id;
+            $col        = 'post_to_id';
+            $othercol   = 'post_from_id';
+        } else {
+            $ret->errors[] = "neither from_id nor to_id were specified";
+        }
+        
+        if ( !empty($id) ) {
+            $sql = "SELECT wp_posts.post_title, wp_posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
+              JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$othercol
+              WHERE $col = %d AND relationship_id = %s";
+            $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
+
+            // add metadata
+            $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
+              WHERE relation_id = %d";
+        
+            foreach ($sql_result as &$relation_row) {
+                $sql_metadata_result = $wpdb->get_results($wpdb->prepare($sql, $relation_row->relation_id));
+                
+                $relation_row->metadata = array();
+                
+                foreach ($sql_metadata_result as &$metadata_row) {
+                    $relation_row->metadata[ $metadata_row->meta_key ] = $metadata_row->meta_value;
+                }
+            
+                $ret->results[] = $relation_row;
+            }
+        }
+
+        return $ret;
+    }
+    static function get_connected_items_ajax () {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+        $ret = self::get_connected_items($req);
+
+        echo json_encode($ret);
+        _log($ret);
+
+        die();
+    }
+
+    static function delete_relation ($req) {
+        global $wpdb;
+        
+        $ret = (object)array(
+             "errors" => array (),
+             "status" => array (),
+            "results" => array (),
+            );
+        
+        if ( empty($req->relation_id) ) {
+            _log("empty");
+            $ret->errors[] = "relation_id was not specified or is not is not a valid id";
+        } else {
+            $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
+            $wpdb->query($wpdb->prepare($sql, $req->relation_id));
+
+            // delete row itself
+            $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
+            $ret->results = $wpdb->query( $wpdb->prepare($sql, $req->relation_id) );
+        }
+        
+        return $ret;
+    }
+    static function delete_relation_ajax () {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+
+        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+            _ping();
+            _log ("wp_verify_nonce($req->nonce) failed.");
+            _die();
+        }
+        
+        $ret = self::delete_relation($req);
+
+        echo json_encode($ret);
+
+        die();
+    }
+
+    static function get_post_type_items ($req) {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
@@ -678,8 +1043,6 @@ $prepared_sql_like
 $prepared_sql_order
 $prepared_sql_limit" );
 
-
-
                 $ret->status['available_results']   = $available_count;
                 $ret->status['returned_results']    = count($results);
 
@@ -692,6 +1055,16 @@ $prepared_sql_limit" );
         }
 
         return $ret;
+    }
+    static function get_post_type_items_ajax() {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+        $ret = self::get_post_type_items($req);
+
+        echo json_encode($ret);
+
+        die();
     }
 }
 
