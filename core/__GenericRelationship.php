@@ -433,11 +433,11 @@ class __GenericRelationship {
 
 
     static function hookup_ajax_functions () {
-        add_action('wp_ajax_get_post_type_items',               array('__GenericRelationship', 'get_post_type_items_ajax'));
-        add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
-        add_action('wp_ajax_add_relation_with_new_post',        array('__GenericRelationship', 'add_relation_ajax'));
-        add_action('wp_ajax_get_connected_items',               array('__GenericRelationship', 'get_connected_items_ajax'));
-        add_action('wp_ajax_delete_relation',                      array('__GenericRelationship', 'delete_relation_ajax'));
+        add_action('wp_ajax_get_post_type_items',               array(__CLASS__, 'get_post_type_items_ajax'));
+        add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
+        add_action('wp_ajax_add_relation_with_new_post',        array(__CLASS__, 'add_relation_ajax'));
+        add_action('wp_ajax_get_connected_items',               array(__CLASS__, 'get_connected_items_ajax'));
+        add_action('wp_ajax_delete_relation',                   array(__CLASS__, 'delete_relation_ajax'));
 
     }
 
@@ -483,7 +483,7 @@ class __GenericRelationship {
             $metadata[substr($f, strlen($ajax_rel_id))] = $k;
         }
 
-        $ret = __GenericRelationship::add_relation($to_id, $from_id, $rel_id, $metadata);
+        $ret = self::add_relation($to_id, $from_id, $rel_id, $metadata);
 
         echo json_encode($ret);
 
