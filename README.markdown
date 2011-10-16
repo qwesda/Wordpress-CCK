@@ -26,17 +26,17 @@ It uses the `wpc_internal_register_type` action.
 
 * `$wpc->register_types_in_dir($dir)` registers all files in a specific directory.
 
-* `$wpc->register_relation($filename)` registers a relationships to be found in the file.  See below.
+* `$wpc->register_relationship($filename)` registers a relationships to be found in the file.  See below.
 
-* `$wpc->register_relations_dir($dir)` registers all files in a specific directory.
+* `$wpc->register_relationships_dir($dir)` registers all files in a specific directory.
 
 * `$wpc->unregister_type($filename)` deletes the registered type. It does not fix any posts post-type.
 
 * `wpc->unregister_types_in_dir($dir)` deletes all registered types in the specified directory.
 
-* `$wpc->unregister_relation($filename)` deletes the registered relationships. It does not fix any posts post-type.
+* `$wpc->unregister_relationship($filename)` deletes the registered relationships. It does not fix any posts post-type.
 
-* `wpc->unregister_relations_in_dir($dir)` deletes all registered relationships in the specified directory.
+* `wpc->unregister_relationships_in_dir($dir)` deletes all registered relationships in the specified directory.
 
 
 Reference
