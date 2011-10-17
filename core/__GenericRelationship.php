@@ -784,12 +784,12 @@ class __GenericRelationship {
     }
 
     static function hookup_ajax_functions () {
-        add_action('wp_ajax_get_post_type_items',               array('__GenericRelationship', 'get_post_type_items_ajax'));
-        add_action('wp_ajax_add_relation',                      array('__GenericRelationship', 'add_relation_ajax'));
-        add_action('wp_ajax_update_relation',                   array('__GenericRelationship', 'update_relation_ajax'));
-        add_action('wp_ajax_add_relation_with_new_post',        array('__GenericRelationship', 'add_relation_ajax'));
-        add_action('wp_ajax_get_connected_items',               array('__GenericRelationship', 'get_connected_items_ajax'));
-        add_action('wp_ajax_delete_relation',                   array('__GenericRelationship', 'delete_relation_ajax'));
+        add_action('wp_ajax_get_post_type_items',               array(__CLASS__, 'get_post_type_items_ajax'));
+        add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
+        add_action('wp_ajax_add_relation_with_new_post',        array(__CLASS__, 'add_relation_ajax'));
+        add_action('wp_ajax_update_relation',                   array(__CLASS__, 'update_relation_ajax'));
+        add_action('wp_ajax_get_connected_items',               array(__CLASS__, 'get_connected_items_ajax'));
+        add_action('wp_ajax_delete_relation',                   array(__CLASS__, 'delete_relation_ajax'));
     }
 
     static function add_relation ($req) {
@@ -861,7 +861,7 @@ class __GenericRelationship {
         
         _log($req);
         
-        $ret = __GenericRelationship::add_relation($req);
+        $ret = self::add_relation($req);
         
         echo json_encode($ret);
 
@@ -916,7 +916,7 @@ class __GenericRelationship {
             _die();
         }
         
-        $ret = __GenericRelationship::update_relation($req);
+        $ret = self::update_relation($req);
         
         echo json_encode($ret);
 
@@ -975,7 +975,7 @@ class __GenericRelationship {
         header('Content-type: text/javascript');
 
         $req = (object)$_REQUEST;
-        $ret = __GenericRelationship::get_connected_items($req);
+        $ret = self::get_connected_items($req);
 
         echo json_encode($ret);
         _log($ret);
@@ -1017,7 +1017,7 @@ class __GenericRelationship {
             _die();
         }
         
-        $ret = __GenericRelationship::delete_relation($req);
+        $ret = self::delete_relation($req);
 
         echo json_encode($ret);
 
@@ -1099,7 +1099,7 @@ $prepared_sql_limit" );
         header('Content-type: text/javascript');
 
         $req = (object)$_REQUEST;
-        $ret = __GenericRelationship::get_post_type_items($req);
+        $ret = self::get_post_type_items($req);
 
         echo json_encode($ret);
 
