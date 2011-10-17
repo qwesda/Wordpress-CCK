@@ -217,12 +217,6 @@ ul#search-for-location-results {
     padding: 4px;
     margin: 0px;
 }
-
-#relation_selector {
-	float: left;
-	margin-right: 4px;
-}
-
 #search-for-location-results li.odd {
     background-color: rgba(0,0,0,0.05);
 }
@@ -251,43 +245,24 @@ ul#relation_src_list {
     height: 155px;
 }
 
-div#relation_connect_new_metadata_box {
-    height: 135px;
-    
-    margin: 10px 0px;
-    padding: 10px;
-	
-	background: white;
-    
-    border: 1px solid rgba(0,0,0,0.15);
-    
-    overflow: scroll;
-}
-div#relation_edit_connected_metadata_box {
-    height: 166px;
-    
-    margin: 10px 0px;
-    padding: 10px;
-	
-	background: white;
-    
-    border: 1px solid rgba(0,0,0,0.15);
-    
-    overflow: scroll;	
-}
+div#relation_connect_new_metadata_box,
+div#relation_edit_connected_metadata_box,
 div#relation_connect_existing_metadata_box {
     height: 166px;
     
     margin: 10px 0px;
     padding: 10px;
 	
-	background: white;
+	background: rgba(255,255,255,0.5);
     
     border: 1px solid rgba(0,0,0,0.15);
     
     overflow: scroll;	
 }
 
+div#relation_connect_new_metadata_box {
+    height: 135px;
+}
 
 
 label.wpc_label_left {
@@ -324,28 +299,73 @@ ul#relation_conected_list li.odd {
 
 div.relation_nav_bar {
 	margin: 4px 0;
-	padding: 4px;
+	margin-bottom: 4px;
 	
-	height: 16px;
+	margin-left: 160px;
+	
+	padding: 0px;
+	height: 22px;
+	
+	background-color: rgba(0,0,0,0.05);
+	border: 1px solid rgba(0,0,0,0.09);
+	
+	overflow: hidden;
+}
+
+#relation_selector {
+	position: absolute;
+	top: 3px;
+}
+div.relation_nav_bar div {
+	float: left;
+	height: 18px;
+	padding-top: 4px;
+	padding-left: 10px;
+	padding-right: 16px;
+	
+	font-weight: bold;
+	color: white;
+	
+	background-image: -ms-linear-gradient(bottom, #6d6d6d, #808080); /* IE10 */
+	background-image: -moz-linear-gradient(bottom, #6d6d6d, #808080); /* Firefox */
+	background-image: -o-linear-gradient(bottom, #6d6d6d, #808080); /* Opera */
+	background-image: -webkit-gradient(linear, left bottom, left top, from(#6d6d6d), to(#808080)); /* old Webkit */
+	background-image: -webkit-linear-gradient(bottom, #6d6d6d, #808080); /* new Webkit */
+	background-image: linear-gradient(bottom, #6d6d6d, #808080);
+	
+	border-left: 1px solid rgba(255,255,255,0.2);
+	border-right: 1px solid rgba(0,0,0,0.3);
+	box-shadow: 3px 0px 5px rgba(0,0,0,0.3);
+}
+div.relation_nav_bar div:first-child {
+	
+}
+div.relation_nav_bar div:last-child {
+	color: black;
+	border-right: none;
+	box-shadow: none;
+	
+	background-image:none;
+	font-style: italic;
+	font-weight: normal;
+}
+div.relation_nav_bar div:before {
 	
 }
 
 div#relation_edit_boxes {
-	height: 250px;
-}
-
-div#relation_connected_box {
-	height: 100%;
-}
-
-div.relation_nav_bar div {
-	float: left;
-	margin-right: 10px;
-}
-div.relation_nav_bar div:last-child {
-	font-weight: bold;
-}
-div.relation_nav_bar div:before {
-	content: " 〉";
+	height: 255px;
 	
+	position: relative;
+	
+	overflow: hidden;
 }
+div#relation_edit_boxes > div {
+	height: 250px;
+	
+	position: absolute;
+	
+	left: 0;
+	right: 0;
+}
+

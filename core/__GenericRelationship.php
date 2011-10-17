@@ -117,11 +117,51 @@ class __GenericRelationship {
                     
     
                     if (direction == "back") {
-                        jQuery('#relation_edit_boxes > div:visible').hide();
-                        jQuery('#'+to_box_id).show();
+                        var hide_me = jQuery('#relation_edit_boxes > div:visible');
+                        var show_me = jQuery('#'+to_box_id);
+
+                        hide_me.css({
+                            marginLeft  : 0,
+                            marginRight : 0,
+                            opacity : 1
+                        }).stop().clearQueue().animate({
+                            marginLeft  :  1*hide_me.outerWidth() + 20,
+                            marginRight : -1*hide_me.outerWidth() - 20,
+                            opacity : 0
+                        }, 200, 'linear');
+
+                        show_me.css({
+                            marginLeft  : -1*show_me.outerWidth() - 20,
+                            marginRight :  1*show_me.outerWidth() + 20,
+                            opacity : 0
+                        }).stop().clearQueue().show().animate({
+                            marginLeft  : 0,
+                            marginRight : 0,
+                            opacity : 1
+                        }, 200, 'linear', function () { hide_me.hide() });
                     } else if (direction == "forward") {
-                        jQuery('#relation_edit_boxes > div:visible').hide();
-                        jQuery('#'+to_box_id).show();
+                        var hide_me = jQuery('#relation_edit_boxes > div:visible');
+                        var show_me = jQuery('#'+to_box_id);
+
+                        hide_me.css({
+                            marginLeft  : 0,
+                            marginRight : 0,
+                            opacity : 1
+                        }).stop().clearQueue().animate({
+                            marginLeft  : -1*hide_me.outerWidth() - 20,
+                            marginRight :  1*hide_me.outerWidth() + 20,
+                            opacity : 0
+                        }, 200, 'linear');
+
+                        show_me.css({
+                            marginLeft  :  1*show_me.outerWidth() + 20,
+                            marginRight : -1*show_me.outerWidth() - 20,
+                            opacity : 0
+                        }).stop().clearQueue().show().animate({
+                            marginLeft  : 0,
+                            marginRight : 0,
+                            opacity : 1
+                        }, 200, 'linear', function () { hide_me.hide() });
                     } else {
                         jQuery('#relation_edit_boxes > div:visible').hide();
                         jQuery('#'+to_box_id).show();
@@ -177,7 +217,7 @@ class __GenericRelationship {
                                 }
                             }
                             
-                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Edit '+selected_item.text()+'</div>');
+                            jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Edit '+selected_item_data.data.post_title+'</div>');
                             break;
                         case "relation_connect_new_box" :                               
                             if (selected_relation_data.editBox == "") { 
@@ -191,7 +231,6 @@ class __GenericRelationship {
                             jQuery("#new_item_title").focus();
                             
                             jQuery('#new_item_title').text('title for new ' + selected_relation.data('dst-singular-label'));
-                            
                             
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search</div><div>Add new '+selected_relation.data('dst-singular-label')+'</div>');
                             break;
@@ -712,7 +751,7 @@ class __GenericRelationship {
                         for (var i = ret.results.length - 1; i >= 0; i--) {
                             var result = ret.results[i];
 
-                            html_to_append = "<li data-relation_id='"+result.relation_id+"'  data-data='"+json_encode(result)+"'><a href='#' class='relation_connected_item'>"+result.post_title+"</a> <a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a></li>\n" + html_to_append;
+                            html_to_append = "<li data-relation_id='"+result.relation_id+"' data-data='"+json_encode(result)+"'><a href='#' class='relation_connected_item'>"+result.post_title+"</a> <a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a></li>\n" + html_to_append;
                         }
 
                         if (ret.results.length == 0) {
