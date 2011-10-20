@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 require_once "helper.php";
 
@@ -9,9 +9,9 @@ require_once "__GenericMetabox.php";
 
 class __GenericMain {
     function __construct () {
-//  SETUP HOOKS 
+//  SETUP HOOKS
         add_action("init",                  array($this, "init") );
-    
+
         add_action('admin_print_scripts',   array($this, "custom_print_scripts") );
         add_action('admin_print_styles',    array($this, "custom_print_styles") );
     }
@@ -19,16 +19,16 @@ class __GenericMain {
     function init () {
         global $wpc_relationships;
         global $wpc_content_types;
-        
+
         $this->custom_wp_print_scripts();
         $this->custom_wp_print_styles();
-        
-//  LOAD FIELS 
+
+//  LOAD FIELS
         foreach (glob(__DIR__ . "/fields/*.php") as $filename) {
             require_once $filename;
         }
-        
-//  LOAD CONTENT TYPES 
+
+//  LOAD CONTENT TYPES
         foreach (glob(__DIR__ . "/../custom/content_types/*.php") as $filename) {
             $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
@@ -38,7 +38,7 @@ class __GenericMain {
             $$instance_name = new $instance_name();
         }
 
-//  LOAD RELATIONSHIPS 
+//  LOAD RELATIONSHIPS
         foreach (glob(__DIR__ . "/../custom/relationships/*.php") as $filename) {
             $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
@@ -65,7 +65,7 @@ class __GenericMain {
 
     function custom_wp_print_scripts () {
         wp_enqueue_script("jquery");
-    
+
         loadScriptsInPathWithIDPrefix   ("core/frontend_libraries", "core_frontend_libraries");
         loadScriptsInPathWithIDPrefix   ("core/frontend_scripts",   "core_frontend_scripts");
     }
