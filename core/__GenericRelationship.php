@@ -859,8 +859,6 @@ class __GenericRelationship {
             _die();
         }
 
-        _log($req);
-
         $ret = self::add_relation($req);
 
         echo json_encode($ret);
@@ -978,7 +976,6 @@ class __GenericRelationship {
         $ret = self::get_connected_items($req);
 
         echo json_encode($ret);
-        _log($ret);
 
         die();
     }
@@ -993,7 +990,6 @@ class __GenericRelationship {
             );
 
         if ( empty($req->relation_id) ) {
-            _log("empty");
             $ret->errors[] = "relation_id was not specified or is not is not a valid id";
         } else {
             $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
