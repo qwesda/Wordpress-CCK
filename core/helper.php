@@ -1,8 +1,8 @@
 <?php
 
 function _debug_var (&$var){
-    if(WP_DEBUG === true){
-        if(is_array($var) || is_object($var)){
+    if (WP_DEBUG === true){
+        if (is_array($var) || is_object($var)){
             error_log(print_r($var, true));
         } else {
             error_log($var);
@@ -26,10 +26,14 @@ function _die () {
 }
 
 function _log ($var){
-    _debug_var($var);
+    if (WP_DEBUG === true)
+    	_debug_var($var);
 }
 
 function _ping ($amount = 1){
+	if (WP_DEBUG === false)
+		return;
+
     $backtrace      = debug_backtrace();
     $backtrace_size = sizeof($backtrace);
     $i_end          = $amount == 0 ? $backtrace_size : min($backtrace_size, $amount + 1);
