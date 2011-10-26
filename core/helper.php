@@ -31,8 +31,8 @@ function _log ($var){
 }
 
 function _ping ($amount = 1){
-	if (WP_DEBUG === false)
-		return;
+  	if (WP_DEBUG === false)
+	    	return;
 
     $backtrace      = debug_backtrace();
     $backtrace_size = sizeof($backtrace);
@@ -40,7 +40,7 @@ function _ping ($amount = 1){
 
     _log("");
 
-    for ($i = 1; $i < $i_end; $i++) { 
+    for ($i = 1; $i < $i_end; $i++) {
         $parent_scope   = (object)$backtrace[$i];
 
         $parent_scope->class    = isset($parent_scope->class)       ? $parent_scope->class      : '';
@@ -93,13 +93,13 @@ function endsWith ($haystack, $needle) {
     return (substr($haystack, $start) === $needle);
 }
 
-function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {    
+function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
     foreach (glob(WP_PLUGIN_DIR . "/Wordpress-CCK/$path/*.js") as $filename) {
         $js_name = preg_replace("/\/?[^\/]+\/|\.js/", "", $filename);
 
         $js_name_dependecies    = explode(".", $js_name);
         array_pop($js_name_dependecies);
-        
+
         wp_enqueue_script("$id_prefix-$js_name", plugins_url("Wordpress-CCK/$path/$js_name.js" ) );
     }
 }
@@ -107,7 +107,7 @@ function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
 function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
     foreach (glob(WP_PLUGIN_DIR . "/Wordpress-CCK/$path/*.css") as $filename) {
         $css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
-    
+
         wp_enqueue_style("$id_prefix-$css_name", plugins_url("Wordpress-CCK/$path/$css_name.css" ) );
     }
 }
