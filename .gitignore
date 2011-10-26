@@ -1,5 +1,6 @@
 .DS_Store
 
+*.swp
 custom/admin_libraries/*.js
 custom/admin_scripts/*.js
 custom/admin_styles/*.css

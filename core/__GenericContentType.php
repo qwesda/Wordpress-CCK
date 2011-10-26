@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 global $wpc_content_types;
 $wpc_content_types = array();
@@ -6,13 +6,13 @@ $wpc_content_types = array();
 class __GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
-    
+
     public $label               = "";
     public $slug                = "";
     public $singular_label      = "";
     public $supports            = array();
-    
-    private $is_first_metabox   = true; 
+
+    private $is_first_metabox   = true;
     private $current_post_data  = array();
 
     function __construct () {
@@ -44,10 +44,10 @@ class __GenericContentType {
             'show_ui' => true,
             'capability_type' => 'post',
             'hierarchical' => false,
-            'menu_position' => 5, 
+            'menu_position' => 5,
             '_builtin' => false,
             'rewrite' => array("slug" => $this->slug),
-            'query_var' => $this->slug, 
+            'query_var' => $this->slug,
             'supports' => $this->supports,
             'register_meta_box_cb' => array(&$this, "add_meta_boxes")
         ) );
@@ -60,18 +60,18 @@ class __GenericContentType {
 
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
-        
-        
+
+
         add_filter( "the_content",  array($this, "the_content") );
     }
 
     function the_content ($content) {
         global $post;
-        
+
         foreach (glob(__DIR__ . "/../content_overrides/" . $post->post_type . ".php") as $filename) {
             $content = _compile($filename);
         }
-        
+
         return $content;
     }
 
@@ -110,7 +110,7 @@ class __GenericContentType {
 
         <?php
 
-        } 
+        }
     }
 
     function add_meta_boxes ($post) {
@@ -118,7 +118,7 @@ class __GenericContentType {
 
         $this->load_post_data($post);
 
-//  ADD METABOXES       
+//  ADD METABOXES
         foreach (glob(__DIR__ . "/../custom/metaboxes/" . $this->slug . "_*.php") as $filename) {
             $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
             $metabox_class_id   = $metabox_class_name;
@@ -128,16 +128,16 @@ class __GenericContentType {
 
                 $instance_name  = lcfirst($metabox_class_name);
                 $$instance_name = new $metabox_class_name();
-                
+
                 $$instance_name->content_type = $this;
 
                 add_meta_box(
-                    $$instance_name->metabox_id, 
-                    $$instance_name->label, 
-                    array(&$$instance_name, "echo_metabox"), 
-                    $this->id, 
-                    $$instance_name->context, 
-                    $$instance_name->priority, 
+                    $$instance_name->metabox_id,
+                    $$instance_name->label,
+                    array(&$$instance_name, "echo_metabox"),
+                    $this->id,
+                    $$instance_name->context,
+                    $$instance_name->priority,
                     $this->current_post_data
                 );
             }
@@ -147,18 +147,18 @@ class __GenericContentType {
         foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
             if ($this->id == $wpc_relationship->post_type_from_id || $this->id == $wpc_relationship->post_type_to_id) {
                 add_meta_box(
-                    "$this->id-relationship", 
-                    "Relationships", 
-                    array("__GenericRelationship", "echo_relations_metabox" ), 
+                    "$this->id-relationship",
+                    "Relationships",
+                    array("__GenericRelationship", "echo_relations_metabox" ),
                     $this->id
                 );
 
                 break;
             }
         }
-        
+
     }
-    
+
     function admin_init() {
 
     }
@@ -188,7 +188,7 @@ class __GenericContentType {
 
         return false;
     }
-    
+
     function delete_post ($post_id) {
         $post = get_post($post_id);
 
@@ -202,8 +202,8 @@ class __GenericContentType {
 
         return false;
     }
-    
-    
+
+
     function wp_update_post ($post_id) {
         $post = get_post($post_id);
 
@@ -216,7 +216,7 @@ class __GenericContentType {
 
         return false;
     }
-    
+
     function save_post ($post_id) {
         $post = get_post($post_id);
 
@@ -268,7 +268,7 @@ class __GenericContentType {
         }
 
         return false;
-    } 
+    }
 
 }
 
