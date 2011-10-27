@@ -68,7 +68,11 @@ class __GenericContentType {
     function the_content ($content) {
         global $post;
 
-        foreach (glob(__DIR__ . "/../content_overrides/" . $post->post_type . ".php") as $filename) {
+        $themes = get_themes();
+        $theme  = get_current_theme();
+        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
+        foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             $content = _compile($filename);
         }
 
@@ -118,8 +122,13 @@ class __GenericContentType {
 
         $this->load_post_data($post);
 
+
+        $themes = get_themes();
+        $theme  = get_current_theme();
+        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
 //  ADD METABOXES
-        foreach (glob(__DIR__ . "/../custom/metaboxes/" . $this->slug . "_*.php") as $filename) {
+        foreach (glob("$theme_dir/metaboxes/" . $this->slug . "_*.php") as $filename) {
             $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
             $metabox_class_id   = $metabox_class_name;
 
