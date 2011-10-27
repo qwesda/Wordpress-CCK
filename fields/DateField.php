@@ -4,7 +4,7 @@
  *
  */
 
-class DateField extends __GenericField {
+class DateField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params);
     }

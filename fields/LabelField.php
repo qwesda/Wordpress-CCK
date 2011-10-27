@@ -4,7 +4,7 @@
  * 
  */
 
-class LabelField extends __GenericField {
+class LabelField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params); 
     }

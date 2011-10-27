@@ -1,6 +1,6 @@
 <?php 
 
-class __GenericField {
+class GenericField {
     public $id              = NULL;
     public $parent          = NULL;
 

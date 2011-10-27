@@ -4,7 +4,7 @@
 global $wpc_relationships;
 $wpc_relationships = array();
 
-class __GenericRelationship {
+class GenericRelationship {
     public $id                  = "";
     public $fields              = NULL;
 

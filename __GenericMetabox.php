@@ -1,6 +1,6 @@
 <?php 
 
-class __GenericMetabox {
+class GenericMetabox {
     public $metabox_id      = NULL;
     public $content_type    = NULL;
     public $label           = "";

@@ -4,7 +4,7 @@
  *
  */
 
-class RichTextField extends __GenericField {
+class RichTextField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params);
     }

@@ -4,7 +4,7 @@
  * 
  */
 
-class TextAreaField extends __GenericField {
+class TextAreaField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params); 
     }

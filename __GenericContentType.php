@@ -3,7 +3,7 @@
 global $wpc_content_types;
 $wpc_content_types = array();
 
-class __GenericContentType {
+class GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
 
@@ -158,7 +158,7 @@ class __GenericContentType {
                 add_meta_box(
                     "$this->id-relationship",
                     "Relationships",
-                    array("__GenericRelationship", "echo_relations_metabox" ),
+                    array("GenericRelationship", "echo_relations_metabox" ),
                     $this->id
                 );
 

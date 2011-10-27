@@ -9,10 +9,10 @@ Version: 1.0
 
 require_once "helper.php";
 
-require_once "__GenericField.php";
-require_once "__GenericContentType.php";
-require_once "__GenericRelationship.php";
-require_once "__GenericMetabox.php";
+require_once "GenericField.php";
+require_once "GenericContentType.php";
+require_once "GenericRelationship.php";
+require_once "GenericMetabox.php";
 
 global $wpc_version;
 global $wpc_db_version;
@@ -71,7 +71,7 @@ class WPCustom {
 
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
-            __GenericRelationship::hookup_ajax_functions();
+            GenericRelationship::hookup_ajax_functions();
         }
     }
 

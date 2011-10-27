@@ -4,7 +4,7 @@
  * 
  */
 
-class SelectField extends __GenericField {
+class SelectField extends GenericField {
     public $options = array();
 
     function __construct ($parent, $params) {

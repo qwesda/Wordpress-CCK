@@ -4,7 +4,7 @@
  * 
  */
 
-class TextField extends __GenericField {
+class TextField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params); 
     }
