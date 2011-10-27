@@ -1,6 +1,6 @@
 <?php 
 
-class GenericField {
+abstract class GenericField {
     public $id              = NULL;
     public $parent          = NULL;
 

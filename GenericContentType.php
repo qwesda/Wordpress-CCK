@@ -3,7 +3,7 @@
 global $wpc_content_types;
 $wpc_content_types = array();
 
-class GenericContentType {
+abstract class GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
 
