@@ -19,7 +19,7 @@
 abstract class GenericRecord {
     protected $typeslug = '';   #qwesda: maybe post_type is better as a name "type" and "slug" are two different things - but maybe just i don't know what you mean
 
-    protected $id = null;   #qwesda: was missing??
+    protected $id = null;
     protected $post = array();
     protected $postrelations = array();
     protected $postmeta = array();
@@ -54,7 +54,6 @@ abstract class GenericRecord {
         if (strpos($attribute, "connected_") === 0)
             return $this->get_connected(substr($attribute, strlen("connected_")));
 
-        _log ("attr after: $attribute");    # qwesda: changed to _log
         if (strpos($attribute, "formatted_") === 0) {
             $attribute_key = substr($attribute, strlen("formatted_"));
 
