@@ -13,7 +13,6 @@
 /**
  * REMAKRS:
  * #qwesda: formated fields should be caching since they are likly to be called twice - once with empty() to check if it should be displayed, and than to display it - implemented it! up for discussion ...
- * #qwesda: the records themself migh also chache - not sure about that though, but they could be stored in a hash ... getting the postmeta, etc might be a lot of work if the templates get very complex
  */
 
 abstract class GenericRecord {
