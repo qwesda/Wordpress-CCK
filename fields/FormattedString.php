@@ -4,7 +4,7 @@
  *
  */
 
-class FormatedString extends GenericField {
+class FormattedString extends GenericField {
     function __construct ($parent, $params, $callback) {
         parent::__construct ($parent, $params);
 
