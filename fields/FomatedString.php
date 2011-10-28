@@ -1,16 +1,16 @@
-<?php 
+<?php
 
 /**
- * 
+ *
  */
 
 class FormatedString extends GenericField {
     function __construct ($parent, $params, $callback) {
-        parent::__construct ($parent, $params); 
+        parent::__construct ($parent, $params);
 
         $filter_id = "wpc_format_".$this->parent->id."_".$this->id;
 
-        add_filter($filter_id, $callback);
+        add_filter($filter_id, $callback, 10, 2);
     }
 
 

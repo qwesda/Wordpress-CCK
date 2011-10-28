@@ -10,7 +10,7 @@
  */
 
 
-/** 
+/**
  * REMAKRS:
  * #qwesda: formated fields should be caching since they are likly to be called twice - once with empty() to check if it should be displayed, and than to display it - implemented it! up for discussion ...
  * #qwesda: the records themself migh also chache - not sure about that though, but they could be stored in a hash ... getting the postmeta, etc might be a lot of work if the templates get very complex
@@ -32,7 +32,7 @@ abstract class GenericRecord {
         // set typeslug to the lowercased classname, if not set
         if (empty($this->typeslug))
             $this->typeslug= strtolower(get_class($this));
-        
+
         if (!empty($this->id)) {
             // get $post as hash for consistency reasons
             $this->post = get_post($this->id, 'ARRAY_A');
@@ -53,11 +53,11 @@ abstract class GenericRecord {
 
         if (strpos($attribute, "connected_") === 0)
             return $this->get_connected(substr($attribute, strlen("connected_")));
-        
-        _log ("attr after: $attribute");    # qwesda: changed to _log 
+
+        _log ("attr after: $attribute");    # qwesda: changed to _log
         if (strpos($attribute, "formatted_") === 0) {
             $attribute_key = substr($attribute, strlen("formatted_"));
-            
+
             if ( isset($this->formatted_string_cache[$attribute_key]) ) {
                 _log ("serving cached: $attribute");
 
@@ -107,8 +107,7 @@ abstract class GenericRecord {
 
         foreach ($filters as $filter)
             if (has_filter($filter)) {
-                #qwesda: apply_filter doesn't pass the $var params ... so $value gets thrown out for now
-                $value = apply_filters($filter, &$this);
+                $value = apply_filters($filter, $value, $this);
 
                 $this->formatted_string_cache[$key] = $value;
                 break;
