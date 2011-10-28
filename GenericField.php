@@ -24,7 +24,6 @@ abstract class GenericField {
             $parent->fields[$this->id] = $this;
             $this->parent   = $parent;
         }
-
     }
 
     function echo_field_core ($post_data = array() ) {      
@@ -45,6 +44,7 @@ abstract class GenericField {
             <?php $this->echo_field_core ($post_data); ?>
         </div><?php
     }
+    
     function echo_field($post_data) { ?>
         <div class="wpc_form_field">
             <?php $this->echo_field_core ($post_data); ?>

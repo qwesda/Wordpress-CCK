@@ -8,12 +8,23 @@
  * For qtranslate to handle quicktags, etc. you can just add
  * "qtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage".
  */
-abstract class GenericRecord {
-    protected $typeslug = '';
 
+
+/** 
+ * REMAKRS:
+ * #qwesda: formated fields should be caching since they are likly to be called twice - once with empty() to check if it should be displayed, and than to display it - implemented it! up for discussion ...
+ * #qwesda: the records themself migh also chache - not sure about that though, but they could be stored in a hash ... getting the postmeta, etc might be a lot of work if the templates get very complex
+ */
+
+abstract class GenericRecord {
+    protected $typeslug = '';   #qwesda: maybe post_type is better as a name "type" and "slug" are two different things - but maybe just i don't know what you mean
+
+    protected $id = null;   #qwesda: was missing??
     protected $post = array();
     protected $postrelations = array();
     protected $postmeta = array();
+
+    protected $formatted_string_cache = array();
 
     function __construct($id=null) {
         $this->id = $id;
@@ -21,24 +32,40 @@ abstract class GenericRecord {
         // set typeslug to the lowercased classname, if not set
         if (empty($this->typeslug))
             $this->typeslug= strtolower(get_class($this));
-
-        // get $post as hash for consistency reasons
-        $this->post = get_post($this->id, 'ARRAY_A');
-        $this->postmeta = get_post_custom($this->id);
+        
+        if (!empty($this->id)) {
+            // get $post as hash for consistency reasons
+            $this->post = get_post($this->id, 'ARRAY_A');
+            $this->postmeta = get_post_custom($this->id);
+        }
     }
 
     function __get($attribute) {
-        if (isset($this->postmeta[$attribute]))
+        #qwesda: return multiple post_meta with same key as array only if requested with prefix "all_" and first value otherwise
+        if (strpos($attribute, "all_") === 0 && isset($this->postmeta[$attribute]))
             return $this->postmeta[$attribute];
+
+        if (!empty($this->postmeta[$attribute]))
+            return $this->postmeta[$attribute][0];
 
         if (isset($this->post[$attribute]))
             return $this->post[$attribute];
 
         if (strpos($attribute, "connected_") === 0)
             return $this->get_connected(substr($attribute, strlen("connected_")));
-        echo "attr after: $attribute\n";
-        if (strpos($attribute, "formatted_") === 0)
-            return $this->formatted_string(substr($attribute, strlen("formatted_")));
+        
+        _log ("attr after: $attribute");    # qwesda: changed to _log 
+        if (strpos($attribute, "formatted_") === 0) {
+            $attribute_key = substr($attribute, strlen("formatted_"));
+            
+            if ( isset($this->formatted_string_cache[$attribute_key]) ) {
+                _log ("serving cached: $attribute");
+
+                return $this->formatted_string_cache[$attribute_key];
+            }
+
+            return $this->formatted_string($attribute_key);
+        }
 
         // return empty string for non-existing thingies
         return "";
@@ -66,8 +93,10 @@ abstract class GenericRecord {
 
     protected function formatted_string ($key) {
         $value = '';
-        if (isset($this->postmeta[$key]))
-            $value = $this->postmeta[$key];
+
+        if (!empty($this->postmeta[$key]))
+            $value = $this->postmeta[$key][0];
+
         else if (isset($this->post[$key]))
             $value = $this->post[$key];
 
@@ -75,26 +104,42 @@ abstract class GenericRecord {
         $filters = array("wpc_format_".$this->typeslug."_$key",
             "wpc_format_$this->typeslug",
             "wpc_format");
+
         foreach ($filters as $filter)
             if (has_filter($filter)) {
-                $value = apply_filters($filter, $value, $this);
+                #qwesda: apply_filter doesn't pass the $var params ... so $value gets thrown out for now
+                $value = apply_filters($filter, &$this);
+
+                $this->formatted_string_cache[$key] = $value;
                 break;
             }
 
         return $value;
     }
+
+    static function make_generic_record_class ($name, $typeslug="") {
+        if (class_exists($name))
+            return;
+
+        if ($typeslug == "")
+            $typeslug = strtolower($name);
+
+        $classdef = "class $name extends GenericRecord {
+                protected \$typeslug = '$typeslug';
+            }";
+
+        $f = eval($classdef);
+    }
 }
 
-function wpc_make_generic_record_class($name, $typeslug="") {
-    if (class_exists($name))
-        return;
+// WP-style maker for the record
+function the_record () {
+    global $post;
 
-    if ($typeslug == "")
-        $typeslug = strtolower($name);
-    $classdef = "class $name extends GenericRecord {
-            protected \$typeslug = '$typeslug';
-        }";
+    $class_name = ucfirst($post->post_type)."Record";
+    $the_record = new $class_name($post->ID);
 
-    eval($classdef);
+    return $the_record;
 }
+
 ?>

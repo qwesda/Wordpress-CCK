@@ -63,6 +63,8 @@ abstract class GenericContentType {
 
 
         add_filter( "the_content",  array($this, "the_content") );
+
+        GenericRecord::make_generic_record_class("".$this->id."Record", "$this->id");
     }
 
     function the_content ($content) {
@@ -73,7 +75,9 @@ abstract class GenericContentType {
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
         foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
-            $content = _compile($filename);
+            if ($post->post_type == $this->id) {
+                $content = _compile($filename);
+            }
         }
 
         return $content;
