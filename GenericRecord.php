@@ -10,18 +10,29 @@
  */
 
 
-/**
- * REMAKRS:
- * #qwesda: formated fields should be caching since they are likly to be called twice - once with empty() to check if it should be displayed, and than to display it - implemented it! up for discussion ...
- */
-
 abstract class GenericRecord {
-    protected $typeslug = '';   #qwesda: maybe post_type is better as a name "type" and "slug" are two different things - but maybe just i don't know what you mean
+    /*
+     * the slug of the custom post type. used for looking up the connected relations.
+     */
+    protected $typeslug = '';
 
+    /*
+     * the post's id
+     */
     protected $id = null;
+    /*
+     * the post's data as returned by get_post with 'ARRAY_A'.
+     */
     protected $post = array();
-    protected $postrelations = array();
-    protected $postmeta = array();
+    /*
+     * the post's meta data as returned by wp_post_custom
+     */
+    protected $meta = array();
+
+    /*
+     * an associative array. keys are the connected types.
+     */
+    protected $relations = array();
 
     protected $formatted_string_cache = array();
 
@@ -35,17 +46,21 @@ abstract class GenericRecord {
         if (!empty($this->id)) {
             // get $post as hash for consistency reasons
             $this->post = get_post($this->id, 'ARRAY_A');
-            $this->postmeta = get_post_custom($this->id);
+            $this->meta = get_post_custom($this->id);
         }
     }
 
+    /**
+     * return multiple post_meta with same key as array if requested with prefix "all_" and first value otherwise.
+     * with prefix "formatted_" return a formatted string. see above for the filters to use.
+     * with prefix "connected_" return the connected items of a specific type.
+     */
     function __get($attribute) {
-        #qwesda: return multiple post_meta with same key as array only if requested with prefix "all_" and first value otherwise
-        if (strpos($attribute, "all_") === 0 && isset($this->postmeta[$attribute]))
-            return $this->postmeta[$attribute];
+        if (strpos($attribute, "all_") === 0 && isset($this->meta[$attribute]))
+            return $this->meta[$attribute];
 
-        if (!empty($this->postmeta[$attribute]))
-            return $this->postmeta[$attribute][0];
+        if (!empty($this->meta[$attribute]))
+            return $this->meta[$attribute][0];
 
         if (isset($this->post[$attribute]))
             return $this->post[$attribute];
@@ -65,14 +80,14 @@ abstract class GenericRecord {
             return $this->formatted_string($attribute_key);
         }
 
-        // return empty string for non-existing thingies
+        // return empty string for non-existing attributes.
         return "";
     }
 
     function __set($attribute, $val) {
         // TODO: verify, really save
-        if (isset($this->postmeta[$attribute])) {
-            $this->postmeta[$attribute] = $arg;
+        if (isset($this->meta[$attribute])) {
+            $this->meta[$attribute] = $arg;
             // and save it!
         } else {
             $this->post[$attribute] = $val;
@@ -81,24 +96,27 @@ abstract class GenericRecord {
     }
 
     function __isset($attribute) {
-        return (isset($this->postmeta[$attribute]) || isset($this->post[$attribute]));
+        return (isset($this->meta[$attribute]) || isset($this->post[$attribute]));
     }
 
-    protected function get_connected($type) {
-        // TODO: implement
-        return array();
+    protected function get_connected($othertype) {
+        if (! isset($relations[$other_type]))
+            $relations[$type] = GenericRelationRecord::relations_for_types($this->typeslug, $other_type);
+
+        return $relations[$type];
+
     }
 
     protected function formatted_string ($key) {
         $value = '';
 
-        if (!empty($this->postmeta[$key]))
-            $value = $this->postmeta[$key][0];
+        if (!empty($this->meta[$key]))
+            $value = $this->meta[$key][0];
 
         else if (isset($this->post[$key]))
             $value = $this->post[$key];
 
-        // check for the following filters, apply the first
+        // check for the following filters, apply the first that exists.
         $filters = array("wpc_format_".$this->typeslug."_$key",
             "wpc_format_$this->typeslug",
             "wpc_format");
