@@ -2,8 +2,8 @@
 
 /*
 Plugin Name: Wordpress-CCK
-Description: Wordpress Plugin to manage connten-types and relations
-Author: Daniel Schwarz and the ._______.
+Description: Wordpress Plugin to manage content-types and relations
+Author: Daniel Schwarz (qwesda@live.com), Tobias Florek (me@ibotty.net) and the ._______.
 Version: 1.0
 */
 
@@ -106,7 +106,7 @@ class WPCustom {
 
         if ($post_type == 'page')
             return $items;
-        
+
         _log ('nav_menu_set_current');
 
         $ancestor_ids = array();
