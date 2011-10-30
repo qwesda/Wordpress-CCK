@@ -37,17 +37,16 @@ abstract class GenericRecord {
     protected $formatted_string_cache = array();
 
     function __construct($id=null) {
+        if ($id === null) {
+            _log("No id given!");
+            throw new Exception("Cannot construct ".get_class().". Id is not set.");
+        }
+
         $this->id = $id;
 
         // set typeslug to the lowercased classname, if not set
         if (empty($this->typeslug))
             $this->typeslug= strtolower(get_class($this));
-
-        if (!empty($this->id)) {
-            // get $post as hash for consistency reasons
-            $this->post = get_post($this->id, 'ARRAY_A');
-            $this->meta = get_post_custom($this->id);
-        }
     }
 
     /**
@@ -56,6 +55,12 @@ abstract class GenericRecord {
      * with prefix "connected_" return the connected items of a specific type.
      */
     function __get($attribute) {
+        if (empty($this->post)) {
+            // get $post as hash for consistency reasons
+            $this->post = get_post($this->id, 'ARRAY_A');
+            $this->meta = get_post_custom($this->id);
+        }
+
         if (strpos($attribute, "all_") === 0 && isset($this->meta[$attribute]))
             return $this->meta[$attribute];
 
