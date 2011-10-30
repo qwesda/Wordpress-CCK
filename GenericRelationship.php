@@ -945,8 +945,8 @@ abstract class GenericRelationship {
         }
 
         if ( !empty($id) ) {
-            $sql = "SELECT wp_posts.post_title, wp_posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
-              JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$othercol
+            $sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
+              JOIN $wpdb->posts ON $wpdb->posts.id = wp_wpc_relations.$othercol
               WHERE $col = %d AND relationship_id = %s";
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
