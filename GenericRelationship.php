@@ -831,9 +831,6 @@ abstract class GenericRelationship {
         if (empty($wpc_relationships[$req->rel_id]))
             $ret->errors[] = "rel_id has invalid value '$req->rel_id'";
         else {
-            #ibotty: there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
-            #qwesda: don't understand you mean ...
-
             $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $req->from_id, $req->to_id, $req->rel_id));
             $id = $wpdb->insert_id;
 
