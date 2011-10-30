@@ -139,7 +139,7 @@ abstract class GenericRecord {
         if ($typeslug == "")
             $typeslug = strtolower($name);
 
-        $classdef = "class $name extends GenericRecord {
+        $classdef = "class $name extends ".__CLASS__."{
                 protected \$typeslug = '$typeslug';
             }";
 
