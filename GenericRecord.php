@@ -86,6 +86,7 @@ abstract class GenericRecord {
         }
 
         // return empty string for non-existing attributes.
+        _log(get_class()." does not have attribute '$attribute'.");
         return "";
     }
 
