@@ -93,7 +93,7 @@ abstract class GenericRelationship {
                 function goto_box (to_box_id, from_box_id, direction) {
                     var selected_relation       = jQuery("#relation_selector option:selected");
                     var selected_relation_data  = selected_relation.data()
-                    
+
                     switch (from_box_id) {
                         case "relation_add_search_box":
                             if (to_box_id != "relation_connect_existing_box") {
@@ -112,10 +112,10 @@ abstract class GenericRelationship {
                             jQuery('#relation_connect_new_metadata_box').empty();
                             break;
                     }
-                    
+
                     jQuery('#relation_edit_boxes > div > div.relation_nav_bar').empty();
-                    
-    
+
+
                     if (direction == "back") {
                         var hide_me = jQuery('#relation_edit_boxes > div:visible');
                         var show_me = jQuery('#'+to_box_id);
@@ -171,44 +171,44 @@ abstract class GenericRelationship {
                     switch (to_box_id) {
                         case "relation_connected_box" :
                             set_connected_items();
-                            
+
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected '+selected_relation.data('dst-label')+'</div>');
                             break;
                         case "relation_add_search_box":
                             jQuery('#relation_src_search').focus();
-                            
+
                             jQuery('#relation_connected_add_new').text('connect new ' + selected_relation.data('dst-singular-label'));
-                            
+
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search for '+selected_relation.data('dst-label')+'</div>');
                             break;
                         case "relation_connect_existing_box" :
                             var selected_item           = jQuery('#relation_src_list li.selected a');
-                                                        
-                            if (selected_relation_data.editBox == "") { 
+
+                            if (selected_relation_data.editBox == "") {
                                 jQuery('#relation_connect_existing_metadata_box').empty().hide();
-                                
+
                                 jQuery('#relation_connect_existing_add').focus();
                             } else {
                                 jQuery('#relation_connect_existing_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
-                                
+
                                 jQuery("#relation_connect_existing_metadata_box .wpc_input_text").each(check_text_input_value);
                                 jQuery("#relation_connect_existing_metadata_box .wpc_input:first").focus();
                             }
-                        
-                            
+
+
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search</div><div>Add '+selected_item.text()+'</div>');
                             break;
                         case "relation_edit_connected_box" :
                             var selected_item           = jQuery('#relation_conected_list li.selected a');
                             var selected_item_data      = jQuery('#relation_conected_list li.selected').data();
-     
-                            if (selected_relation_data.editBox == "") { 
+
+                            if (selected_relation_data.editBox == "") {
                                 jQuery('#relation_edit_connected_metadata_box').empty().hide();
-                                
+
                                 jQuery('#relation_edit_connected_update').focus();
                             } else {
                                 jQuery('#relation_edit_connected_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
-                                
+
                                 jQuery("#relation_edit_connected_metadata_box .wpc_input_text").each(check_text_input_value);
                                 jQuery("#relation_edit_connected_metadata_box .wpc_input:first").focus();
 
@@ -216,52 +216,52 @@ abstract class GenericRelationship {
                                     jQuery('#wpc_'+selected_relation_data.relId+'_'+metadata_key).val(selected_item_data.data.metadata[metadata_key]);
                                 }
                             }
-                            
+
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Edit '+selected_item_data.data.post_title+'</div>');
                             break;
-                        case "relation_connect_new_box" :                               
-                            if (selected_relation_data.editBox == "") { 
+                        case "relation_connect_new_box" :
+                            if (selected_relation_data.editBox == "") {
                                 jQuery('#relation_connect_new_metadata_box').empty().hide();
                             } else {
                                 jQuery('#relation_connect_new_metadata_box').empty().append(htmlspecialchars_decode(selected_relation_data.editBox)).show();
-                                
+
                                 jQuery("#relation_connect_new_metadata_box .wpc_input_text").each(check_text_input_value);
-                            }   
-                               
+                            }
+
                             jQuery("#new_item_title").focus();
-                            
+
                             jQuery('#new_item_title').text('title for new ' + selected_relation.data('dst-singular-label'));
-                            
+
                             jQuery('#'+to_box_id + ' > div.relation_nav_bar').append('<div>Connected</div><div>Search</div><div>Add new '+selected_relation.data('dst-singular-label')+'</div>');
                             break;
                     }
 
-                    
+
                 }
             </script>
-            
+
             <div id="relation_connected_box">
                 <div class="relation_nav_bar"></div><div class="clear"></div>
-                
+
                 <ul id="relation_conected_list">
 
                 </ul>
-    
+
                 <div id="relation_buttons_box" class="relation_buttons_box">
                     <a id='relation_connected_add' class="button" href='#'>add connection</a>
                 </div>
-                
+
                 <script type="text/javascript" charset="utf-8">
                     jQuery('body').delegate('a.relation_connected_item', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         jQuery(this).parent().addClass("selected");
 
                         goto_box('relation_edit_connected_box', 'relation_connected_box', 'forward');
                     });
                     jQuery('body').delegate('a#relation_connected_add', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         goto_box('relation_add_search_box', 'relation_connected_box', 'forward');
                     });
                 </script>
@@ -269,7 +269,7 @@ abstract class GenericRelationship {
 
             <div id="relation_add_search_box" class="hidden">
                 <div class="relation_nav_bar"></div><div class="clear"></div>
-                
+
                 <div>
                     <input type="text" class="wpc_input_text" id="relation_src_search" >
                     <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">search for existing item</label> or
@@ -279,20 +279,20 @@ abstract class GenericRelationship {
                 <ul id="relation_src_list">
 
                 </ul>
-    
+
                 <div id="relation_add_buttons_box" class="relation_buttons_box">
                     <a id='relation_add_search_cancel' class="button" href='#'>back</a>
                 </div>
-                
+
                 <script type="text/javascript" charset="utf-8">
                     var last_filter_value  = "";
-        
+
                     jQuery('body').delegate('#relation_src_search', 'keydown keypress', function(event) {
                         var selected = jQuery('#relation_src_list li.selected');
 
                         if ( event.keyCode == 13 && event.type == "keypress") {
                             event.preventDefault();
-                            
+
                             add_selected_item(selected);
                         }
                         if ( event.keyCode == 40) {
@@ -307,7 +307,7 @@ abstract class GenericRelationship {
                         }
                         if ( event.keyCode == 27) {
                             event.preventDefault();
-        
+
                             goto_box('relation_connected_box', 'relation_add_search_box', 'back');
                         }
                         if ( event.keyCode == 38) {
@@ -351,7 +351,7 @@ abstract class GenericRelationship {
 
                                 var html_to_append = "<div class='relations_info'><img src='<?php echo admin_url('images/wpspin_light.gif') ?>'> searching for "+relation_data.dstLabel+" like \""+filter_value+"\"<br></div>";
                                 jQuery('#relation_src_list').empty().append(html_to_append);
-                                
+
                                 jQuery.ajax({
                                     url: ajaxurl,
                                     dataType: "json",
@@ -389,7 +389,7 @@ abstract class GenericRelationship {
                     });
                     jQuery('body').delegate('a#relation_add_search_cancel', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         relation_add_search_cancel();
                     });
                     jQuery('body').delegate('a.relation_source_item', 'click', function(event) {
@@ -400,36 +400,36 @@ abstract class GenericRelationship {
 
                         add_selected_item ();
                     });
-                    
+
                     jQuery('body').delegate('a#relation_connected_add_new', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         goto_box('relation_connect_new_box', 'relation_connected_box', 'forward');
 
                     });
                     function relation_add_search_cancel () {
                         goto_box('relation_connected_box', 'relation_add_search_box', 'back');
                     }
-        
+
                     function add_selected_item () {
                         goto_box('relation_connect_existing_box', 'relation_add_search_box', 'forward');
                     }
                 </script>
             </div>
 
-            <div id="relation_edit_connected_box" class="hidden">   
+            <div id="relation_edit_connected_box" class="hidden">
                 <div class="relation_nav_bar"></div><div class="clear"></div>
-                        
+
                 <div id="relation_edit_connected_metadata_box">
-                
+
                 </div>
-            
+
                 <div id="relation_edit_connected_buttons_box" class="relation_buttons_box">
                     <a id='relation_edit_connected_cancel' class="button" href='#'>cancel</a>
                     <a id='relation_edit_connected_delete' class="button" href='#'>delete</a>
                     <a id='relation_edit_connected_update' class="button-primary" href='#'>save</a>
                 </div>
-                
+
                 <script type="text/javascript" charset="utf-8">
                     function relation_edit_connected_cancel () {
                         goto_box('relation_connected_box', 'relation_edit_connected', 'back');
@@ -465,7 +465,7 @@ abstract class GenericRelationship {
                             dataType: "json",
                             data : data,
                             cache : false,
-                            success: function (data) {          
+                            success: function (data) {
                                 goto_box('relation_connected_box', 'relation_edit_connected', 'back');
                             }
                         });
@@ -490,15 +490,15 @@ abstract class GenericRelationship {
                             dataType: "json",
                             data : data,
                             cache : false,
-                            success: function (data) {          
+                            success: function (data) {
                                 goto_box('relation_connected_box', 'relation_edit_connected', 'back');
                             }
                         });
                     }
-                
+
                     jQuery('body').delegate('a#relation_edit_connected_cancel', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         relation_edit_connected_cancel();
                     });
                     jQuery('body').delegate('a#relation_edit_connected_update', 'click', function(event) {
@@ -531,18 +531,18 @@ abstract class GenericRelationship {
                 </script>
             </div>
 
-            <div id="relation_connect_existing_box" class="hidden"> 
+            <div id="relation_connect_existing_box" class="hidden">
                 <div class="relation_nav_bar"></div><div class="clear"></div>
-                        
+
                 <div id="relation_connect_existing_metadata_box">
-                
+
                 </div>
-            
+
                 <div id="relation_connect_existing_buttons_box" class="relation_buttons_box">
                     <a id='relation_connect_existing_cancel' class="button" href='#'>cancel</a>
                     <a id='relation_connect_existing_add' class="button-primary" href='#'>add</a>
                 </div>
-                
+
                 <script type="text/javascript" charset="utf-8">
                     function relation_connect_existing_add () {
                         var selected_relation   = jQuery("#relation_selector option:selected");
@@ -568,13 +568,13 @@ abstract class GenericRelationship {
 
                             data.metadata[metadata_key] = metadata_field.val();
                         };
-        
+
                         jQuery.ajax({
                             url: ajaxurl,
                             dataType: "json",
                             data : data,
                             cache : false,
-                            success: function (data) {          
+                            success: function (data) {
                                 goto_box('relation_add_search_box', 'relation_connect_existing_box', 'back');
                             }
                         });
@@ -582,19 +582,19 @@ abstract class GenericRelationship {
                     function relation_connect_existing_cancel () {
                         goto_box('relation_add_search_box', 'relation_connect_existing_box', 'back');
                     }
-                
+
                     jQuery('body').delegate('a#relation_connect_existing_cancel', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         relation_connect_existing_cancel();
                     });
-        
+
                     jQuery('body').delegate('a#relation_connect_existing_add', 'click', function(event) {
                         event.preventDefault();
 
                         relation_connect_existing_add();
                     });
-        
+
                     jQuery('#relation_connect_existing_box').delegate('.wpc_input', 'keydown keypress', function(event) {
                         if ( event.keyCode == 13 ) {
                             event.preventDefault();
@@ -614,23 +614,23 @@ abstract class GenericRelationship {
                 </script>
             </div>
 
-            <div id="relation_connect_new_box" class="hidden"> 
+            <div id="relation_connect_new_box" class="hidden">
                 <div class="relation_nav_bar"></div><div class="clear"></div>
-                
+
                 <div>
                     <input type="text" class="wpc_input wpc_input_text" id="new_item_title" >
                     <label class="wpc_hint" for="new_item_title" id="wpc_input_text_hint">title for the new item</label>
                 </div>
-                        
+
                 <div id="relation_connect_new_metadata_box">
-                
+
                 </div>
-            
+
                 <div id="relation_connect_new_buttons_box" class="relation_buttons_box">
                     <a id='relation_connect_new_cancel' class="button" href='#'>cancel</a>
                     <a id='relation_connect_new_add' class="button-primary" href='#'>add</a>
                 </div>
-                
+
                 <script type="text/javascript" charset="utf-8">
                     function relation_connect_new_add () {
                         var selected_relation   = jQuery("#relation_selector option:selected");
@@ -657,7 +657,7 @@ abstract class GenericRelationship {
                                 data.metadata[metadata_key] = metadata_field.val();
                             }
                         };
-                        
+
                         if (relation_data.relDir == "to_from") {
                             data.from_id = relation_data.postId;
                         } else {
@@ -668,7 +668,7 @@ abstract class GenericRelationship {
                             url: ajaxurl,
                             dataType: "json",
                             data : data,
-                            success: function (data) {          
+                            success: function (data) {
                                 goto_box('relation_connected_box', 'relation_connect_new_box', 'back');
                             }
                         });
@@ -676,10 +676,10 @@ abstract class GenericRelationship {
                     function relation_connect_new_cancel () {
                         goto_box('relation_add_search_box', 'relation_connect_new_box', 'back');
                     }
-                
+
                     jQuery('body').delegate('a#relation_connect_new_cancel', 'click', function(event) {
                         event.preventDefault();
-                        
+
                         relation_connect_new_cancel();
                     });
                     jQuery('body').delegate('a#relation_connect_new_add', 'click', function(event) {
@@ -687,7 +687,7 @@ abstract class GenericRelationship {
 
                         relation_connect_new_add();
                     });
-        
+
                     jQuery('#relation_connect_new_box').delegate('.wpc_input', 'keydown keypress', function(event) {
                         if ( event.keyCode == 13 ) {
                             event.preventDefault();
@@ -718,8 +718,8 @@ abstract class GenericRelationship {
                 var relation_data = selected_relation.data()
 
                 jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.srcLabel + ' to add');
-                
-                
+
+
                 goto_box('relation_connected_box','','');
             }
             function set_connected_items () {
@@ -806,16 +806,16 @@ abstract class GenericRelationship {
 
         if ( (!isset($req->from_id) xor !isset($req->to_id)) and !empty($req->new_post_title) && !empty($wpc_relationships[$req->rel_id]) ) {
             $relation = $wpc_relationships[$req->rel_id];
-            
+
             if ( !isset($req->to_id) ) {
-                $new_post_id = wp_insert_post ( 
-                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_to_id) 
+                $new_post_id = wp_insert_post (
+                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_to_id)
                 );
-                
+
                 $req->to_id   = $new_post_id;
             } else {
                 $new_post_id = wp_insert_post (
-                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_from_id) 
+                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_from_id)
                 );
 
                 $req->from_id = $new_post_id;
@@ -823,7 +823,7 @@ abstract class GenericRelationship {
 
             _log ("add_relation_ajax: created post $new_post_id");
         }
-        
+
         if ($req->from_id <= 0)
             $ret->errors[] = "from_id has invalid value '$req->from_id'";
         else if ($req->to_id <= 0)
@@ -836,7 +836,7 @@ abstract class GenericRelationship {
 
             $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $req->from_id, $req->to_id, $req->rel_id));
             $id = $wpdb->insert_id;
-          
+
             if ( !empty($req->metadata) ) {
                 $sql = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES (%d, %s, %s);';
 
@@ -858,9 +858,9 @@ abstract class GenericRelationship {
             _log ("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
-        
+
         $ret = self::add_relation($req);
-        
+
         echo json_encode($ret);
 
         die();
@@ -889,9 +889,9 @@ abstract class GenericRelationship {
         } else {
             #ibotty: there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
             #qwesda: don't understand you mean ...
-            
+
             $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
-            
+
             if ( !empty($req->metadata) ) {
                 $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
 
@@ -900,7 +900,7 @@ abstract class GenericRelationship {
                 }
             }
         }
-        
+
         return $ret;
     }
     static function update_relation_ajax () {
@@ -913,23 +913,23 @@ abstract class GenericRelationship {
             _log ("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
-        
+
         $ret = self::update_relation($req);
-        
+
         echo json_encode($ret);
 
         die();
     }
 
     static function get_connected_items ($req) {
-        global $wpdb;   
+        global $wpdb;
 
         $ret = (object)array(
                      "errors" => array (),
                      "status" => array (),
                     "results" => array (),
                 );
-                
+
         if ( empty($req->rel_id) ) {
             $ret->errors[] = "rel_id was not specified";
         } else if ( !empty($req->from_id) ) {
@@ -943,7 +943,7 @@ abstract class GenericRelationship {
         } else {
             $ret->errors[] = "neither from_id nor to_id were specified";
         }
-        
+
         if ( !empty($id) ) {
             $sql = "SELECT wp_posts.post_title, wp_posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
               JOIN wp_posts ON wp_posts.id = wp_wpc_relations.$othercol
@@ -953,16 +953,16 @@ abstract class GenericRelationship {
             // add metadata
             $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
               WHERE relation_id = %d";
-        
+
             foreach ($sql_result as &$relation_row) {
                 $sql_metadata_result = $wpdb->get_results($wpdb->prepare($sql, $relation_row->relation_id));
-                
+
                 $relation_row->metadata = array();
-                
+
                 foreach ($sql_metadata_result as &$metadata_row) {
                     $relation_row->metadata[ $metadata_row->meta_key ] = $metadata_row->meta_value;
                 }
-            
+
                 $ret->results[] = $relation_row;
             }
         }
@@ -982,15 +982,15 @@ abstract class GenericRelationship {
 
     static function delete_relation ($req) {
         global $wpdb;
-        
+
         $ret = (object)array(
              "errors" => array (),
              "status" => array (),
             "results" => array (),
             );
-        
+
         if ( empty($req->relation_id) ) {
-            $ret->errors[] = "relation_id was not specified or is not is not a valid id";
+            $ret->errors[] = "relation_id was not specified or is not a valid id";
         } else {
             $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
             $wpdb->query($wpdb->prepare($sql, $req->relation_id));
@@ -999,7 +999,7 @@ abstract class GenericRelationship {
             $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
             $ret->results = $wpdb->query( $wpdb->prepare($sql, $req->relation_id) );
         }
-        
+
         return $ret;
     }
     static function delete_relation_ajax () {
@@ -1012,7 +1012,7 @@ abstract class GenericRelationship {
             _log ("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
-        
+
         $ret = self::delete_relation($req);
 
         echo json_encode($ret);
