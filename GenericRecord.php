@@ -99,11 +99,11 @@ abstract class GenericRecord {
         return (isset($this->meta[$attribute]) || isset($this->post[$attribute]));
     }
 
-    protected function get_connected($othertype) {
+    protected function get_connected($other_type) {
         if (! isset($relations[$other_type]))
-            $relations[$type] = GenericRelationRecord::relations_for_types($this->typeslug, $other_type);
+            $relations[$other_type] = GenericRelationRecords::relations_for_types($this->typeslug, $other_type, $this->id);
 
-        return $relations[$type];
+        return $relations[$other_type];
 
     }
 
