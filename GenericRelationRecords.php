@@ -100,9 +100,9 @@ class GenericRelationRecords {
             $i = $row["relation_id"];
             if (!isset($res[$i])) {
                 $relationship_id = $this->db_relationslug !== '' ? $this->db_relationslug : $row["relationship_id"];
-                $types = explode('_', $relationship_id);
-                $one_type     = $types[0]."Record";
-                $another_type = $types[1]."Record";
+                list($one_type, $another_type) = explode('_', $relationship_id);
+                $one_type    .= "Record";
+                $another_type.= "Record";
 
                 $res[$i] = array(
                     "record"          => new $one_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"]),
