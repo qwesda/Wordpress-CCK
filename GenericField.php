@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 abstract class GenericField {
     public $id              = NULL;
@@ -26,10 +26,7 @@ abstract class GenericField {
         }
     }
 
-    function echo_field_core ($post_data = array() ) {
-        echo "unhandeled field <b>$this->id</b> of type <i>$field->type</i>";
-        _var_dump($field);
-    }
+    abstract function echo_field_core ($post_data = array());
 
     function echo_field_with_label_above ($post_data = array(), $label = "") { ?>
         <div class="wpc_form_field wpc_form_field_<?php echo $this->type ?>">
