@@ -238,7 +238,7 @@ abstract class GenericRelationship {
                 <div class="relation_nav_bar"></div><div class="clear"></div>
 
                 <div>
-                    <input type="text" class="wpc_input_text" id="relation_src_search" />
+                    <input type="text" class="wpc_input_text" id="relation_src_search" placeholder="search"/>
                     <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">search for existing item</label> or
                     <a id='relation_connected_add_new' class="button" href='#'>connect new item</a>
                 </div>
@@ -585,7 +585,7 @@ abstract class GenericRelationship {
                 <div class="relation_nav_bar"></div><div class="clear"></div>
 
                 <div>
-                    <input type="text" class="wpc_input wpc_input_text" id="new_item_title" />
+                    <input type="text" class="wpc_input wpc_input_text" id="new_item_title" placeholder="title"/>
                     <label class="wpc_hint" for="new_item_title" id="wpc_input_text_hint">title for the new item</label>
                 </div>
 
