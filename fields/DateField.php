@@ -16,7 +16,7 @@ class DateField extends GenericField {
      */
     function echo_field_core ($post_data = array ()) {
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
-            id="<?php echo "wpc_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>">
+            id="<?php echo "wpc_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>" />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
         <span class='wpc_input_date_date hide-if-no-js'>
             <span id="wpc_input_date_timestamp-<?php echo $this->id;?>"> <?php if ($post_data[$this->id] !== '')
