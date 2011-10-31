@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 abstract class GenericField {
     public $id              = NULL;
@@ -8,6 +8,11 @@ abstract class GenericField {
     public $label           = "";
     public $default         = "";
     public $hint            = "";
+
+    /**
+     * set to true to have qtranslate-like localization (e.g. [:en]english text[:de]german text[
+     */
+    public $localized = false;
 
     function __construct ($parent, $params) {
         $this->type = get_class($this);
@@ -19,6 +24,7 @@ abstract class GenericField {
         if ( !empty($params->label) )       $this->label        = $params->label;       else $this->label = ucwords( str_replace("_", " ", $this->id) );
         if ( !empty($params->default) )     $this->default      = $params->default;
         if ( !empty($params->hint) )        $this->hint         = $params->hint;
+        if ( !empty($params->localizable) && $params->localizable === true ) $this->localizable  = true;
 
         if ( !empty($this->id) && empty ($parent->fields[$this->id]) ) {
             $parent->fields[$this->id] = $this;
