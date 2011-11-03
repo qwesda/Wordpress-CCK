@@ -54,40 +54,7 @@ abstract class GenericRelationship {
     static function echo_relations_metabox ($post) {
         global $wpc_relationships;
 
-        ?><select id="relation_selector"><?php
-
-        foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
-            if ($post->post_type == $wpc_relationship->post_type_from_id || $post->post_type == $wpc_relationship->post_type_to_id) {
-                $rel_direction = $post->post_type == $wpc_relationship->post_type_from_id ? "to_from" : "from_to";
-
-                $src_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_to_id   : $wpc_relationship->post_type_from_id;
-                $dst_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_from_id : $wpc_relationship->post_type_to_id;
-
-                $src    = $rel_direction == "from_to" ? $wpc_relationship->post_type_to     : $wpc_relationship->post_type_from;
-                $dst    = $rel_direction == "from_to" ? $wpc_relationship->post_type_from   : $wpc_relationship->post_type_to;
-
-                ?>
-                <option value = "<?php echo $wpc_relationship->id ?>"
-                        class = "<?php echo $wpc_relationship->id ?>"
-
-                 data-rel-dir = "<?php echo $rel_direction ?>"
-
-                  data-rel-id = "<?php echo $wpc_relationship->id ?>"
-                  data-src-id = "<?php echo $src_id ?>"
-                  data-dst-id = "<?php echo $dst_id ?>"
-
-               data-src-label = "<?php echo $src->label ?>"
-               data-dst-label = "<?php echo $dst->label ?>"
-
-      data-src-singular-label = "<?php echo $src->singular_label ?>"
-      data-dst-singular-label = "<?php echo $dst->singular_label ?>"
-                data-edit-box = "<?php echo $wpc_relationship->echo_item_metabox_str() ?>"
-                 data-post-id = "<?php echo $post->ID ?>"
-                ><?php echo $wpc_relationship->label ?></option><?php
-            }
-        }
-
-        ?><select>
+        ?>
         <div id="relation_edit_boxes">
             <script type="text/javascript" charset="utf-8">
                 function goto_box (to_box_id, from_box_id, direction) {
@@ -708,6 +675,41 @@ abstract class GenericRelationship {
             </div>
         </div>
 
+        <select id="relation_selector"><?php
+
+        foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
+            if ($post->post_type == $wpc_relationship->post_type_from_id || $post->post_type == $wpc_relationship->post_type_to_id) {
+                $rel_direction = $post->post_type == $wpc_relationship->post_type_from_id ? "to_from" : "from_to";
+
+                $src_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_to_id   : $wpc_relationship->post_type_from_id;
+                $dst_id  = $rel_direction == "to_from" ? $wpc_relationship->post_type_from_id : $wpc_relationship->post_type_to_id;
+
+                $src    = $rel_direction == "from_to" ? $wpc_relationship->post_type_to     : $wpc_relationship->post_type_from;
+                $dst    = $rel_direction == "from_to" ? $wpc_relationship->post_type_from   : $wpc_relationship->post_type_to;
+
+                ?>
+                <option value = "<?php echo $wpc_relationship->id ?>"
+                        class = "<?php echo $wpc_relationship->id ?>"
+
+                 data-rel-dir = "<?php echo $rel_direction ?>"
+
+                  data-rel-id = "<?php echo $wpc_relationship->id ?>"
+                  data-src-id = "<?php echo $src_id ?>"
+                  data-dst-id = "<?php echo $dst_id ?>"
+
+               data-src-label = "<?php echo $src->label ?>"
+               data-dst-label = "<?php echo $dst->label ?>"
+
+      data-src-singular-label = "<?php echo $src->singular_label ?>"
+      data-dst-singular-label = "<?php echo $dst->singular_label ?>"
+                data-edit-box = "<?php echo $wpc_relationship->echo_item_metabox_str() ?>"
+                 data-post-id = "<?php echo $post->ID ?>"
+                ><?php echo $wpc_relationship->label ?></option><?php
+            }
+        }
+
+        ?><select>
+        
         <script type="text/javascript">
             set_selected_relation();
 
