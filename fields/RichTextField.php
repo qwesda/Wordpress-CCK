@@ -11,13 +11,12 @@ class RichTextField extends GenericField {
 
 
     function echo_field_core ($post_data = array ()) {
-
         if (isset($post_data[$this->id]))
             $content = $post_data[$this->id];
         else
             $content = "";
 
-        wp_editor(esc_textarea($content), "wpc_$this->id", array('editor_class'=>'wpc_input wpc_input_richtext'));
+        wp_editor($content, "wpc_$this->id", array('editor_class'=>'wpc_input wpc_input_richtext'));
     }
 }
 

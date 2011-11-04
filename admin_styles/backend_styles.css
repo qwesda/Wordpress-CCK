@@ -1,5 +1,6 @@
 /* @override 
-    https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/core/admin_styles/backend_styles.css?ver=3.3-beta1
+	https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/core/admin_styles/backend_styles.css?ver=3.3-beta1
+	https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3-beta1
 */
 
 div.wpc_form_row_header {
@@ -368,4 +369,16 @@ div#relation_edit_boxes > div {
 	left: 0;
 	right: 0;
 }
+
+.wp-editor-container {
+	background-color: #fff;
+}
+
+div.wpc_form_field_RichTextField {
+	width: 100%;
+	
+	margin-bottom: 15px;
+	margin-right: -5px;
+}
+
 

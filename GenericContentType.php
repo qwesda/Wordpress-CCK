@@ -132,6 +132,20 @@ abstract class GenericContentType {
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
 //  ADD METABOXES
+        foreach ($this->fields as $field) {
+            if ($field->type == "RichTextField") {
+                add_meta_box(
+                    $this->id."_".$field->id,
+                    $field->label,
+                    array(&$this, "echo_richtext_metabox"),
+                    $this->id,
+                    "advanced",
+                    "high",
+                    array('field' => $field, 'post_data' => $this->current_post_data)
+                );
+            }
+        }
+
         foreach (glob("$theme_dir/metaboxes/" . $this->slug . "_*.php") as $filename) {
             $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
             $metabox_class_id   = $metabox_class_name;
@@ -151,7 +165,7 @@ abstract class GenericContentType {
                     $this->id,
                     $$instance_name->context,
                     $$instance_name->priority,
-                    $this->current_post_data
+                    array('post_data' => $this->current_post_data)
                 );
             }
         }
@@ -170,6 +184,15 @@ abstract class GenericContentType {
             }
         }
 
+    }
+
+    function echo_richtext_metabox ($post, $metabox) {
+        $field      = $metabox['args']['field'];
+        $post_data  = $metabox['args']['post_data'];
+
+        $field->echo_field($post_data);
+
+        echo '<div class="clear"></div>';
     }
 
     function admin_init() {

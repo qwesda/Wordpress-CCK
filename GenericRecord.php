@@ -102,7 +102,9 @@ abstract class GenericRecord {
     }
 
     function __isset($attribute) {
-        return (isset($this->meta[$attribute]) || isset($this->post[$attribute]));
+        $val = $this->__get($attribute);
+
+        return isset($val);
     }
 
     protected function get_connected($other_type) {
