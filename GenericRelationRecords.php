@@ -115,7 +115,7 @@ class GenericRelationRecords {
 
         $this->where = array_filter($this->where);
         if (count($this->where))
-            $sql.= "WHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
+            $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
 
         $sql.= "ORDER BY wpcr.relation_id;";
 
