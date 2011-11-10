@@ -23,11 +23,11 @@ abstract class GenericRecord {
     /*
      * the post's data as returned by get_post with 'ARRAY_A'.
      */
-    protected $post = array();
+    protected $post;
     /*
      * the post's meta data as returned by wp_post_custom
      */
-    protected $meta = array();
+    protected $meta;
 
     /*
      * an associative array. keys are the connected types.
@@ -55,7 +55,7 @@ abstract class GenericRecord {
      * with prefix "connected_" return the connected items of a specific type.
      */
     function __get($attribute) {
-        if (empty($this->post)) {
+        if (! isset($this->post)) {
             // get $post as hash for consistency reasons
             $this->post = get_post($this->id, 'ARRAY_A');
             $this->meta = get_post_custom($this->id);
@@ -102,16 +102,14 @@ abstract class GenericRecord {
     }
 
     function __isset($attribute) {
-        $val = $this->__get($attribute);
-
         return isset($val);
     }
 
     protected function get_connected($other_type) {
-        if (! isset($relations[$other_type]))
-            $relations[$other_type] = GenericRelationRecords::relations_for_types($this->typeslug, $other_type, $this->id);
+        if (! isset($this->relations[$other_type]))
+            $this->relations[$other_type] = GenericRelationRecords::relations_for_types($this->typeslug, $other_type, $this->id);
 
-        return $relations[$other_type];
+        return $this->relations[$other_type];
 
     }
 
