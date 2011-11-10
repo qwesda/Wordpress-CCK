@@ -41,7 +41,7 @@ class GenericRelationRecords {
             return null;
         }
 
-        $classname = ucfirst($type).ucfirst($othertype)."RelationRecord";
+        $classname = ucfirst($type).ucfirst($othertype)."RelationRecords";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
               protected \$db_relationslug = '$db_relationslug';
