@@ -191,6 +191,8 @@ class GenericRelationRecords {
      * $key is either "id" or "other_id" for the post ids in wp_wpc_relations or the meta_key in wp_wpc_relations_meta.
      * $value is the intended value (or array of values for IN, BETWEEN and its variants).
      * $op is the operator (one of "=", "<=>", "!=", "<", ">", "<=", ">=", "LIKE", "NOT LIKE", "IN", "NOT IN", "BETWEEN", "NOT BETWEEN", "IS", "IS NOT"). Default operator is "=".
+     *
+     * Note: For negative queries, it does not list relations without this key.
      */
     function add_filter_($key, $val, $op="=") {
         global $wpdb;
