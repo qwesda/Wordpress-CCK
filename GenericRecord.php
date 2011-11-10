@@ -36,17 +36,49 @@ abstract class GenericRecord {
 
     protected $formatted_string_cache = array();
 
-    function __construct($id=null) {
+    /**
+     * constructor for a Record.
+     *
+     * If $post and $meta are set, use them (for when they are already fetched one way or another).
+     * Both must be an associative array.
+     */
+    function __construct($id=null, $post=null, $meta=null) {
         if ($id === null) {
             _log("No id given!");
             throw new Exception("Cannot construct ".get_class().". Id is not set.");
         }
 
         $this->id = $id;
+        $this->post = $post;
+        $this->meta = $meta;
 
         // set typeslug to the lowercased classname, if not set
         if (empty($this->typeslug))
             $this->typeslug= strtolower(get_class($this));
+    }
+
+    /**
+     * returns a new object of the right type.
+     */
+    static function new_type($id=null, $type=null, $p=null, $m=null) {
+        if (! (($id && $type) || $p)) {
+            // XXX: _error needed;
+            _log("Cannot get new record with neither post nor id or type set.");
+            return;
+        }
+
+        // post might be an object. cast to associative array.
+        $p = (array) $p;
+
+        // deduct $id and $type from $p
+        if (! $id)
+            $id = $p["ID"];
+        if (! $type)
+            $type = $p["post_type"];
+
+        $classname = ucfirst($type)."Record";
+
+        return new $classname($id, $p, $m);
     }
 
     /**
@@ -55,11 +87,11 @@ abstract class GenericRecord {
      * with prefix "connected_" return the connected items of a specific type.
      */
     function __get($attribute) {
-        if (! isset($this->post)) {
+        if (! isset($this->post))
             // get $post as hash for consistency reasons
             $this->post = get_post($this->id, 'ARRAY_A');
+        if (! isset($this->meta))
             $this->meta = get_post_custom($this->id);
-        }
 
         if (strpos($attribute, "all_") === 0 && isset($this->meta[$attribute]))
             return $this->meta[$attribute];
@@ -157,8 +189,7 @@ abstract class GenericRecord {
 function the_record () {
     global $post;
 
-    $class_name = ucfirst($post->post_type)."Record";
-    $the_record = new $class_name($post->ID);
+    $the_record = GenericRecord::new_type($post->ID, $post->post_type, $post);
 
     return $the_record;
 }
