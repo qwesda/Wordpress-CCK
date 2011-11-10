@@ -24,7 +24,7 @@ abstract class GenericField {
         if ( !empty($params->label) )       $this->label        = $params->label;       else $this->label = ucwords( str_replace("_", " ", $this->id) );
         if ( !empty($params->default) )     $this->default      = $params->default;
         if ( !empty($params->hint) )        $this->hint         = $params->hint;
-        if ( !empty($params->localizable) && $params->localizable === true ) $this->localizable  = true;
+        if ( !empty($params->localized) && $params->localized === true ) $this->localized  = true;
 
         if ( !empty($this->id) && empty ($parent->fields[$this->id]) ) {
             $parent->fields[$this->id] = $this;
