@@ -58,12 +58,41 @@ class GenericRelationRecords {
     }
 
     /**
+     * Prepares the object to iterate over the results. Resets the iteration pointer.
+     *
+     * For explanation of $as, see results().
+     */
+    function iterate ($as='OBJECT') {
+        // do only get results the first time it is called
+        if (! isset($this->iterate_results))
+            $this->iterate_results = $this->results($as);
+        $this->iterate_pointer = 0;
+        return $this;
+    }
+
+    /**
+     * iterate over the fetched results (in iterate())
+     * return false, if there are no more results.
+     */
+    function next() {
+        // although against API, support next() w/o previous iterate().
+        if (!isset ($this->iterate_results))
+            $this->iterate();
+
+        if (count($this->iterate_results) <= $this->iterate_pointer)
+            return false;
+
+        return $this->iterate_results[$this->iterate_pointer++];
+    }
+
+    /**
      * returns all filtered relations in the following form if $as is 'ARRAY_A'.
      *
      * $relations = array(
-     *    $relation_id => array(
-     *        "record"          => GenericRecord($id)
-     *        "other_record"    => GenericRecord($other_id)
+     *    array(
+     *        "relation_id"     => 1,
+     *        "record"          => GenericRecord($id),
+     *        "other_record"    => GenericRecord($other_id),
      *        "relationship_id" => "person_institution",
      *        "meta"            => array("key1"=>"value1", [...])
      *     ),
@@ -82,7 +111,9 @@ class GenericRelationRecords {
 
         $this->where = array_filter($this->where);
         if (count($this->where))
-            $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )";
+            $sql.= "WHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
+
+        $sql.= "ORDER BY wpcr.relation_id;";
 
         _log("SQL query about to execute:\n$sql");
 
@@ -95,16 +126,21 @@ class GenericRelationRecords {
             return array();
         }
 
+        $i = -1;
+        $prev_relation_id = -1;
         // aggregate
         while ($row = mysql_fetch_assoc($dbres)) {
-            $i = $row["relation_id"];
-            if (!isset($res[$i])) {
+            if ($prev_relation_id != $row["relation_id"]) {
+                $i++;
+                $prev_relation_id = $row["relation_id"];
+
                 $relationship_id = $this->db_relationslug !== '' ? $this->db_relationslug : $row["relationship_id"];
                 list($one_type, $another_type) = explode('_', $relationship_id);
                 $one_type    .= "Record";
                 $another_type.= "Record";
 
                 $res[$i] = array(
+                    "relation_id"     => $row["relation_id"],
                     "record"          => new $one_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"]),
                     "other_record"    => new $another_type($this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"]),
                     // the following looks odd, but is correct:
@@ -178,6 +214,9 @@ class GenericRelationRecords {
 
             _log ("meta filter '$filter' added.");
         }
+
+        // invalidate iterate_results
+        unset($this->iterate_results);
     }
 
     /**
@@ -194,7 +233,6 @@ class GenericRelationRecords {
             if (!is_array($val)) {
                 // XXX: _error would be more appropiate
                 _log("$op needs an array. '".print_r($val)."' given");
-              //   '
                 // XXX: _error would be more appropiate _log("$op needs an array. '".print_r($val)."' given");
                 return;
             }
