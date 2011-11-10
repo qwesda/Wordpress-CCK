@@ -57,6 +57,10 @@ class GenericRelationRecords {
         return $relations;
     }
 
+    function __construct() {
+        if (isset($db_relationslug))
+            $this->add_filter_('relationship_id', $this->db_relationslug);
+    }
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
      *
@@ -136,13 +140,10 @@ class GenericRelationRecords {
 
                 $relationship_id = $this->db_relationslug !== '' ? $this->db_relationslug : $row["relationship_id"];
                 list($one_type, $another_type) = explode('_', $relationship_id);
-                $one_type    .= "Record";
-                $another_type.= "Record";
-
                 $res[$i] = array(
                     "relation_id"     => $row["relation_id"],
-                    "record"          => new $one_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"]),
-                    "other_record"    => new $another_type($this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"]),
+                    "record"          => GenericRecord::new_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"], $one_type),
+                    "other_record"    => GenericRecord::new_type($this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"], $another_type),
                     // the following looks odd, but is correct:
                     // if db_relationslug is '', the relation cannot be reverse.
                     "relationship_id" => $relationship_id,
@@ -202,6 +203,9 @@ class GenericRelationRecords {
         case "other_id":
             $key = $this->db_is_reverse ? "post_from_id" : "post_to_id";
             $this->where[] = $this->where_clause("wpcr.$key", $val, $op);
+            break;
+        case "relationship_id":
+            $this->where[] = $this->where_clause("wpcr.relationship_id", $val, $op);
             break;
         default:
             $join_ix = count($this->join);
