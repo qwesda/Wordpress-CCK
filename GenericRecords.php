@@ -1,19 +1,9 @@
 <?php
 
 /**
- * relations records
+ * records
  */
-class GenericRelationRecords {
-
-    /**
-     * the relationship's name in the db
-     */
-    protected $db_relationslug = '';
-
-    /**
-     * is set to false if the relationship is stored in the same order in the database.
-     */
-    protected $db_is_reverse = false;
+class GenericRecords {
 
     /**
      * the where clauses
@@ -26,45 +16,35 @@ class GenericRelationRecords {
     protected $join = array();
 
     /**
-     * returns an instance of (a subclass of) GenericRelationsRecords for both types.
+     * returns an instance of (a subclass of) GenericRecords for the specific type.
      * if $id is set to a valid id of type $type, prefilter to get only connected relations.
      */
-    static function relations_for_types($type, $othertype, $id=null) {
-        global $wpc_relationships;
+    static function records_for_type($type, $id=null) {
+        global $wpc_content_types;
 
-        $db_relationslug = $type."_".$othertype;
-        if (! isset($wpc_relationships[$db_relationslug]))
-            $db_relationslug = $othertype."_".$type;
-        if (! isset($wpc_relationships[$db_relationslug])) {
+        if (! isset($wpc_content_types[$type])) {
             // XXX: there should be an _error here!
-            _log("The relationship between $type and $othertype does not exist in the database.");
+            _log("The type $type does not exist in the database.");
             return null;
         }
 
-        $classname = ucfirst($type).ucfirst($othertype)."RelationRecords";
+        $classname = ucfirst($type)."Records";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
-              protected \$db_relationslug = '$db_relationslug';
             }";
             eval ($classdef);
         }
 
-        $relations = new $classname();
+        $records = new $classname();
 
         if ($id !== null)
-            $relations = $relations->id_is($id);
+            $records = $records->id_is($id);
 
-        return $relations;
+        return $records;
     }
 
-    function __construct() {
-        if (isset($db_relationslug))
-            $this->add_filter_('relationship_id', $this->db_relationslug);
-    }
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
-     *
-     * For explanation of $as, see results().
      */
     function iterate ($as='OBJECT') {
         // do only get results the first time it is called
@@ -90,34 +70,20 @@ class GenericRelationRecords {
     }
 
     /**
-     * returns all filtered relations in the following form if $as is 'ARRAY_A'.
-     *
-     * $relations = array(
-     *    array(
-     *        "relation_id"     => 1,
-     *        "record"          => GenericRecord($id),
-     *        "other_record"    => GenericRecord($other_id),
-     *        "relationship_id" => "person_institution",
-     *        "meta"            => array("key1"=>"value1", [...])
-     *     ),
-     *     [...]
-     * );
-     *
-     * It will convert to an object, if $as is 'OBJECT'.
+     * returns all filtered records as array.
      */
-    function results($as='OBJECT') {
+    function results() {
         global $wpdb;
 
-        $sql = "SELECT DISTINCT wpcr.*, wpcm.meta_id, wpcm.meta_key, wpcm.meta_value FROM wp_wpc_relations AS wpcr
-            LEFT JOIN wp_wpc_relations_meta AS wpcm ON wpcm.relation_id = wpcr.relation_id\n";
-
+        $sql = "SELECT DISTINCT posts.*, meta.* FROM $wpdb->posts AS posts
+            LEFT JOIN $wpdb->postmeta AS meta ON meta.post_id = posts.ID\n";
         $sql.= join("\n", $this->join);
 
         $this->where = array_filter($this->where);
         if (count($this->where))
             $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
 
-        $sql.= "ORDER BY wpcr.relation_id;";
+        $sql.= "ORDER BY posts.ID;";
 
         _log("SQL query about to execute:\n$sql");
 
@@ -130,34 +96,33 @@ class GenericRelationRecords {
             return array();
         }
 
-        $i = -1;
-        $prev_relation_id = -1;
+        $p = null; $meta = array();
+        $cur_id = -1;
         // aggregate
         while ($row = mysql_fetch_assoc($dbres)) {
-            if ($prev_relation_id != $row["relation_id"]) {
-                $i++;
-                $prev_relation_id = $row["relation_id"];
+            if ($cur_id != $row["ID"]) {
+                // add the now complete record to the array to return later
+                // (do not do this the first time)
+                if ($cur_id != -1) {
+                    $res[$i] = GenericRecord::new_type($cur_id, null, $p, $meta);
+                    $meta = array();
+                }
 
-                $relationship_id = $this->db_relationslug !== '' ? $this->db_relationslug : $row["relationship_id"];
-                list($one_type, $another_type) = explode('_', $relationship_id);
-                $res[$i] = array(
-                    "relation_id"     => $row["relation_id"],
-                    "record"          => GenericRecord::new_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"], $one_type),
-                    "other_record"    => GenericRecord::new_type($this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"], $another_type),
-                    // the following looks odd, but is correct:
-                    // if db_relationslug is '', the relation cannot be reverse.
-                    "relationship_id" => $relationship_id,
-                    "meta"            => array()
-                );
+                $cur_id = $row["ID"];
+
+                // copy the row and remove meta-fields
+                $p = $row;
+                foreach (array("meta_id", "post_id", "meta_key", "meta_value") as $metakey)
+                    unset($p[$metakey]);
             }
             if (! empty($row["meta_value"]))
-              array_push($res[$i]["meta"], array($row["meta_key"] => $row["meta_value"]));
+              array_push($meta, array($row["meta_key"] => $row["meta_value"]));
         }
-        if ($as === 'OBJECT')
-            foreach ($res as &$r) {
-                $r = (object) $r;
-                $r->meta = (object) $r->meta;
-            }
+        // add the last completed record
+        if ($cur_id != -1) {
+            $res[] = GenericRecord::new_type($cur_id, null, $p, $meta);
+        }
+
         return $res;
     }
 
@@ -188,7 +153,7 @@ class GenericRelationRecords {
 
     /**
      * adds a filter inplace.
-     * $key is either "id" or "other_id" for the post ids in wp_wpc_relations or the meta_key in wp_wpc_relations_meta.
+     * $key is one of wp_posts cols or a meta_key in wp_postmeta
      * $value is the intended value (or array of values for IN, BETWEEN and its variants).
      * $op is the operator (one of "=", "<=>", "!=", "<", ">", "<=", ">=", "LIKE", "NOT LIKE", "IN", "NOT IN", "BETWEEN", "NOT BETWEEN", "IS", "IS NOT"). Default operator is "=".
      *
@@ -197,28 +162,24 @@ class GenericRelationRecords {
     function add_filter_($key, $val, $op="=") {
         global $wpdb;
 
-        switch ($key) {
-        case "id":
-            $key = $this->db_is_reverse ? "post_to_id" : "post_from_id";
-            $this->where[] = $this->where_clause("wpcr.$key", $val, $op);
-            break;
-        case "other_id":
-            $key = $this->db_is_reverse ? "post_from_id" : "post_to_id";
-            $this->where[] = $this->where_clause("wpcr.$key", $val, $op);
-            break;
-        case "relationship_id":
-            $this->where[] = $this->where_clause("wpcr.relationship_id", $val, $op);
-            break;
-        default:
+        $key = strtolower($key);
+
+        if (in_array($key, array('id', 'post_author', 'post_date',
+            'post_date_gmt', 'post_content', 'post_content_filtered',
+            'post_title', 'post_excerpt', 'post_status', 'post_type',
+            'comment_count', 'comment_status', 'ping_status', 'post_password',
+            'post_name', 'to_ping', 'pinged', 'post_modified',
+            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
+            'guid')))
+                $this->where[] = $this->where_clause("posts.$key", $val, $op);
+        else {
             $join_ix = count($this->join);
-            $alias = "wpcm$join_ix";
-            $this->join[$join_ix] = "INNER JOIN wp_wpc_relations_meta AS $alias ON $alias.relation_id = wpcr.relation_id";
+            $alias = "wpm$join_ix";
+            $this->join[$join_ix] = "INNER JOIN $wpdb->postmeta AS $alias ON $alias.post_id = posts.ID";
 
             $filter = $wpdb->prepare("$alias.meta_key = %s AND ", $key);
             $filter.= $this->where_clause("$alias.meta_value", $val, $op);
             $this->where[] = $filter;
-
-            _log ("meta filter '$filter' added.");
         }
 
         // invalidate iterate_results
@@ -227,6 +188,8 @@ class GenericRelationRecords {
 
     /**
      * returns a where clause (without "WHERE")
+     *
+     * XXX: this is a copy of GenericRelationRecords::where_clause. this should be one function!
      */
     protected function where_clause($key, $val, $op) {
         global $wpdb;
@@ -239,7 +202,6 @@ class GenericRelationRecords {
             if (!is_array($val)) {
                 // XXX: _error would be more appropiate
                 _log("$op needs an array. '".print_r($val)."' given");
-                // XXX: _error would be more appropiate _log("$op needs an array. '".print_r($val)."' given");
                 return;
             }
             $c = count($val);

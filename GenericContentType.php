@@ -52,7 +52,7 @@ abstract class GenericContentType {
             'register_meta_box_cb' => array(&$this, "add_meta_boxes")
         ) );
 
-//  ADD HOKKS
+//  ADD HOOKS
         add_action ("save_post",                    array(&$this, "save_post") );
         add_action ("wp_insert_post",               array(&$this, "wp_insert_post") );
         add_action ("wp_update_post",               array(&$this, "wp_update_post") );
@@ -85,7 +85,6 @@ abstract class GenericContentType {
     }
 
     function custom_print_scripts () {
-
     }
 
     function custom_print_styles () {

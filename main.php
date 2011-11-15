@@ -11,6 +11,7 @@ require_once "helper.php";
 
 require_once "GenericField.php";
 require_once "GenericRecord.php";
+require_once "GenericRecords.php";
 require_once "GenericRelationRecords.php";
 require_once "GenericContentType.php";
 require_once "GenericRelationship.php";

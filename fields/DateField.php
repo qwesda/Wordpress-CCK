@@ -16,7 +16,8 @@ class DateField extends GenericField {
      */
     function echo_field_core ($post_data = array ()) {
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
-            id="<?php echo "wpc_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>">
+            placeholder="<?php echo $this->hint;?>"
+            id="<?php echo "wpc_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>" />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
         <span class='wpc_input_date_date hide-if-no-js'>
             <span id="wpc_input_date_timestamp-<?php echo $this->id;?>"> <?php if ($post_data[$this->id] !== '')
@@ -41,10 +42,8 @@ class DateField extends GenericField {
                   $month.= ">$i ".__(date('M', mktime(0, 0, 0, $i, 1, 2000)))."</option>\n";
               }
               $month.= '</select>';
-            $day   = "<input id='wpc_input_date_d-$this->id' name='wpc_date_d-$this->id' type='text' size=2 maxlength=2 value='$d' />
-              <label class='wpc_hint' for='wpc_date_d-$this->id'>".__('dd')."</label>\n";
-            $year  = "<input id='wpc_input_date_y-$this->id' name='wpc_date_y-$this->id' type='text' size=4 maxlength=4 value='$y' />
-              <label class='wpc_hint' for='wpc_date_y-$this->id'>".__('YYYY')."</label>\n";
+            $day   = "<input id='wpc_input_date_d-$this->id' name='wpc_date_d-$this->id' type='text' size=2 maxlength=2 value='$d' placeholder='".__('dd')."'/>";
+            $year  = "<input id='wpc_input_date_y-$this->id' name='wpc_date_y-$this->id' type='text' size=4 maxlength=4 value='$y' placeholder='".__('yyyy')."'/>";
             printf(__('%1$s %2$s, %3$s'), $month, $day, $year);
             ?> <a id='wpc_input_date_edit_ok-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_ok'><?php _e('OK')?></a>
             <a id='wpc_input_date_edit_cancel-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_cancel'><?php _e('cancel')?></a>
