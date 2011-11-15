@@ -74,6 +74,7 @@ abstract class GenericContentType {
         $theme  = get_current_theme();
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
+            _log($theme_dir);
         foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             if ($post->post_type == $this->id) {
                 $content = _compile($filename);

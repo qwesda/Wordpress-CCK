@@ -15,6 +15,7 @@ require_once "GenericRelationRecords.php";
 require_once "GenericContentType.php";
 require_once "GenericRelationship.php";
 require_once "GenericMetabox.php";
+require_once "GenericIndex.php";
 
 global $wpc_version;
 global $wpc_db_version;
