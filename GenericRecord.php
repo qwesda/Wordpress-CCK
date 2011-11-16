@@ -134,6 +134,8 @@ abstract class GenericRecord {
     }
 
     function __isset($attribute) {
+        $val = $this->__get($attribute);
+
         return isset($val);
     }
 
