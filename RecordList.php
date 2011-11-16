@@ -120,6 +120,12 @@ abstract class RecordList {
         return $new;
     }
 
+    function offset($offset) {
+        $new = clone($this);
+        $new->offset = $offset;
+        return $new;
+    }
+
     /**
      * returns a new instance, filtered by the filter. see add_filter_ for documentation.
      */
