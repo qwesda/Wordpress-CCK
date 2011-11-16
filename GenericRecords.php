@@ -5,6 +5,29 @@
  */
 class GenericRecords {
 
+    static $wp_post_keys = array('id', 'post_author', 'post_date',
+        'post_date_gmt', 'post_content', 'post_content_filtered',
+        'post_title', 'post_excerpt', 'post_status', 'post_type',
+        'comment_count', 'comment_status', 'ping_status', 'post_password',
+        'post_name', 'to_ping', 'pinged', 'post_modified',
+        'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
+        'guid');
+
+    /**
+     * the order by key
+     */
+    protected $order_by = null;
+
+    /**
+     * the offset number
+     */
+    protected $offset = null;
+
+    /**
+     * the limit count
+     */
+    protected $limit = null;
+
     /**
      * the where clauses
      */
@@ -83,7 +106,15 @@ class GenericRecords {
         if (count($this->where))
             $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
 
-        $sql.= "ORDER BY posts.ID;";
+        if (! isset($this->order_by))
+            $order_by = "posts.ID";
+        $sql.= "ORDER BY $order_by\n";
+
+        if (isset($this->limit)) {
+            $sql.= "LIMIT $this->limit\n";
+            if (isset($this->offset))
+                $sql.= "OFFSET $this->offset\n";
+        }
 
         _log("SQL query about to execute:\n$sql");
 
@@ -127,6 +158,39 @@ class GenericRecords {
     }
 
     /**
+     * order by column
+     *
+     * Note, right now, only wp_post columns are supported.
+     */
+    function order_by($order_by){
+        if (! in_array($order_by, $this->wp_post_keys)){
+            // XXX: _error would be more appropriate
+            _log("$order_by is no supported key to order by.");
+        }
+        $new = clone($this);
+        $new->order_by = $order_by;
+        return $new;
+    }
+
+    /**
+     * limits the number of records to fetch
+     */
+    function limit($count) {
+        $new = clone($this);
+        $new->limit = $count;
+        return $new;
+    }
+
+    /**
+     * fetch records only after the given offset
+     */
+    function offset($offset) {
+        $new = clone($this);
+        $new->offset = $offset;
+        return $new;
+    }
+
+    /**
      * convenience method for filter. filters for the id.
      * returns a new instance.
      */
@@ -164,14 +228,8 @@ class GenericRecords {
 
         $key = strtolower($key);
 
-        if (in_array($key, array('id', 'post_author', 'post_date',
-            'post_date_gmt', 'post_content', 'post_content_filtered',
-            'post_title', 'post_excerpt', 'post_status', 'post_type',
-            'comment_count', 'comment_status', 'ping_status', 'post_password',
-            'post_name', 'to_ping', 'pinged', 'post_modified',
-            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
-            'guid')))
-                $this->where[] = $this->where_clause("posts.$key", $val, $op);
+        if (in_array($key, $this->wp_post_keys))
+            $this->where[] = $this->where_clause("posts.$key", $val, $op);
         else {
             $join_ix = count($this->join);
             $alias = "wpm$join_ix";
