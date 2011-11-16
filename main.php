@@ -10,6 +10,7 @@ Version: 1.0
 require_once "helper.php";
 
 require_once "GenericField.php";
+require_once "RecordList.php";
 require_once "GenericRecord.php";
 require_once "GenericRecords.php";
 require_once "GenericRelationRecords.php";
