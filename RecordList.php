@@ -149,7 +149,7 @@ abstract class RecordList {
         global $wpdb;
 
         if (in_array($key, $this->table_cols))
-            $this->where[] = $this->where_clause("table.$key", $val, $op);
+            $this->where[] = $this->where_clause("t.$key", $val, $op);
         else {
             $join_ix = count($this->join);
             $alias = "wpcj$join_ix";
