@@ -104,7 +104,7 @@ class GenericRecords {
                 // add the now complete record to the array to return later
                 // (do not do this the first time)
                 if ($cur_id != -1) {
-                    $res[$i] = GenericRecord::new_type($cur_id, null, $p, $meta);
+                    $res[] = GenericRecord::new_type($cur_id, null, $p, $meta);
                     $meta = array();
                 }
 

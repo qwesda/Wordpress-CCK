@@ -32,6 +32,8 @@ class WPCustom {
         add_action('admin_print_scripts',   array($this, "custom_print_scripts") );
         add_action('admin_print_styles',    array($this, "custom_print_styles") );
 
+        add_action('widgets_init',          array($this, "widgets_init") );
+
 
         // register hook to set current item in nav menus (default priority)
         add_filter('wp_get_nav_menu_items', array($this, "nav_menu_set_current"), 10, 3);
@@ -73,9 +75,37 @@ class WPCustom {
             $$instance_name = new $instance_name();
         }
 
+//  LOAD INDICES
+        foreach (glob($theme_dir . "/indices/*.php") as $filename) {
+            $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+
+            require_once $filename;
+
+            $instance_name  = lcfirst($class_name);
+            $$instance_name = new $instance_name();
+        }
+
+
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
             GenericRelationship::hookup_ajax_functions();
+        }
+    }
+
+    function widgets_init () {
+        $themes = get_themes();
+        $theme  = get_current_theme();
+        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
+//  LOAD WIDGETS
+        foreach (glob($theme_dir . "/widgets/*.php") as $filename) {
+            $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+
+            require_once $filename;
+
+            register_widget($class_name);
+
+            _log($class_name);
         }
     }
 
