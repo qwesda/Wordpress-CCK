@@ -134,7 +134,12 @@ abstract class GenericRecord {
     }
 
     function __isset($attribute) {
-        return isset($val);
+      if (! isset($this->post))
+        // get $post as hash for consistency reasons
+        $this->post = get_post($this->id, 'ARRAY_A');
+      if (! isset($this->meta))
+        $this->meta = get_post_custom($this->id);
+      return isset($this->post[$attribute]) || isset($this->meta["$attribute"]);
     }
 
     protected function get_connected($other_type) {
