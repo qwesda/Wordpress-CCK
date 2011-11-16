@@ -77,7 +77,6 @@ abstract class GenericRecord {
             $type = $p["post_type"];
 
         $classname = ucfirst($type)."Record";
-
         return new $classname($id, $p, $m);
     }
 
@@ -87,10 +86,11 @@ abstract class GenericRecord {
      * with prefix "connected_" return the connected items of a specific type.
      */
     function __get($attribute) {
-        if (! isset($this->post))
+        if (empty($this->post)) {
             // get $post as hash for consistency reasons
             $this->post = get_post($this->id, 'ARRAY_A');
-        if (! isset($this->meta))
+        }
+        if (empty($this->meta))
             $this->meta = get_post_custom($this->id);
 
         if (strpos($attribute, "all_") === 0 && isset($this->meta[$attribute]))
