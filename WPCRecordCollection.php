@@ -1,9 +1,10 @@
 <?php
+require_once("WPCCollection.php");
 
 /**
  * records
  */
-class GenericRecords extends RecordList {
+class WPCRecordCollection extends WPCCollection {
 
     protected $table_alias = "posts";
     protected $table_cols = array('id', 'post_author', 'post_date',
@@ -23,7 +24,7 @@ class GenericRecords extends RecordList {
     }
 
     /**
-     * returns an instance of (a subclass of) GenericRecords for the specific type.
+     * returns an instance of (a subclass of) WPCRecordCollection for the specific type.
      * if $id is set to a valid id of type $type, prefilter to get only connected relations.
      */
     static function records_for_type($type, $id=null) {
@@ -48,32 +49,6 @@ class GenericRecords extends RecordList {
             $records = $records->id_is($id);
 
         return $records;
-    }
-
-    /**
-     * Prepares the object to iterate over the results. Resets the iteration pointer.
-     */
-    function iterate ($as='OBJECT') {
-        // do only get results the first time it is called
-        if (! isset($this->iterate_results))
-            $this->iterate_results = $this->results($as);
-        $this->iterate_pointer = 0;
-        return $this;
-    }
-
-    /**
-     * iterate over the fetched results (in iterate())
-     * return false, if there are no more results.
-     */
-    function next() {
-        // although against API, support next() w/o previous iterate().
-        if (!isset ($this->iterate_results))
-            $this->iterate();
-
-        if (count($this->iterate_results) <= $this->iterate_pointer)
-            return false;
-
-        return $this->iterate_results[$this->iterate_pointer++];
     }
 
     /**

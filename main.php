@@ -10,10 +10,10 @@ Version: 1.0
 require_once "helper.php";
 
 require_once "GenericField.php";
-require_once "RecordList.php";
-require_once "GenericRecord.php";
-require_once "GenericRecords.php";
-require_once "GenericRelationRecords.php";
+require_once "WPCRecord.php";
+require_once "WPCRelation.php";
+require_once "WPCRecordCollection.php";
+require_once "WPCRelationCollection.php";
 require_once "GenericContentType.php";
 require_once "GenericRelationship.php";
 require_once "GenericMetabox.php";

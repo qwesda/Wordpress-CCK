@@ -1,9 +1,11 @@
 <?php
+require_once('WPCCollection.php');
+require_once('WPCRelation.php');
 
 /**
  * relations records
  */
-class GenericRelationRecords extends RecordList{
+class WPCRelationCollection extends WPCCollection {
 
     protected $table = "wp_wpc_relations";
     protected $table_pk = "relation_id";
@@ -26,7 +28,7 @@ class GenericRelationRecords extends RecordList{
     protected $db_is_reverse = false;
 
     /**
-     * returns an instance of (a subclass of) GenericRelationsRecords for both types.
+     * returns an instance of (a subclass of) WPCRelationCollection for both types.
      * if $id is set to a valid id of type $type, prefilter to get only connected relations.
      */
     static function relations_for_types($type, $othertype, $id=null) {
@@ -63,59 +65,28 @@ class GenericRelationRecords extends RecordList{
     }
 
     /**
-     * Prepares the object to iterate over the results. Resets the iteration pointer.
-     *
-     * For explanation of $as, see results().
+     * returns all filtered relations as array of WPCRelation objects.
      */
-    function iterate ($as='OBJECT') {
-        // do only get results the first time it is called
-        if (! isset($this->iterate_results))
-            $this->iterate_results = $this->results($as);
-        $this->iterate_pointer = 0;
-        return $this;
-    }
-
-    /**
-     * returns all filtered relations in the following form if $as is 'ARRAY_A'.
-     *
-     * $relations = array(
-     *    array(
-     *        "relation_id"     => 1,
-     *        "record"          => GenericRecord($id),
-     *        "other_record"    => GenericRecord($other_id),
-     *        "relationship_id" => "person_institution",
-     *        "meta"            => array("key1"=>"value1", [...])
-     *     ),
-     *     [...]
-     * );
-     *
-     * It will convert to an object, if $as is 'OBJECT' (default).
-     */
-    function results($as='OBJECT') {
-        $res = array_map(array($this, "row_to_object"), parent::results());
-        if ($as == 'OBJECT')
-            foreach ($res as &$r) {
-                $r = (object) $r;
-                $r->meta = (object) $r->meta;
-            }
+    function results() {
+        $res = array_map(array($this, "row_to_relation"), parent::results());
         return $res;
     }
-    protected function row_to_object ($record) {
+    function row_to_relation ($record) {
         $row = $record[$this->table];
 
-        $relationship_id = $this->db_relationslug !== '' ? $this->db_relationslug : $row["relationship_id"];
-        list($one_type, $another_type) = explode('_', $relationship_id);
+        $relationship_id = $row["relationship_id"];
+        if ($this->db_is_reverse) {
+            list($type, $other_type) = explode($relationship_id);
+            $relationship_id = $othertype."_$type";
+        }
 
-        $new = array(
-            "relation_id"     => $row["relation_id"],
-            "record"          => GenericRecord::new_type($this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"], $one_type),
-            "other_record"    => GenericRecord::new_type($this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"], $another_type),
-            // the following looks odd, but is correct:
-            // if db_relationslug is ', the relation cannot be reverse.
-            "relationship_id" => $relationship_id,
-            "meta"            => $record["meta"]
+        return WPCRelation::new_relation(
+            $row["relation_id"],
+            $this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"],
+            $this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"],
+            $record["meta"],
+            $relationship_id
         );
-        return $new;
     }
 
     /**

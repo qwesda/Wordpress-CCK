@@ -1,6 +1,6 @@
 <?php
 
-abstract class RecordList {
+abstract class WPCCollection {
 
     /**
      * the name of the main table
@@ -59,10 +59,10 @@ abstract class RecordList {
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
      */
-    function iterate ($as='OBJECT') {
+    function iterate () {
         // do only get results the first time it is called
         if (! isset($this->iterate_results))
-            $this->iterate_results = $this->results($as);
+            $this->iterate_results = $this->results();
         $this->iterate_pointer = 0;
         return $this;
     }

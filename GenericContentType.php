@@ -64,7 +64,7 @@ abstract class GenericContentType {
 
         add_filter( "the_content",  array($this, "the_content") );
 
-        GenericRecord::make_generic_record_class("$this->id"."Record", "$this->id");
+        WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");
     }
 
     function the_content ($content) {
