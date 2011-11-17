@@ -82,8 +82,8 @@ class GenericRecords extends RecordList {
     function results() {
         return array_map(array($this, "row_to_record"), parent::results());
     }
-    protected function row_to_record($record) {
-        return GenericRecord::new_type($record[$this->table_pk], null, $record[$this->table], $record["meta"]);
+    function row_to_record($record) {
+        return WPCRecord::new_record($record[$this->table_pk], $record[$this->table], $record["meta"]);
     }
 
     /**
