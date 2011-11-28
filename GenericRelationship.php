@@ -876,7 +876,8 @@ abstract class GenericRelationship {
              "status" => array (),
             "results" => array (),
         );
-
+//	_log($rel);	
+_log($req);
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
         } else if ($rel->to_id <= 0) {
@@ -892,11 +893,13 @@ abstract class GenericRelationship {
             $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
 
             if ( !empty($req->metadata) ) {
-                $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
+                $sql_delete = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id=%d AND meta_key=%s;';
+	            $sql_insert = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES(%d, %s, %s);';
 
                 foreach ($req->metadata as $key => $value) {
-                    $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
-                }
+                    $wpdb->query($wpdb->prepare ($sql_delete, $req->relation_id, $key) );
+	                $wpdb->query($wpdb->prepare ($sql_insert, $req->relation_id, $key, $value) );
+				}
             }
         }
 
