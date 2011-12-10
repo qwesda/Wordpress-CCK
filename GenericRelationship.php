@@ -709,7 +709,7 @@ abstract class GenericRelationship {
         }
 
         ?><select>
-        
+
         <script type="text/javascript">
             set_selected_relation();
 
@@ -876,7 +876,7 @@ abstract class GenericRelationship {
              "status" => array (),
             "results" => array (),
         );
-//	_log($rel);	
+//	_log($rel);
 _log($req);
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
@@ -894,12 +894,12 @@ _log($req);
 
             if ( !empty($req->metadata) ) {
                 $sql_delete = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id=%d AND meta_key=%s;';
-	            $sql_insert = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES(%d, %s, %s);';
+                $sql_insert = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES(%d, %s, %s);';
 
                 foreach ($req->metadata as $key => $value) {
                     $wpdb->query($wpdb->prepare ($sql_delete, $req->relation_id, $key) );
-	                $wpdb->query($wpdb->prepare ($sql_insert, $req->relation_id, $key, $value) );
-				}
+                    $wpdb->query($wpdb->prepare ($sql_insert, $req->relation_id, $key, $value) );
+                }
             }
         }
 
