@@ -15,7 +15,7 @@ class DateField extends GenericField {
      * the js-version is partly localized. it needs a date_format in js.
      */
     function echo_field_core ($post_data = array ()) {
-        ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
+        ?><input type="text" name="<?php echo "wpc_field_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
             placeholder="<?php echo $this->hint;?>"
             id="<?php echo "wpc_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>" />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
