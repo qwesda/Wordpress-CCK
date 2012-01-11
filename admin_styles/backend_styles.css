@@ -1,6 +1,6 @@
 /* @override 
-	https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/core/admin_styles/backend_styles.css?ver=3.3-beta1
-	https://dev.topoi.hu-berlin.de/zfjs/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3-beta1
+	https://dev.topoi.hu-berlin.de/fdcl/*
+	http://dev.topoi.hu-berlin.de/fdcl/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
 */
 
 div.wpc_form_row_header {
@@ -32,6 +32,9 @@ div.wpc_form_field {
     float: left;
     
     position: relative;
+}
+div.wpc_form_row_fullwidth {
+	width: 100%;
 }
 
 .disabled  {
@@ -205,6 +208,11 @@ div.wpc_form_row {
     margin-top: 14px;
     margin-right: 20px;
     text-align: right;
+}
+
+#search-for-location {
+	width: 100%;
+	margin-left: 0px;
 }
 
 ul#search-for-location-results {

@@ -37,15 +37,15 @@
                         jQuery("#map_canvas_data").html(results[0].formatted_address);
                         jQuery("#map_canvas_data").append(" <a id='map_canvas_data_use'>use this address</a>");
                         jQuery("#map_canvas_data_use").click(function() {
-                            jQuery("#wpc_street").val(mapspicker_street).trigger('change');
-                            jQuery("#wpc_number").val(mapspicker_number).trigger('change');
-                            jQuery("#wpc_postal_code").val(mapspicker_postal_code).trigger('change');
-                            jQuery("#wpc_city").val(mapspicker_city).trigger('change');
-                            jQuery("#wpc_state").val(mapspicker_state).trigger('change');
-                            jQuery("#wpc_country").val(mapspicker_country).trigger('change');
+                            jQuery("#wpc_field_street").val(mapspicker_street).trigger('change');
+                            jQuery("#wpc_field_number").val(mapspicker_number).trigger('change');
+                            jQuery("#wpc_field_postal_code").val(mapspicker_postal_code).trigger('change');
+                            jQuery("#wpc_field_city").val(mapspicker_city).trigger('change');
+                            jQuery("#wpc_field_state").val(mapspicker_state).trigger('change');
+                            jQuery("#wpc_field_country").val(mapspicker_country).trigger('change');
 
-                            jQuery("#wpc_latitude").val(mapspicker_latLgn.lat()).trigger('change');
-                            jQuery("#wpc_longitude").val(mapspicker_latLgn.lng()).trigger('change');
+                            jQuery("#wpc_field_latitude").val(mapspicker_latLgn.lat()).trigger('change');
+                            jQuery("#wpc_field_longitude").val(mapspicker_latLgn.lng()).trigger('change');
                         });
                     } else {
                         jQuery("#map_canvas_data").html("No results found");
