@@ -33,10 +33,10 @@ div.wpc_form_field {
     
     position: relative;
 }
-div.wpc_form_row_fullwidth {
-	width: 100%;
-}
 
+div.wpc_form_field_DateField {
+	margin-right: 10px;
+}
 .disabled  {
     display: none;
 }
