@@ -15,7 +15,7 @@ class TextField extends GenericField {
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"
                class="wpc_input wpc_input_text <?php if ($this->localized) echo "wpc_localized_input";?>"
-               name="<?php echo "wpc_$this->id"; ?>" id="<?php echo "wpc_$this->id"; ?>"
+               name="<?php echo "wpc_$this->id"; ?>"
                value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>"
                placeholder="<?php echo $this->hint; ?>" />
     <?php }

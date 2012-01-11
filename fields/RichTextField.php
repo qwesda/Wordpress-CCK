@@ -16,7 +16,7 @@ class RichTextField extends GenericField {
         else
             $content = "";
 
-        wp_editor($content, "wpc_field_$this->id", array('editor_class'=>'wpc_input wpc_input_richtext'));
+        wp_editor($content, "wpc_$this->id", array('editor_class'=>'wpc_input wpc_input_richtext'));
     }
 }
 
