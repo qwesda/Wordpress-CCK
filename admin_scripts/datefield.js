@@ -3,7 +3,7 @@
         $('a.wpc_input_date_edit_link').click(function(event) {
             event.preventDefault();
             $(this).parent().hide();
-            $(this).parent().next().show('fast');
+            $(this).parent().next().show();
         });
         $('a.wpc_input_date_edit_ok').click(function(event) {
             event.preventDefault();
