@@ -35,18 +35,22 @@ class WPCRelationCollection extends WPCCollection {
         global $wpc_relationships;
 
         $db_relationslug = $type."_".$othertype;
-        if (! isset($wpc_relationships[$db_relationslug]))
-            $db_relationslug = $othertype."_".$type;
         if (! isset($wpc_relationships[$db_relationslug])) {
-            // XXX: there should be an _error here!
-            _log("The relationship between $type and $othertype does not exist in the database.");
-            return null;
+            $db_relationslug = $othertype."_".$type;
+            $db_is_reverse = true;
+
+            if (! isset($wpc_relationships[$db_relationslug])) {
+                // XXX: there should be an _error here!
+                _log("The relationship between $type and $othertype does not exist in the database.");
+                return null;
+            }
         }
 
         $classname = ucfirst($type).ucfirst($othertype)."RelationRecords";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
               protected \$db_relationslug = '$db_relationslug';
+              protected \$db_is_reverse = $db_is_reverse;
             }";
             eval ($classdef);
         }
