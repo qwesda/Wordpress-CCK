@@ -83,7 +83,7 @@ class WPCRelationCollection extends WPCCollection {
         $relationship_id = $row["relationship_id"];
         if ($this->db_is_reverse) {
             list($type, $other_type) = explode($relationship_id);
-            $relationship_id = $othertype."_$type";
+            $relationship_id = $other_type."_$type";
         }
 
         return WPCRelation::new_relation(
