@@ -71,7 +71,7 @@ abstract class WPCRecord extends WPCData {
         $this->meta = get_post_custom($this->id);
     }
     protected function load_data() {
-        $this->post = get_post($this->id, 'ARRAY_A');
+        $this->data = get_post($this->id, 'ARRAY_A');
     }
 }
 
