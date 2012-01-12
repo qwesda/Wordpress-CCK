@@ -35,6 +35,8 @@ class WPCRelationCollection extends WPCCollection {
         global $wpc_relationships;
 
         $db_relationslug = $type."_".$othertype;
+        $db_is_reverse = false;
+
         if (! isset($wpc_relationships[$db_relationslug])) {
             $db_relationslug = $othertype."_".$type;
             $db_is_reverse = true;
