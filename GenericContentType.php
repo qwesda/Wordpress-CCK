@@ -258,7 +258,7 @@ abstract class GenericContentType {
         if( !empty($post) && $post->post_type == $this->id) {
             _ping();
     //      _log($post);
-          _log($_POST);
+    //      _log($_POST);
 
             $fields_to_update = array();
             $fields_to_remove = array();
