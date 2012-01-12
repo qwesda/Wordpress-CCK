@@ -765,7 +765,6 @@ abstract class GenericRelationship {
 								"<a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a> "
 							+ "</li>\n" + html_to_append;
                         }
-						console.log(relation_data);
 
                         if (ret.results.length == 0) {
                             html_to_append = "<div class='relations_info'>no "+relation_data.dstLabel+" connected yet<br>click on \"add connection\" to get started</div>";
