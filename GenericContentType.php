@@ -256,7 +256,7 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-            _ping();
+    //      _ping();
     //      _log($post);
     //      _log($_POST);
 
@@ -295,7 +295,7 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-            _ping();
+        //  _ping();
         //  _log($post);
 
 
