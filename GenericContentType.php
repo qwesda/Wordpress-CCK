@@ -258,7 +258,7 @@ abstract class GenericContentType {
         if( !empty($post) && $post->post_type == $this->id) {
             _ping();
     //      _log($post);
-    //      _log($_POST);
+          _log($_POST);
 
             $fields_to_update = array();
             $fields_to_remove = array();
@@ -268,7 +268,7 @@ abstract class GenericContentType {
                     $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
                 } elseif ( !empty($this->fields[$field_key]->default) ) {
                     $fields_to_update[$field_key] = $this->fields[$field_key]->default;
-                } elseif ( isset($_POST["wpc_$field_key"]) ) {
+                } else {
                     $fields_to_remove[$field_key] = true;
                 }
             }
