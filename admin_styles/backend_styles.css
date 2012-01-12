@@ -34,11 +34,16 @@ div.wpc_form_field {
     position: relative;
 }
 
+div.wpc_form_field_CheckBoxField {
+	margin-right: 10px;
+}
+
 div.wpc_form_field_DateField {
 	margin-right: 10px;
 	width: 250px;
-	min-height: 60px;
+	min-height: 30px;
 }
+
 .disabled  {
     display: none;
 }

@@ -15,6 +15,7 @@ require_once "WPCRelation.php";
 require_once "WPCRecordCollection.php";
 require_once "WPCRelationCollection.php";
 require_once "GenericContentType.php";
+require_once "GenericTaxonomy.php";
 require_once "GenericRelationship.php";
 require_once "GenericMetabox.php";
 require_once "GenericIndex.php";
@@ -58,6 +59,16 @@ class WPCustom {
 
 //  LOAD CONTENT TYPES
         foreach (glob($theme_dir . "/content_types/*.php") as $filename) {
+            $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+
+            require_once $filename;
+
+            $instance_name  = lcfirst($class_name);
+            $$instance_name = new $instance_name();
+        }
+
+//  LOAD TAXONOMIES
+        foreach (glob($theme_dir . "/taxonomies/*.php") as $filename) {
             $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
 
             require_once $filename;
@@ -141,7 +152,7 @@ class WPCustom {
         if ($post_type == 'page')
             return $items;
 
-        _log ('nav_menu_set_current');
+     #   _log ('nav_menu_set_current');
 
         $ancestor_ids = array();
         $parent_ids = array();

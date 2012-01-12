@@ -63,7 +63,9 @@ abstract class WPCCollection {
         // do only get results the first time it is called
         if (! isset($this->iterate_results))
             $this->iterate_results = $this->results();
+		
         $this->iterate_pointer = 0;
+		
         return $this;
     }
 
@@ -71,7 +73,7 @@ abstract class WPCCollection {
      * iterate over the fetched results (in iterate())
      * return false, if there are no more results.
      */
-    function next() {
+    function next () {
         // although against API, support next() w/o previous iterate().
         if (!isset ($this->iterate_results))
             $this->iterate();
@@ -83,12 +85,23 @@ abstract class WPCCollection {
     }
 
     /**
+     * gets the first result trough iterate() and next().
+     */
+    function first_record () {
+        $this->iterate();
+		
+		$ret = $this->next();
+		
+        return ( !empty($ret) ? $ret->other_record : NULL );
+    }
+
+    /**
      * order by column $col.
      * direction is either "ASC" or "DESC" for ascending or descending order. defaults to ASC.
      *
      * Note, right now, only wp_post columns are supported.
      */
-    function order_by($col, $dir="ASC"){
+    function order_by($col, $dir = "ASC"){
         if (! in_array($dir, array("ASC", "DESC"))) {
             // XXX: _error would be more appropriate
             _log("$dir is neither ASC nor DESC.");
@@ -289,7 +302,7 @@ abstract class WPCCollection {
             }
             $filter = $wpdb->prepare($filter."%s", $val);
         }
-        _log($filter);
+      #  _log($filter);
         return $filter;
     }
 

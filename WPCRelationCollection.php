@@ -60,7 +60,7 @@ class WPCRelationCollection extends WPCCollection {
     }
 
     function __construct() {
-        if (isset($db_relationslug))
+        if (isset($this->db_relationslug))
             $this->add_filter_('relationship_id', $this->db_relationslug);
     }
 
