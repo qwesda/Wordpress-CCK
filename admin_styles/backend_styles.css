@@ -36,9 +36,15 @@ div.wpc_form_field {
 
 div.wpc_form_field_DateField {
 	margin-right: 10px;
+	width: 250px;
+	min-height: 60px;
 }
 .disabled  {
     display: none;
+}
+
+input[disabled='disabled'] {
+	opacity: 0.4;
 }
 
 label.wpc_hint {
