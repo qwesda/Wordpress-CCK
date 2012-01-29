@@ -19,6 +19,7 @@ require_once "GenericTaxonomy.php";
 require_once "GenericRelationship.php";
 require_once "GenericMetabox.php";
 require_once "GenericIndex.php";
+require_once "OptionPage.php";
 
 global $wpc_version;
 global $wpc_db_version;
