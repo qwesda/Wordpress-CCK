@@ -1,12 +1,12 @@
-<?php 
+<?php
 
 /**
- * 
+ *
  */
 
 class CheckBoxField extends GenericField {
     function __construct ($parent, $params) {
-        parent::__construct ($parent, $params); 
+        parent::__construct ($parent, $params);
     }
 
 

@@ -20,8 +20,8 @@ class DateField extends GenericField {
             id="<?php echo "wpc_field_$this->id" ?>" value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>" />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
         <span class='wpc_input_date_date hide-if-no-js'>
-            <a class='wpc_input_date_edit_link' href='#'><span id="wpc_input_date_timestamp-<?php echo $this->id;?>"> 
-				<?php if ($post_data[$this->id] !== '') echo date_i18n(__('M, j Y'), mysql2date('U', $post_data[$this->id], false)); 
+            <a class='wpc_input_date_edit_link' href='#'><span id="wpc_input_date_timestamp-<?php echo $this->id;?>">
+				<?php if ($post_data[$this->id] !== '') echo date_i18n(__('M, j Y'), mysql2date('U', $post_data[$this->id], false));
 					  else echo _e('Set Date'); ?> </span></a>
         </span>
         <div class='wpc_input_date_edit_container hidden'>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  *
@@ -10,7 +10,7 @@ class TextField extends GenericField {
     }
 
 
-    function echo_field_core ($post_data = array ()) { 
+    function echo_field_core ($post_data = array ()) {
      ?>
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"

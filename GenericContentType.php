@@ -70,16 +70,16 @@ abstract class GenericContentType {
     function the_content ($input_content) {
         global $post;
         global $content;
-		
+
 		$content = $input_content;
-      
+
         $themes = get_themes();
         $theme  = get_current_theme();
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
         foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             if ($post->post_type == $this->id) {
-				
+
                 $content = _compile($filename);
             }
         }

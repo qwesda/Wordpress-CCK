@@ -7,14 +7,14 @@ $wpc_relationships = array();
 abstract class GenericRelationship {
     public $id                  	= "";
     public $fields              	= NULL;
-	
+
     public $label               	= "";
-	
+
     public $post_type_from_id   	= "";
     public $post_type_from      	= NULL;
     public $post_type_to_id     	= "";
     public $post_type_to        	= NULL;
-	
+
 	public $field_to_show_in_list	= "";
 
     function __construct () {
@@ -699,8 +699,8 @@ abstract class GenericRelationship {
                   data-rel-id = "<?php echo $wpc_relationship->id ?>"
                   data-src-id = "<?php echo $src_id ?>"
                   data-dst-id = "<?php echo $dst_id ?>"
-				  
-				  data-field-to-show-in-list = "<?php echo $wpc_relationship->field_to_show_in_list ?>"				  
+
+				  data-field-to-show-in-list = "<?php echo $wpc_relationship->field_to_show_in_list ?>"
 
                data-src-label = "<?php echo $src->label ?>"
                data-dst-label = "<?php echo $dst->label ?>"
@@ -758,8 +758,8 @@ abstract class GenericRelationship {
                         for (var i = ret.results.length - 1; i >= 0; i--) {
                             var result = ret.results[i];
 
-                            html_to_append = 
-							"<li data-relation_id='"+result.relation_id+"' data-data='"+json_encode(result)+"'>" + 
+                            html_to_append =
+							"<li data-relation_id='"+result.relation_id+"' data-data='"+json_encode(result)+"'>" +
 								(relation_data.fieldToShowInList != "" && result.metadata['field_'+relation_data.fieldToShowInList] != undefined ? "<span class='connected_item_info'>"+result.metadata['field_'+relation_data.fieldToShowInList]+"</span> " : "") +
 								"<a href='#' class='relation_connected_item'>"+result.post_title+"</a> " +
 								"<a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a> "

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 abstract class GenericMetabox {
     public $metabox_id      = NULL;
@@ -7,7 +7,7 @@ abstract class GenericMetabox {
 
     public $context         = "advanced";
     public $priority        = "high";
-    
+
     function __construct () {
 
 //  SET DEFAULTS
@@ -17,14 +17,14 @@ abstract class GenericMetabox {
     }
 
     function register_metabox() {
-        
+
     }
 
     function echo_metabox () {
         $this->content_type->first_metabox();
     }
 
-    
+
 }
 
 ?>

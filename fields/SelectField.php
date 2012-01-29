@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 /**
- * 
+ *
  */
 
 class SelectField extends GenericField {
@@ -9,8 +9,8 @@ class SelectField extends GenericField {
 
     function __construct ($parent, $params) {
         if ( !empty($params['options']) )   $this->options = $params['options'];
-        
-        parent::__construct ($parent, $params); 
+
+        parent::__construct ($parent, $params);
     }
 
 
