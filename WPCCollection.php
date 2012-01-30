@@ -98,8 +98,6 @@ abstract class WPCCollection {
     /**
      * order by column $col.
      * direction is either "ASC" or "DESC" for ascending or descending order. defaults to ASC.
-     *
-     * Note, right now, only wp_post columns are supported.
      */
     function order_by($col, $dir = "ASC"){
         if (! in_array($dir, array("ASC", "DESC"))) {
@@ -108,18 +106,22 @@ abstract class WPCCollection {
             return $this;
         }
 
-        if (! in_array($col, $this->table_cols)){
-            // XXX: _error would be more appropriate
-            _log("$col is no supported column to order by.");
-            return $this;
+        $new = clone($this);
+
+        // regular column
+        if (in_array($col, $this->table_cols))
+            $order_by_str = "t.$col $dir";
+
+        // meta column
+        else {
+            $table_alias = $new->join_with_metakey_ ($col, false, false);
+            $order_by_str = "$table_alias.meta_value $dir";
         }
 
-        $order_by_str = "t.$col $dir";
         if (in_array($order_by_str, $this->order_by))
             // we already order by this col
-            return $this;
+            return $new;
 
-        $new = clone($this);
         $new->order_by[] = $order_by_str;
         return $new;
     }
