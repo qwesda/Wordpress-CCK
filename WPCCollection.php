@@ -63,9 +63,9 @@ abstract class WPCCollection {
         // do only get results the first time it is called
         if (! isset($this->iterate_results))
             $this->iterate_results = $this->results();
-		
+
         $this->iterate_pointer = 0;
-		
+
         return $this;
     }
 
@@ -89,9 +89,9 @@ abstract class WPCCollection {
      */
     function first_record () {
         $this->iterate();
-		
+
 		$ret = $this->next();
-		
+
         return ( !empty($ret) ? $ret->other_record : NULL );
     }
 
@@ -164,18 +164,33 @@ abstract class WPCCollection {
         if (in_array($key, $this->table_cols))
             $this->where[] = $this->where_clause("t.$key", $val, $op);
         else {
-            $join_ix = count($this->join);
-            $alias = "wpcj$join_ix";
-            $this->join[$join_ix] = "INNER JOIN $this->meta_table AS $alias
-                ON $alias.$this->meta_fk = t.$this->table_pk";
-
-            $filter = $wpdb->prepare("$alias.meta_key = %s AND ", $key);
-            $filter.= $this->where_clause("$alias.meta_value", $val, $op);
-            $this->where[] = $filter;
+            $alias = $this->join_with_metakey_($key);
+            $this->where[] = $this->where_clause("$alias.meta_value", $val, $op);
         }
 
         // invalidate iterate_results
         unset($this->iterate_results);
+    }
+
+    /**
+     * adds a join clause inplace.
+     * $metakey is a key in the meta table.
+     *
+     * returns the table alias.
+     */
+    function join_with_metakey_($metakey) {
+      global $wpdb;
+      $alias = "wpcj$metakey";
+
+      // simply overwrite possibly existing join.
+      $this->join[$alias] = "INNER JOIN $this->meta_table AS $alias
+        ON ($alias.$this->meta_fk = t.$this->table_pk
+            AND ".$wpdb->prepare("$alias.meta_key = %s", $metakey).")";
+
+      //invalidate iterate_results
+      unset($this->iterate_results);
+
+      return $alias;
     }
 
     /**
