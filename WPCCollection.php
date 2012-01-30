@@ -175,17 +175,27 @@ abstract class WPCCollection {
     /**
      * adds a join clause inplace.
      * $metakey is a key in the meta table.
+     * $inner specifies, whether this should be an inner or outer (left) join
+     * (defaults to inner join).
+     * might overwrite an existing join, if $overwrite is true (default).
      *
      * returns the table alias.
      */
-    function join_with_metakey_($metakey) {
+    function join_with_metakey_($metakey, $inner=true, $overwrite=true) {
       global $wpdb;
       $alias = "wpcj$metakey";
+      if (! $overwrite)
+          if (array_key_exists($alias, $this->join))
+              return $alias;
+
+      $joinstr = $inner? "INNER" : "LEFT";
+      $joinstr.= " JOIN $this->meta_table AS $alias
+          ON ($alias.$this->meta_fk = t.$this->table_pk
+              AND ".$wpdb->prepare("$alias.meta_key = %s", $metakey).")";
+
 
       // simply overwrite possibly existing join.
-      $this->join[$alias] = "INNER JOIN $this->meta_table AS $alias
-        ON ($alias.$this->meta_fk = t.$this->table_pk
-            AND ".$wpdb->prepare("$alias.meta_key = %s", $metakey).")";
+      $this->join[$alias] = $joinstr;
 
       //invalidate iterate_results
       unset($this->iterate_results);
