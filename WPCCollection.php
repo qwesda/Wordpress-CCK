@@ -35,6 +35,12 @@ abstract class WPCCollection {
     protected $order_by = array();
 
     /**
+     * the callback to sort by, if needed.
+     * should be a usort()-like comparision function.
+     */
+    protected $sort_by_callback = false;
+
+    /**
      * the offset number
      */
     protected $offset = null;
@@ -96,33 +102,46 @@ abstract class WPCCollection {
     }
 
     /**
-     * order by column $col.
+     * order by column or callback $c.
      * direction is either "ASC" or "DESC" for ascending or descending order. defaults to ASC.
+     *
+     * A callback is assumed to conform to usort().
      */
-    function order_by($col, $dir = "ASC"){
+    function order_by($c, $dir = "ASC"){
         if (! in_array($dir, array("ASC", "DESC"))) {
             // XXX: _error would be more appropriate
-            _log("$dir is neither ASC nor DESC.");
+            _log("$dir is neither ASC nor DESC. Ignoring Order By clause.");
             return $this;
         }
 
         $new = clone($this);
 
-        // regular column
-        if (in_array($col, $this->table_cols))
-            $order_by_str = "t.$col $dir";
-
-        // meta column
-        else {
-            $table_alias = $new->join_with_metakey_ ($col, false, false);
-            $order_by_str = "$table_alias.meta_value $dir";
+        // callback
+        if (is_callable($c)) {
+            if (! empty($this->order_by))
+                _log('You cannot have both: sorting with SQL and sorting with callback. Callback sorting will win.');
+            $this->sort_by_cb = $c;
         }
+        else {
+            if ($this->sort_by_cb)
+                _log('You cannot have both: sorting with SQL and sorting with callback. This Sorting will most likely have no effect.');
 
-        if (in_array($order_by_str, $this->order_by))
-            // we already order by this col
-            return $new;
+            // regular column
+            if (in_array($c, $this->table_cols))
+                $order_by_str = "t.$c $dir";
 
-        $new->order_by[] = $order_by_str;
+            // meta column
+            else {
+                $table_alias = $new->join_with_metakey_($c, false, false);
+                $order_by_str = "$table_alias.meta_value $dir";
+            }
+
+            if (in_array($order_by_str, $this->order_by))
+                // we already order by this col
+                return $new;
+
+            $new->order_by[] = $order_by_str;
+        }
         return $new;
     }
 
@@ -276,6 +295,12 @@ abstract class WPCCollection {
                 "$this->table"   => $r,
                 "meta"           => $meta
             );
+
+        // sort with callback if given
+        // this is suboptimal. usort uses quicksort. so if the db presorts,
+        // it will hit quicksorts worst case performance O(n²).
+        if ($this->sort_with_cb)
+            $res = usort($res, $this->sort_with_cb);
 
         return $res;
     }
