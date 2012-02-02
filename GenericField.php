@@ -8,11 +8,11 @@ abstract class GenericField {
     public $label           = "";
     public $default         = "";
     public $hint            = "";
-	
+
     public $required        = FALSE;
 
     /**
-     * set to true to have qtranslate-like localization (e.g. [:en]english text[:de]german text[
+     * set to true to have qtranslate-like localization (e.g. [:en]english text[:de]german text)
      */
     public $localized = false;
 
@@ -32,7 +32,7 @@ abstract class GenericField {
             $parent->fields[$this->id] = $this;
             $this->parent   = $parent;
         }
-		
+
 		if ( !empty($params->required) ) {
 			$this->required = true;
 		}
