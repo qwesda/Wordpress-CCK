@@ -33,9 +33,9 @@ abstract class GenericField {
             $this->parent   = $parent;
         }
 
-		if ( !empty($params->required) ) {
-			$this->required = true;
-		}
+        if ( !empty($params->required) ) {
+            $this->required = true;
+        }
     }
 
     abstract function echo_field_core ($post_data = array());
