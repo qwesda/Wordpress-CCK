@@ -299,7 +299,7 @@ abstract class WPCCollection {
         // sort with callback if given
         // this is suboptimal. usort uses quicksort. so if the db presorts,
         // it will hit quicksorts worst case performance O(n²).
-        if ($this->sort_with_cb)
+        if (!empty($this->sort_with_cb))
             $res = usort($res, $this->sort_with_cb);
 
         return $res;
