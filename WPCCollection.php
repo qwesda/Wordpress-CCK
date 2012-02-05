@@ -288,8 +288,9 @@ abstract class WPCCollection {
 			
             if (! empty($row["meta_value"])) {
 				if ( empty( $meta[$row["meta_key"]] ) )	$meta[$row["meta_key"]] = $row["meta_value"];
+				elseif (is_array ($meta[$row["meta_key"]]) ) array_push($meta[$row["meta_key"]], $row["meta_value"]);
+				else $meta[$row["meta_key"]] = array($meta[$row["meta_key"]], $row["meta_value"]);
 			}
-            #  array_push($meta, array($row["meta_key"] => $row["meta_value"]));
         }
         // add the last completed record
         if ($cur_id != -1)
