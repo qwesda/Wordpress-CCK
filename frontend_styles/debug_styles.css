@@ -1,0 +1,23 @@
+/* @override 
+	https://dev.topoi.hu-berlin.de/fdcl/*
+	http://dev.topoi.hu-berlin.de/fdcl/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
+	http://dev.fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/frontend_styles/debug_styles.css?ver=3.3.1
+*/
+
+table.var_dump {
+	font-size: 9pt;
+	font-family: "Menlo", "Courier New", Courier, mono;
+}
+
+span.var_type {
+	font-style: italic;
+	opacity: 0.6;
+}
+
+span.var_ellipsis {
+	font-weight: bold;
+}
+
+span.var_name {
+	font-weight: bold;
+}
