@@ -285,8 +285,11 @@ abstract class WPCCollection {
                 foreach (array("meta_key", "meta_value") as $metakey)
                     unset($r[$metakey]);
             }
-            if (! empty($row["meta_value"]))
-              array_push($meta, array($row["meta_key"] => $row["meta_value"]));
+			
+            if (! empty($row["meta_value"])) {
+				if ( empty( $meta[$row["meta_key"]] ) )	$meta[$row["meta_key"]] = $row["meta_value"];
+			}
+            #  array_push($meta, array($row["meta_key"] => $row["meta_value"]));
         }
         // add the last completed record
         if ($cur_id != -1)
