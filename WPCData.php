@@ -182,5 +182,46 @@ abstract class WPCData {
 
         eval($classdef);
     }
+
+
+	protected function sub_dump($key, $val) {
+		$type = gettype($key);
+			
+		switch (gettype($val)) {
+			case 'string':
+?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php echo substr($val, 0, 100); if (strlen($val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
+				break;
+			default:
+?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$value; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
+				break;
+		}
+	}
+
+    public function dump() {
+        if (empty($this->meta))
+            $this->load_meta();
+
+        if (empty($this->meta))
+            $this->load_meta();
+	 
+	   	?><div class="var_dump">
+	   		<span class="var_typeslug" ><?php echo $this->typeslug ?></span>
+			<h3 class="var_dump_heading">Data</h3>
+			<table border="0" cellspacing="5" cellpadding="5" class="var_dump">
+			<?php foreach ($this->data as $key => $value) {
+				$this->sub_dump($key, $value);
+			} ?>
+			</table>
+
+			<h3 class="var_dump_heading">Meta</h3>
+			<table border="0" cellspacing="5" cellpadding="5" class="var_dump">
+			<?php foreach ($this->meta as $key => $value) {
+				$this->sub_dump($key, $value);
+			} ?>
+			</table>
+			
+	   	<div><?php
+    }
+
 }
 ?>
