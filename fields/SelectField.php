@@ -13,7 +13,6 @@ class SelectField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-
     function echo_field_core ($post_data = array ()) {  ?>
         <select id="<?php echo "wpc_field_$this->id" ?>" class="wpc_input wpc_input_select"   name="<?php echo "wpc_$this->id" ?>" width="100%">
             <option value=""></option>
