@@ -9,7 +9,6 @@ class DateField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-
     /**
      * the non-js-version is not localized at all. it would need a save-hook to convert the localized date back.
      * the js-version is partly localized. it needs a date_format in js.

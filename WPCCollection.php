@@ -123,7 +123,7 @@ abstract class WPCCollection {
             $this->sort_by_cb = $c;
         }
         else {
-            if ($this->sort_by_cb)
+            if (!empty($this->sort_by_cb))
                 _log('You cannot have both: sorting with SQL and sorting with callback. This Sorting will most likely have no effect.');
 
             // regular column
@@ -251,7 +251,7 @@ abstract class WPCCollection {
         }
         $sql.= ";";
 
-        _log("SQL query about to execute:\n$sql");
+     #   _log("SQL query about to execute:\n$sql");
 
         $res = array();
 
@@ -285,8 +285,12 @@ abstract class WPCCollection {
                 foreach (array("meta_key", "meta_value") as $metakey)
                     unset($r[$metakey]);
             }
-            if (! empty($row["meta_value"]))
-              array_push($meta, array($row["meta_key"] => $row["meta_value"]));
+
+            if (! empty($row["meta_value"])) {
+				if ( empty( $meta[$row["meta_key"]] ) )	$meta[$row["meta_key"]] = $row["meta_value"];
+				elseif (is_array ($meta[$row["meta_key"]]) ) array_push($meta[$row["meta_key"]], $row["meta_value"]);
+				else $meta[$row["meta_key"]] = array($meta[$row["meta_key"]], $row["meta_value"]);
+			}
         }
         // add the last completed record
         if ($cur_id != -1)
@@ -299,7 +303,7 @@ abstract class WPCCollection {
         // sort with callback if given
         // this is suboptimal. usort uses quicksort. so if the db presorts,
         // it will hit quicksorts worst case performance O(n²).
-        if ($this->sort_with_cb)
+        if (!empty($this->sort_with_cb))
             $res = usort($res, $this->sort_with_cb);
 
         return $res;

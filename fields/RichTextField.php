@@ -9,7 +9,6 @@ class RichTextField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-
     function echo_field_core ($post_data = array ()) {
         if (isset($post_data[$this->id]))
             $content = $post_data[$this->id];

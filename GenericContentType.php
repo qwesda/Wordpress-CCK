@@ -16,6 +16,7 @@ abstract class GenericContentType {
     private $current_post_data  = array();
 
     function __construct () {
+		global $wpdb;
         global $wpc_content_types;
 
 //  SET DEFAULTS
@@ -25,8 +26,7 @@ abstract class GenericContentType {
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
         if ( empty($this->slug) )           $this->slug             = $this->id;
 
-        if ( empty($this->supports) )       $this->supports         = array ('title','editor');
-
+        if ( empty($this->supports) )       $this->supports         = array ('title','editor','excerpt');
 
         if ( in_array($this->id, get_post_types()) ) {
             die ("wpc content_type \"$this->id\" is not unique");

@@ -9,7 +9,6 @@ class TextField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-
     function echo_field_core ($post_data = array ()) {
      ?>
         <input type="text"
