@@ -399,10 +399,3 @@ div.wpc_form_field_RichTextField {
 	margin-bottom: 15px;
 	margin-right: -5px;
 }
-
-.wpc_localized_input_en:before {
-  content:"en:";
-}
-.wpc_localized_input_de:before {
-  content:"de:";
-}
