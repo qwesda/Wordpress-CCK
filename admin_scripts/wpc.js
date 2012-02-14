@@ -1,3 +1,9 @@
+if (wpc.get_surrounding_metabox == undefined) {
+  wpc.get_surrounding_metabox = function(element) {
+    return element.parents(".postbox");
+  };
+}
+
 // add Array.some function if not supported natively (IE9)
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/some
 if (!Array.prototype.some) {

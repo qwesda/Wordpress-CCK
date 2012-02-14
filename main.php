@@ -114,6 +114,20 @@ class WPCustom {
     }
 
     function custom_print_scripts () {
+        // add wpc-object for javascript
+        // TODO: this should check for qtranslate and set it to array() if not loaded.
+        $languages = array("de", "en");
+        foreach ($languages as &$lang)
+            $lang = "'$lang'";
+        ?>
+        <script type='text/javascript'>
+            wpc = {
+                enabled_languages: [<?php echo join(", ", $languages);?>],
+                default_language:  <?php echo $languages[0];?>
+            };
+
+        </script>
+        <?php
         loadScriptsInPathWithIDPrefix   ("admin_libraries",    "core_admin_libraries");
         loadScriptsInPathWithIDPrefix   ("admin_scripts",      "core_admin_scripts");
     }
