@@ -44,7 +44,7 @@ if (wpc.enabled_languages.length > 0) {
           lang_texts = text.split(/\[:\w\w\]/).slice(1);
         } else if (text.match(/^<!--:\w\w-->/g)) {
           langs = text.match(/<!--:\w\w-->/g).map(function (l) {return l.slice(5,7);});
-          lang_texts = text.replace(/^<!--:\w\w-->(.*)<!--:-->$/, "$1").split(/<!--:--><!--:\w\w-->/g);
+          lang_texts = text.replace(/^<!--:\w\w-->([\s\S]*)<!--:-->$/, "$1").split(/<!--:--><!--:\w\w-->/g);
         } else {
           // if string is not localized, assume the text is in the default lang
           langs = [wpc.default_language];
