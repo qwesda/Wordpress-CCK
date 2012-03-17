@@ -9,18 +9,6 @@ Version: 1.0
 
 require_once "helper.php";
 
-require_once "GenericField.php";
-require_once "WPCRecord.php";
-require_once "WPCRelation.php";
-require_once "WPCRecordCollection.php";
-require_once "WPCRelationCollection.php";
-require_once "GenericContentType.php";
-require_once "GenericTaxonomy.php";
-require_once "GenericRelationship.php";
-require_once "GenericMetabox.php";
-require_once "GenericIndex.php";
-require_once "OptionPage.php";
-
 global $wpc_version;
 global $wpc_db_version;
 
@@ -29,6 +17,9 @@ $wpc_db_version = "1.0";
 
 class WPCustom {
     function __construct () {
+        // setup autoloading of class files
+        spl_autoload_register(array(__CLASS__, 'autoload'));
+
 //  SETUP HOOKS
         add_action("init",                  array($this, "init") );
 
@@ -126,6 +117,20 @@ class WPCustom {
     }
 
     function custom_print_scripts () {
+        // add wpc-object for javascript
+        // TODO: this should check for qtranslate and set it to array() if not loaded.
+        $languages = array("de", "en");
+        foreach ($languages as &$lang)
+            $lang = "'$lang'";
+        ?>
+        <script type='text/javascript'>
+            wpc = {
+                enabled_languages: [<?php echo join(", ", $languages);?>],
+                default_language:  <?php echo $languages[0];?>
+            };
+
+        </script>
+        <?php
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_libraries",    "core_admin_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_scripts",      "core_admin_scripts");
     }
@@ -203,6 +208,18 @@ class WPCustom {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * autoload files in this directory as well as in fields/
+     *
+     * With namespaces, this would not be necessary.
+     */
+    static public function autoload($name) {
+        if (@file_exists(dirname(__FILE__)."/$name.php"))
+            include_once dirname(__FILE__)."/$name.php";
+        else if (@file_exists(dirname(__FILE__)."/fields/$name.php"))
+            include_once dirname(__FILE__)."/fields/$name.php";
     }
 }
 

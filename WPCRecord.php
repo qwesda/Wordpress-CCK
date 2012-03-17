@@ -1,7 +1,5 @@
 <?php
 
-require_once('WPCData.php');
-
 /**
  * The base class for records of a content type.
  */
