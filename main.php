@@ -99,6 +99,9 @@ class WPCustom {
         }
 
 
+        loadStylesInPathWithIDPrefix    ($theme_dir . "/frontend_styles",       "theme_frontend_styles");
+
+
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
             GenericRelationship::hookup_ajax_functions();
@@ -123,23 +126,27 @@ class WPCustom {
     }
 
     function custom_print_scripts () {
-        loadScriptsInPathWithIDPrefix   ("admin_libraries",    "core_admin_libraries");
-        loadScriptsInPathWithIDPrefix   ("admin_scripts",      "core_admin_scripts");
+        loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_libraries",    "core_admin_libraries");
+        loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_scripts",      "core_admin_scripts");
     }
 
     function custom_print_styles () {
-        loadStylesInPathWithIDPrefix    ("admin_styles",       "core_admin_styles");
+        loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",       "core_admin_styles");
     }
 
     function custom_wp_print_scripts () {
         wp_enqueue_script("jquery");
 
-        loadScriptsInPathWithIDPrefix   ("frontend_libraries", "core_frontend_libraries");
-        loadScriptsInPathWithIDPrefix   ("frontend_scripts",   "core_frontend_scripts");
+        loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_libraries", "core_frontend_libraries");
+        loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_scripts",   "core_frontend_scripts");
     }
 
     function custom_wp_print_styles () {
-        loadStylesInPathWithIDPrefix    ("frontend_styles",    "core_frontend_styles");
+        $themes = get_themes();
+        $theme  = get_current_theme();
+        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
+        loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_styles",    "core_frontend_styles");
     }
 
     static function nav_menu_set_current($items, $menu, $args) {

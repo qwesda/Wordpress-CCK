@@ -1,8 +1,18 @@
 /* @override 
 	https://dev.topoi.hu-berlin.de/fdcl/*
 	http://dev.topoi.hu-berlin.de/fdcl/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
+	http://dev.fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
 */
 
+a.wpc_input_date_edit_link {
+	padding-top: 4px;
+	height: 22px;
+	display: inline-block;
+}
+
+span.wpc_input_date_edit_container {
+	
+}
 div.wpc_form_row_header {
     clear: both;
     
@@ -40,7 +50,6 @@ div.wpc_form_field_CheckBoxField {
 
 div.wpc_form_field_DateField {
 	margin-right: 10px;
-	width: 250px;
 	min-height: 30px;
 }
 

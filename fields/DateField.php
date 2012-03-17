@@ -23,7 +23,7 @@ class DateField extends GenericField {
 				<?php if ($post_data[$this->id] !== '') echo date_i18n(__('M, j Y'), mysql2date('U', $post_data[$this->id], false));
 					  else echo _e('Set Date'); ?> </span></a>
         </span>
-        <div class='wpc_input_date_edit_container hidden'>
+        <span class='wpc_input_date_edit_container hidden'>
             <?php
             $m = $d = $y = '';
             if ($post_data[$this->id] !== '') {
@@ -45,7 +45,7 @@ class DateField extends GenericField {
             printf(__('%1$s %2$s, %3$s'), $month, $day, $year);
             ?> <a id='wpc_input_date_edit_ok-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_ok'><?php _e('OK')?></a>
             <a id='wpc_input_date_edit_cancel-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_cancel'><?php _e('cancel')?></a>
-        </div>
+        </span>
     <?php }
 }
 
