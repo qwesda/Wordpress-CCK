@@ -294,8 +294,8 @@ abstract class WPCCollection {
 
                 // copy the row and remove meta-fields
                 $r = $row;
-                foreach (array("meta_key", "meta_value") as $metakey)
-                    unset($r[$metakey]);
+		unset($r["meta_key"]);
+		unset($r["meta_value"]);
             }
 
             if (! empty($row["meta_value"])) {
