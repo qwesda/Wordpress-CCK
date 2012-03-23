@@ -13,7 +13,7 @@ global $wpc_version;
 global $wpc_db_version;
 
 $wpc_version    = "1.0";
-$wpc_db_version = "1.0";
+$wpc_db_version = "1.1";
 
 class WPCustom {
     function __construct () {
@@ -21,13 +21,15 @@ class WPCustom {
         spl_autoload_register(array(__CLASS__, 'autoload'));
 
 //  SETUP HOOKS
+        register_activation_hook(__CLASS__, array($this, 'wpc_install'));
+
         add_action("init",                  array($this, "init") );
+        add_action('plugins_loaded',        array($this, "plugins_loaded"));
 
         add_action('admin_print_scripts',   array($this, "custom_print_scripts") );
         add_action('admin_print_styles',    array($this, "custom_print_styles") );
 
         add_action('widgets_init',          array($this, "widgets_init") );
-
 
         // register hook to set current item in nav menus (default priority)
         add_filter('wp_get_nav_menu_items', array($this, "nav_menu_set_current"), 10, 3);
@@ -96,6 +98,63 @@ class WPCustom {
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
             GenericRelationship::hookup_ajax_functions();
+        }
+    }
+
+    function wpc_install() {
+        $this->db_install();
+        add_option("wpc_db_version", $wpc_db_version);
+    }
+
+    function db_install() {
+        global $wpdb;
+        global $wpc_db_version;
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations` (
+            `relation_id` bigint(20) unsigned NOT NULL auto_increment,
+            `post_from_id` bigint(20) unsigned NOT NULL,
+            `post_to_id` bigint(20) unsigned NOT NULL,
+            `relationship_id` varchar(255) NOT NULL default '',
+            PRIMARY KEY  `relation_id` (`relation_id`),
+                KEY `post_from_id`  (`post_from_id`),
+                KEY `post_to_id` (`post_to_id`),
+                KEY `relationship_id` (`relationship_id`)
+            );";
+
+        dbDelta($sql);
+
+        $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations_meta` (
+            `meta_id` bigint(20) unsigned NOT NULL auto_increment,
+            `relation_id` bigint(20) unsigned NOT NULL,
+            `meta_key` varchar(255) default NULL,
+            `meta_value` longtext,
+            PRIMARY KEY  `meta_id` (`meta_id`),
+                KEY `relation_id` (`relation_id`),
+                KEY `meta_key` (`meta_key`)
+            );
+        );";
+
+        dbDelta($sql);
+    }
+
+    function plugins_loaded() {
+        global $wpdb;
+        global $wpc_db_version;
+
+        $old_db_version = get_option("wpc_db_version");
+        if ($old_db_version != $wpc_db_version) {
+            $this->db_install();
+
+            // the plugin had a bug until db_version 1.0 where all relation's
+            // meta keys had "field_" appended
+            if ($old_db_version == 1.0) {
+                $query = "UPDATE {$wpdb->prefix}wpc_relations_meta
+                    SET meta_key=SUBSTR(meta_key,7)
+                    WHERE LEFT(meta_key,6)='field_';";
+                $wpdb->query($query);
+            }
+            update_option("wpc_db_version", $wpc_db_version);
         }
     }
 
@@ -224,47 +283,4 @@ class WPCustom {
 }
 
 $WPCustom = new WPCustom();
-
-
-function wpc_install() {
-    global $wpdb;
-    global $wpc_version;
-    global $wpc_db_version;
-
-    _ping();
-    _log("wpc_install - version: $wpc_db_version");
-
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-    $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations` (
-                `relation_id` bigint(20) unsigned NOT NULL auto_increment,
-                `post_from_id` bigint(20) unsigned NOT NULL,
-                `post_to_id` bigint(20) unsigned NOT NULL,
-                `relationship_id` varchar(255) NOT NULL default '',
-                PRIMARY KEY  `relation_id` (`relation_id`),
-                KEY `post_from_id`  (`post_from_id`),
-                KEY `post_to_id` (`post_to_id`),
-                KEY `relationship_id` (`relationship_id`)
-                );";
-
-    dbDelta($sql);
-
-    $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations_meta` (
-                `meta_id` bigint(20) unsigned NOT NULL auto_increment,
-                `relation_id` bigint(20) unsigned NOT NULL,
-                `meta_key` varchar(255) default NULL,
-                `meta_value` longtext,
-                PRIMARY KEY  `meta_id` (`meta_id`),
-                KEY `relation_id` (`relation_id`),
-                KEY `meta_key` (`meta_key`)
-            );
-        );";
-
-    dbDelta($sql);
-
-    add_option("wpc_db_version",    $wpc_db_version);
-}
-
-register_activation_hook(__FILE__, 'wpc_install');
-
 ?>
