@@ -4,15 +4,15 @@ global $wpc_relationships;
 $wpc_relationships = array();
 
 abstract class GenericRelationship {
-    public $id                      = "";
-    public $fields                  = NULL;
+    public $id                    = "";
+    public $fields                = NULL;
 
-    public $label                   = "";
+    public $label                 = "";
 
-    public $post_type_from_id       = "";
-    public $post_type_from          = NULL;
-    public $post_type_to_id         = "";
-    public $post_type_to            = NULL;
+    public $post_type_from_id     = "";
+    public $post_type_from        = NULL;
+    public $post_type_to_id       = "";
+    public $post_type_to          = NULL;
 
     public $field_to_show_in_list	= "";
 
@@ -225,7 +225,7 @@ abstract class GenericRelationship {
         } else {
             $ret->errors[] = "neither from_id nor to_id were specified";
         }
-        
+
         if ( !empty($id) ) {
             $sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
               JOIN $wpdb->posts ON $wpdb->posts.id = wp_wpc_relations.$othercol
