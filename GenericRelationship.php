@@ -897,9 +897,6 @@ _log($req);
         } else if (empty($rel->relation_id)) {
             $ret->errors[] = "relation_id has invalid value '$rel->relation_id'";
         } else {
-            #ibotty: there is a race between these two lines. hope, this does not matter. MYISAM does not support transactions...
-            #qwesda: don't understand you mean ...
-
             $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
 
             if ( !empty($req->metadata) ) {
