@@ -46,6 +46,11 @@ class WPCustom {
         $theme  = get_current_theme();
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
+//  LOAD HELPERS
+        foreach (glob($theme_dir . "/helpers/*.php") as $filename) {
+            require_once $filename;
+        }
+
 //  LOAD FIELS
         foreach (glob(__DIR__ . "/fields/*.php") as $filename) {
             require_once $filename;
