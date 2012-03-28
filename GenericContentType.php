@@ -27,6 +27,7 @@ abstract class GenericContentType {
         if ( empty($this->slug) )           $this->slug             = $this->id;
 
         if ( empty($this->supports) )       $this->supports         = array ('title','editor','excerpt');
+        if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
         if ( in_array($this->id, get_post_types()) ) {
             die ("wpc content_type \"$this->id\" is not unique");
@@ -49,6 +50,7 @@ abstract class GenericContentType {
             'rewrite' => array("slug" => $this->slug),
             'query_var' => $this->slug,
             'supports' => $this->supports,
+            'taxonomies' => $this->taxonomies,
             'register_meta_box_cb' => array(&$this, "add_meta_boxes")
         ) );
 
