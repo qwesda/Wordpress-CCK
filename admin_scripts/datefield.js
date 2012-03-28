@@ -12,6 +12,10 @@
             var d = $("#wpc_input_date_d-"+id).val();
             var m = $("#wpc_input_date_m-"+id).val();
             var Y = $("#wpc_input_date_y-"+id).val();
+			
+			m = (m < 10 ? '0' : '') + m;
+			d = (d < 10 ? '0' : '') + d;
+			
             $("input[name='wpc_"+id+"']").val(Y+'-'+m+'-'+d);
             $("#wpc_input_date_timestamp-"+id).html(Y+'-'+m+'-'+d);
             $(this).parent().prev().show();
