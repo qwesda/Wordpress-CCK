@@ -83,8 +83,8 @@
         if(!document.getElementById("map_canvas"))
             return ;
 
-        var lat = jQuery("#wpc_latitude").val();
-        var lng = jQuery("#wpc_longitude").val();
+        var lat = jQuery("#wpc_field_latitude").val();
+        var lng = jQuery("#wpc_field_longitude").val();
 
         if(isNaN(parseFloat(lat)) || lat == 0)  lat = 52.51456249417806;
         if(isNaN(parseFloat(lng)) || lng == 0)  lng = 13.350002031326355;
