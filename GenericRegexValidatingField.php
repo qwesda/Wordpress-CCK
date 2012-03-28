@@ -75,6 +75,9 @@ abstract class GenericRegexValidatingField extends GenericField {
         //echo "<span class='wpc_regexval_display_val'>";
         if ($post_data[$this->id] !== '')
             echo $this->display_value($post_data[$this->id]);
+		else {
+			echo "set value";
+		}
         _log($this->display_value($post_data[$this->id]));
         //echo "</span>";
         echo "</span>\n";

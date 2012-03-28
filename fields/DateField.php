@@ -3,17 +3,6 @@
 /**
  *
  */
-class DateField extends GenericRegexValidatingField {
-    protected $replacements = array(
-        array(
-            '/^(\d|[012]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|[1-9]|1[012]) (\d{4})$/',
-            'function(str, day, month, year) { return mysqldate(new Date(str)); }',
-            'false'),
-        array(
-            '/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|[1-9]|1[012]) (\d|[012]\d|3[01]), (\d{4})$/',
-            'function(str, month, day, year) { return mysqldate(new Date(str)); }',
-            'false')
-        );
 
 class DateField extends GenericField {
     function __construct ($parent, $params) {
@@ -34,7 +23,7 @@ class DateField extends GenericField {
 				<?php if ($post_data[$this->id] !== '') echo date_i18n(__('M, j Y'), mysql2date('U', $post_data[$this->id], false));
 					  else echo _e('Set Date'); ?> </span></a>
         </span>
-        <span class='wpc_input_date_edit_container hidden'>
+        <div class='wpc_input_date_edit_container hidden'>
             <?php
             $m = $d = $y = '';
             if ($post_data[$this->id] !== '') {
@@ -56,7 +45,8 @@ class DateField extends GenericField {
             printf(__('%1$s %2$s, %3$s'), $month, $day, $year);
             ?> <a id='wpc_input_date_edit_ok-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_ok'><?php _e('OK')?></a>
             <a id='wpc_input_date_edit_cancel-<?php echo $this->id;?>' href='#' class='wpc_input_date_edit_cancel'><?php _e('cancel')?></a>
-        </span>
+        </div>
     <?php }
 }
+
 ?>
