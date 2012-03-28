@@ -1,6 +1,5 @@
 <?php
 
-
 global $wpc_relationships;
 $wpc_relationships = array();
 
@@ -183,7 +182,7 @@ abstract class GenericRelationship {
                                 jQuery("#relation_edit_connected_metadata_box .wpc_input:first").focus();
 
                                 for (var metadata_key in selected_item_data.data.metadata){
-                                    jQuery('#wpc_'+selected_relation_data.relId+'_'+metadata_key).val(selected_item_data.data.metadata[metadata_key]);
+                                    jQuery('#wpc_'+selected_relation_data.relId+'_field_'+metadata_key).val(selected_item_data.data.metadata[metadata_key]);
                                 }
                             }
 
@@ -241,7 +240,7 @@ abstract class GenericRelationship {
                 <div class="relation_nav_bar"></div><div class="clear"></div>
 
                 <div>
-                    <input type="text" class="wpc_input_text" id="relation_src_search" placeholder="search"/>
+                    <input type="text" class="wpc_input_text" id="relation_src_search" />
                     <label class="wpc_hint" for="relation_src_search" id="wpc_input_text_hint">search for existing item</label> or
                     <a id='relation_connected_add_new' class="button" href='#'>connect new item</a>
                 </div>
@@ -425,7 +424,7 @@ abstract class GenericRelationship {
                         for (var i = metadata_fields.length - 1; i >= 0; i--) {
                             var metadata_field = jQuery(metadata_fields[i]);
 
-                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_field_", "")
 
                             data.metadata[metadata_key] = metadata_field.val();
                         };
@@ -533,8 +532,8 @@ abstract class GenericRelationship {
 
                         for (var i = metadata_fields.length - 1; i >= 0; i--) {
                             var metadata_field = jQuery(metadata_fields[i]);
-
-                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+							
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_field_", "")
 
                             data.metadata[metadata_key] = metadata_field.val();
                         };
@@ -588,7 +587,7 @@ abstract class GenericRelationship {
                 <div class="relation_nav_bar"></div><div class="clear"></div>
 
                 <div>
-                    <input type="text" class="wpc_input wpc_input_text" id="new_item_title" placeholder="title"/>
+                    <input type="text" class="wpc_input wpc_input_text" id="new_item_title" />
                     <label class="wpc_hint" for="new_item_title" id="wpc_input_text_hint">title for the new item</label>
                 </div>
 
@@ -621,7 +620,7 @@ abstract class GenericRelationship {
                         for (var i = metadata_fields.length - 1; i >= 0; i--) {
                             var metadata_field = jQuery(metadata_fields[i]);
 
-                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_", "")
+                            metadata_key = metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_field_", "")
 
                             if ( metadata_key != "new_item_title") {
                                 data.metadata[metadata_key] = metadata_field.val();
@@ -724,7 +723,7 @@ abstract class GenericRelationship {
                 var selected_relation = jQuery("#relation_selector option:selected");
                 var relation_data = selected_relation.data()
 
-                jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.srcLabel + ' to add');
+                jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.dstLabel + ' to add');
 
 
                 goto_box('relation_connected_box','','');
@@ -760,7 +759,7 @@ abstract class GenericRelationship {
 
                             html_to_append =
 							"<li data-relation_id='"+result.relation_id+"' data-data='"+json_encode(result)+"'>" +
-								(relation_data.fieldToShowInList != "" && result.metadata['field_'+relation_data.fieldToShowInList] != undefined ? "<span class='connected_item_info'>"+result.metadata['field_'+relation_data.fieldToShowInList]+"</span> " : "") +
+								(relation_data.fieldToShowInList != "" && result.metadata[relation_data.fieldToShowInList] != undefined ? "<span class='connected_item_info'>"+result.metadata[relation_data.fieldToShowInList]+"</span> " : "") +
 								"<a href='#' class='relation_connected_item'>"+result.post_title+"</a> " +
 								"<a class='relation_edit_link' target='_blank' href='<?php echo admin_url('post.php') ?>?post="+(result.post_from_id != relation_data.postId ? result.post_from_id : result.post_to_id)+"&action=edit'>edit "+relation_data.dstSingularLabel+"</a> "
 							+ "</li>\n" + html_to_append;

@@ -77,8 +77,8 @@ abstract class WPCData {
         if ( !empty( $formatted_string ) )
             return $formatted_string;
 
-        // return empty string for non-existing attributes.
         _log(get_class($this)." does not have attribute '$attribute'.");
+        // return empty string for non-existing attributes.
         return "";
     }
 
