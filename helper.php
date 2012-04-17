@@ -94,9 +94,11 @@ function endsWith ($haystack, $needle) {
 }
 
 function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
-    foreach (glob("$path/*.js") as $filename) {
+	$filenames = glob("$path/*.js");
+	
+    foreach ($filenames as $filename) {
         $js_name = preg_replace("/\/?[^\/]+\/|\.js/", "", $filename);
-
+		
         $js_name_dependecies    = explode(".", $js_name);
         array_pop($js_name_dependecies);
 
@@ -107,11 +109,19 @@ function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
 }
 
 function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
-    foreach (glob("$path/*.css") as $filename) {
+	$filenames = glob("$path/*.css");
+	
+    if (file_exists("$path/reset.css")) 		wp_enqueue_style("$id_prefix-reset", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ) );
+//		if (file_exists("$path/grid.css")) 			wp_enqueue_style("$id_prefix-grid", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ) );
+    if (file_exists("$path/layout.css")) 		wp_enqueue_style("$id_prefix-layout", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ) );
+    if (file_exists("$path/typography.css")) 	wp_enqueue_style("$id_prefix-typography", 	site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/typography.css") ) );
+	dbgx_trace_var($path);
+    foreach ($filenames as $filename) {	dbgx_trace_var($filename);
         $css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
-
-   #     _log(site_url(str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.js")));
-
+		
+		if ($css_name == "grid" || $css_name == "reset" || $css_name == "layout" || $css_name == "typography")
+			continue;
+		
         wp_enqueue_style("$id_prefix-$css_name", site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") ) );
     }
 }

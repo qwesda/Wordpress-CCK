@@ -10,7 +10,8 @@ abstract class GenericContentType {
     public $label               = "";
     public $slug                = "";
     public $singular_label      = "";
-    public $supports            = array();
+    public $supports            = array('title','editor','excerpt');
+    public $has_archive   		= false;
 
     private $is_first_metabox   = true;
     private $current_post_data  = array();
@@ -26,7 +27,6 @@ abstract class GenericContentType {
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
         if ( empty($this->slug) )           $this->slug             = $this->id;
 
-        if ( empty($this->supports) )       $this->supports         = array ('title','editor','excerpt');
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
         if ( in_array($this->id, get_post_types()) ) {
@@ -39,19 +39,20 @@ abstract class GenericContentType {
 
 //  REGISTER POST TYPE
         register_post_type ($this->id, array(
-            'label' => ucfirst($this->label),
-            'singular_label' => ucfirst($this->singular_label),
-            'public' => true,
-            'show_ui' => true,
-            'capability_type' => 'post',
-            'hierarchical' => false,
-            'menu_position' => 5,
-            '_builtin' => false,
-            'rewrite' => array("slug" => $this->slug),
-            'query_var' => $this->slug,
-            'supports' => $this->supports,
-            'taxonomies' => $this->taxonomies,
-            'register_meta_box_cb' => array(&$this, "add_meta_boxes")
+            'label' 				=> ucfirst($this->label),
+            'singular_label' 		=> ucfirst($this->singular_label),
+            'public' 				=> true,
+            'show_ui' 				=> true,
+            'capability_type' 		=> 'post',
+            'hierarchical' 			=> false,
+            'menu_position' 		=> 5,
+            '_builtin' 				=> false,
+            'rewrite' 				=> array("slug" => $this->slug),
+            'query_var' 			=> $this->slug,
+            'supports' 				=> $this->supports,
+			'has_archive'			=> $this->has_archive,
+			'taxonomies' 			=> $this->taxonomies,
+            'register_meta_box_cb' 	=> array(&$this, "add_meta_boxes")
         ) );
 
 //  ADD HOOKS
@@ -175,7 +176,7 @@ abstract class GenericContentType {
             }
         }
 
-
+		if ($wpc_relationships)
         foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
             if ($this->id == $wpc_relationship->post_type_from_id || $this->id == $wpc_relationship->post_type_to_id) {
                 add_meta_box(

@@ -26,9 +26,6 @@ class WPCustom {
         add_action("init",                  array($this, "init") );
         add_action('plugins_loaded',        array($this, "plugins_loaded"));
 
-        add_action('admin_print_scripts',   array($this, "custom_print_scripts") );
-        add_action('admin_print_styles',    array($this, "custom_print_styles") );
-
         add_action('widgets_init',          array($this, "widgets_init") );
 
         // register hook to set current item in nav menus (default priority)
@@ -39,12 +36,27 @@ class WPCustom {
         global $wpc_relationships;
         global $wpc_content_types;
 
-        $this->custom_wp_print_scripts();
-        $this->custom_wp_print_styles();
-
         $themes = get_themes();
         $theme  = get_current_theme();
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
+
+   //     add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
+   //     add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
+
+
+		if ( !is_admin() ) { 
+	        $this->wp_enqueue_scripts();
+	        $this->wp_enqueue_styles();
+		} else {
+	//		$this->admin_enqueue_scripts();
+	//		$this->admin_enqueue_styles();
+			
+			add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
+			add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
+		}
+
+		
 
 //  LOAD HELPERS
         foreach (glob($theme_dir . "/helpers/*.php") as $filename) {
@@ -95,10 +107,6 @@ class WPCustom {
             $instance_name  = lcfirst($class_name);
             $$instance_name = new $instance_name();
         }
-
-
-        loadStylesInPathWithIDPrefix    ($theme_dir . "/frontend_styles",       "theme_frontend_styles");
-
 
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
@@ -180,7 +188,7 @@ class WPCustom {
         }
     }
 
-    function custom_print_scripts () {
+    function admin_enqueue_scripts () {
         // add wpc-object for javascript
         // TODO: this should check for qtranslate and set it to array() if not loaded.
         $languages = array("de", "en");
@@ -199,23 +207,32 @@ class WPCustom {
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_scripts",      "core_admin_scripts");
     }
 
-    function custom_print_styles () {
-        loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",       "core_admin_styles");
+    function admin_enqueue_styles () {
+        $themes = get_themes();
+        $theme  = get_current_theme();
+        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+
+        loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",    "core_frontend_styles");
+
+        loadStylesInPathWithIDPrefix    ($theme_dir . "/metaboxes",       "metabox_styles");
     }
 
-    function custom_wp_print_scripts () {
+    function wp_enqueue_scripts () {
         wp_enqueue_script("jquery");
 
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_libraries", "core_frontend_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_scripts",   "core_frontend_scripts");
     }
 
-    function custom_wp_print_styles () {
+    function wp_enqueue_styles () {
         $themes = get_themes();
         $theme  = get_current_theme();
         $theme_dir  = $themes[$theme]["Stylesheet Dir"];
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_styles",    "core_frontend_styles");
+
+        loadStylesInPathWithIDPrefix    ($theme_dir . "/styles",       "theme_frontend_styles");
+		
     }
 
     static function nav_menu_set_current($items, $menu, $args) {
@@ -243,6 +260,7 @@ class WPCustom {
                 // set ancestor classes
                 while( ($ancestor_id = get_post_meta($ancestor_id, '_menu_item_menu_item_parent', true)) && ! in_array($ancestor_id, $ancestor_ids))
                     $ancestor_ids[] = (int) $ancestor_id;
+				
                 $parent_ids[] = (int) $nav_item->menu_item_parent;
             }
 
