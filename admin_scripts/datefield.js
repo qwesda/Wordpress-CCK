@@ -1,38 +1,62 @@
+
+
 (function($) {
-    $(document).ready(function (){
-        $('a.wpc_input_date_edit_link').click(function(event) {
+    jQuery(document).ready(function (){
+        jQuery('a.wpc_input_date_edit_link').click(function(event) {
             event.preventDefault();
-            $(this).parent().hide();
-            $(this).parent().next().show();
-        });
-        $('a.wpc_input_date_edit_ok').click(function(event) {
-            event.preventDefault();
-            // the following selectors do not seem to work...
-            var id = $(this).attr('id').substring('wpc_input_date_edit_ok-'.length);
-            var d = $("#wpc_input_date_d-"+id).val();
-            var m = $("#wpc_input_date_m-"+id).val();
-            var Y = $("#wpc_input_date_y-"+id).val();
 			
-			m = (m < 10 ? '0' : '') + m;
-			d = (d < 10 ? '0' : '') + d;
-			
-            $("input[name='wpc_"+id+"']").val(Y+'-'+m+'-'+d);
-            $("#wpc_input_date_timestamp-"+id).html(Y+'-'+m+'-'+d);
-            $(this).parent().prev().show();
-            $(this).parent().hide();
+            jQuery(this).parent().hide();
+            jQuery(this).parent().next().show();
         });
-        $('a.wpc_input_date_edit_cancel').click(function(event) {
+        jQuery('a.wpc_input_date_edit_ok').click(function(event) {
             event.preventDefault();
-            $(this).parent().prev().show();
-            $(this).parent().hide();
+        			
+			ok(this);
+        });
+        jQuery('.wpc_input_date_edit_container > input').keypress(function(event) {
+		     if(event.which == 13){
+        		 event.preventDefault();
+			 }
+        });
+        jQuery('.wpc_input_date_edit_container > input').keyup(function(event) {
+		     if(event.which == 13){
+        		 event.preventDefault();
+				 
+				 ok(this);
+			 }
+        });
+        jQuery('a.wpc_input_date_edit_cancel').click(function(event) {
+            event.preventDefault();
+			
+            jQuery(this).parent().prev().show();
+            jQuery(this).parent().hide();
         });
     });
 })(jQuery);
 
-// this is from mike boone
+// mysqldate is from mike boone
 // http://boonedocks.net/mike/archives/157-Formatting-a-Javascript-Date-for-MySQL.html
 function mysqldate(date1) {
   return date1.getFullYear() + '-' +
     (date1.getMonth() < 9 ? '0' : '') + (date1.getMonth()+1) + '-' +
     (date1.getDate() < 10 ? '0' : '') + date1.getDate();
+}
+
+function ok (context) {
+	var id = jQuery(context).attr('id').replace(/[^\-]+\-/, "")
+			
+    // the following selectors do not seem to work...
+    
+	var d = jQuery("#wpc_input_date_d-"+id).val();
+    var m = jQuery("#wpc_input_date_m-"+id).val();
+    var Y = jQuery("#wpc_input_date_y-"+id).val();
+			
+	m = (m < 10 ? '0' : '') + m;
+	d = (d < 10 ? '0' : '') + d;
+			
+    jQuery("input[name='wpc_"+id+"']").val(Y+'-'+m+'-'+d);
+    jQuery("#wpc_input_date_timestamp-"+id).html(Y+'-'+m+'-'+d);
+
+    jQuery(context).parent().prev().show();
+    jQuery(context).parent().hide();	
 }
