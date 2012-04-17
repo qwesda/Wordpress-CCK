@@ -50,10 +50,10 @@ class WPCustom {
 	        $this->wp_enqueue_styles();
 		} else {
 	//		$this->admin_enqueue_scripts();
-	//		$this->admin_enqueue_styles();
+			$this->admin_enqueue_styles();
 			
 			add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
-			add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
+	//		add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
 		}
 
 		
