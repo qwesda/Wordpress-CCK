@@ -1,6 +1,6 @@
 (function($) {
     jQuery(document).ready(function (){
-        jQuery('input.wpc_input_file_select').click(function(event) {
+        jQuery('input.wpc_input_file_select').live("click", function(event) {
             event.preventDefault();
             
             tb_show('', 'media-upload.php?post_id='+postID+'&TB_iframe=true');
@@ -8,7 +8,7 @@
     });
     
     jQuery(document).ready(function (){
-        jQuery('input.wpc_input_file_remove').click(function(event) {
+        jQuery('input.wpc_input_file_remove').live("click", function(event) {
             var win = window.dialogArguments || opener || parent || top;
 
             event.preventDefault();
@@ -39,7 +39,7 @@
                         link.hide();
                     });
 
-                    win.WPCFileFieldSetPreview(data.file_field_key, html);
+                    win.WPCFileFieldSetContainer(data.file_field_key, html);
                 }
             }
             );
