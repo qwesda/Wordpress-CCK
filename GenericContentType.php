@@ -81,7 +81,7 @@ abstract class GenericContentType {
 
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
-        
+		
         if(!empty($post)) foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             if ($post->post_type == $this->id) {
 
@@ -201,7 +201,7 @@ abstract class GenericContentType {
             $fields_to_remove = array();
 
             foreach ($this->fields as $field_key => $field) {
-                #_log("checking postmeta " . $field_key);
+                _log("checking postmeta " . $field_key);
                 
                 if ( !empty($_POST["wpc_$field_key"]) ) {
                     $fields_to_update[$field_key] = $_POST["wpc_$field_key"];

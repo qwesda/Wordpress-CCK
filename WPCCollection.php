@@ -107,9 +107,7 @@ abstract class WPCCollection {
      */
     function first_record () {
         $this->iterate();
-
-		$ret = $this->next();
-
+        $ret = $this->next();
         return ( !empty($ret) ? $ret->other_record : NULL );
     }
 

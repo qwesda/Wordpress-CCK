@@ -4,17 +4,17 @@ global $wpc_relationships;
 $wpc_relationships = array();
 
 abstract class GenericRelationship {
-    public $id                  	= "";
-    public $fields              	= NULL;
+    public $id                    = "";
+    public $fields                = NULL;
 
-    public $label               	= "";
+    public $label                 = "";
 
-    public $post_type_from_id   	= "";
-    public $post_type_from      	= NULL;
-    public $post_type_to_id     	= "";
-    public $post_type_to        	= NULL;
+    public $post_type_from_id     = "";
+    public $post_type_from        = NULL;
+    public $post_type_to_id       = "";
+    public $post_type_to          = NULL;
 
-	public $field_to_show_in_list	= "";
+    public $field_to_show_in_list	= "";
 
     function __construct () {
         global $wpc_relationships;
@@ -24,7 +24,6 @@ abstract class GenericRelationship {
         if (empty($this->id))       $this->id       = strtolower( get_class($this) );
 
         if (empty($this->label))    $this->label    = $this->id;
-
 
         if ( !in_array( $this->post_type_from_id, get_post_types() ) ) {
             die ("in wpc relation \"$this->id\" is post_type_from not a valid wpc content_type\npost_type_from_id == \"$this->post_type_from_id\"");
@@ -163,8 +162,7 @@ abstract class GenericRelationship {
              "status" => array (),
             "results" => array (),
         );
-//	_log($rel);
-_log($req);
+
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
         } else if ($rel->to_id <= 0) {
@@ -177,12 +175,10 @@ _log($req);
             $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
 
             if ( !empty($req->metadata) ) {
-                $sql_delete = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id=%d AND meta_key=%s;';
-                $sql_insert = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES(%d, %s, %s);';
+                $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
 
                 foreach ($req->metadata as $key => $value) {
-                    $wpdb->query($wpdb->prepare ($sql_delete, $req->relation_id, $key) );
-                    $wpdb->query($wpdb->prepare ($sql_insert, $req->relation_id, $key, $value) );
+                    $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
                 }
             }
         }

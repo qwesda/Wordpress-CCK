@@ -50,12 +50,12 @@ class WPCustom {
 		} else {
 	//		$this->admin_enqueue_scripts();
 			$this->admin_enqueue_styles();
-			
+
 			add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
 	//		add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
 		}
 
-		
+
 
 //  LOAD HELPERS
         foreach (glob($theme_dir . "/helpers/*.php") as $filename) {
@@ -319,7 +319,7 @@ class WPCustom {
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_styles",    "core_frontend_styles");
         loadStylesInPathWithIDPrefix    ($theme_dir . "/styles",       "theme_frontend_styles");
-		
+
     }
 
     static function nav_menu_set_current($items, $menu, $args) {
@@ -345,7 +345,7 @@ class WPCustom {
                 // set ancestor classes
                 while( ($ancestor_id = get_post_meta($ancestor_id, '_menu_item_menu_item_parent', true)) && ! in_array($ancestor_id, $ancestor_ids))
                     $ancestor_ids[] = (int) $ancestor_id;
-				
+
                 $parent_ids[] = (int) $nav_item->menu_item_parent;
             }
 

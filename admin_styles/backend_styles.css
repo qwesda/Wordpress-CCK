@@ -3,7 +3,6 @@
 	http://dev.topoi.hu-berlin.de/fdcl/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
 	http://dev.fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
 	http://fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.4.1
-	http://www.iticon.de/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.4.1
 */
 
 div.wpc_form_row_header {
@@ -107,3 +106,41 @@ div.wpc_form_row {
 }
 :-moz-placeholder { color: #999 !important; }
 
+div.wpc_form_field_RichTextField {
+	width: 100%;
+	
+	margin-bottom: 15px;
+	margin-right: -5px;
+}
+
+:-moz-placeholder { color: #999 !important; }
+
+div.wpc_file_field_preview {
+	margin: 8px 0;
+	padding: 8px;
+	
+	border: 1px solid #bbb;
+	background: #ffffff;
+	
+	overflow: hidden;
+	
+}
+
+#wpc_form_field_id_attachments {
+	width: 100%;
+}
+
+a.wpc_file_field_file_name {
+	text-overflow: ellipsis;
+}
+span.wpc_file_field_not_set {
+	font-style: italic;
+}
+
+div.wpc_form_field_FileField {
+	width: 100%;
+}
+span.wpc_file_field_mime_type,
+span.wpc_file_field_date {
+	font-style: italic;
+}

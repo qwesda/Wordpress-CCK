@@ -8,6 +8,7 @@ function _debug_var (&$var){
             error_log($var);
         }
 
+
         if( function_exists( 'dbgx_trace_var' ) ) {
             dbgx_trace_var($var);
         }
