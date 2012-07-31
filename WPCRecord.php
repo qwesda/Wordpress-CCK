@@ -77,9 +77,13 @@ abstract class WPCRecord extends WPCData {
 function the_record () {
     global $post;
 
-    $the_record = WPCRecord::new_record($post->ID, $post);
+    if (!empty($post)) {
+        $the_record = WPCRecord::new_record($post->ID, $post);
 
-    return $the_record;
+        return $the_record;
+    }
+
+    return null;
 }
 
 ?>

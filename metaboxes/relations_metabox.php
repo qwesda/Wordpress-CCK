@@ -78,7 +78,11 @@ global $wpc_relationships;
                 }, 200, 'linear', function () { hide_me.hide() });
             } else {
                 jQuery('#relation_edit_boxes > div:visible').hide();
-                jQuery('#'+to_box_id).show();
+                jQuery('#'+to_box_id).show().css({
+                    marginLeft  : 0,
+                    marginRight : 0,
+                    opacity : 1
+                });
             }
 
 
@@ -666,12 +670,12 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
 
     function set_selected_relation () {
         var selected_relation = jQuery("#relation_selector option:selected");
-        var relation_data = selected_relation.data()
+        var relation_data = selected_relation.data();
 
         jQuery('#wpc_input_text_hint').text('type to search for ' + relation_data.dstLabel + ' to add');
 
 
-        goto_box('relation_connected_box','','');
+        goto_box('relation_connected_box', '', '');
     }
     function set_connected_items () {
         var selected_relation   = jQuery("#relation_selector option:selected");

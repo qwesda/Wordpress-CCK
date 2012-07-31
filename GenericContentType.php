@@ -76,11 +76,10 @@ abstract class GenericContentType {
 
 		$content = $input_content;
 
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
-
-        foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
+		
+        if(!empty($post)) foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             if ($post->post_type == $this->id) {
 
                 $content = _compile($filename);
@@ -102,6 +101,8 @@ abstract class GenericContentType {
             $this->is_first_metabox = false;
         ?>
             <script type="text/javascript">
+                var postID = <?php the_ID(); ?>;
+                
                 function check_text_input_value(event) {
                     var input = jQuery(this);
                     var label = jQuery("label.wpc_hint[for='" + input.attr('id') + "']");
@@ -132,10 +133,8 @@ abstract class GenericContentType {
 
         $this->load_post_data($post);
 
-
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
 
 //  ADD METABOXES
         foreach ($this->fields as $field) {
@@ -271,6 +270,8 @@ abstract class GenericContentType {
             $fields_to_remove = array();
 
             foreach ($this->fields as $field_key => $field) {
+                _log("checking postmeta " . $field_key);
+                
                 if ( !empty($_POST["wpc_$field_key"]) ) {
                     $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
                 } elseif ( !empty($this->fields[$field_key]->default) ) {
@@ -283,13 +284,13 @@ abstract class GenericContentType {
             foreach ($fields_to_update as $field_key => $field_value) {
                 update_post_meta($post_id, $field_key, $field_value);
 
-                _log("update_post_meta($post_id, $field_key, \"$field_value\");");
+                //_log("update_post_meta($post_id, $field_key, \"$field_value\");");
             }
 
             foreach ($fields_to_remove as $field_key => $field_value) {
                 delete_post_meta($post_id, $field_key);
 
-                _log("delete_post_meta($post_id, $field_key);");
+                //_log("delete_post_meta($post_id, $field_key);");
             }
 
             return true;

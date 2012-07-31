@@ -36,10 +36,8 @@ class WPCustom {
         global $wpc_relationships;
         global $wpc_content_types;
 
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
-
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
 
    //     add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
    //     add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
@@ -172,9 +170,8 @@ class WPCustom {
     }
 
     function widgets_init () {
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+        $theme      = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
 
 //  LOAD WIDGETS
         foreach (glob($theme_dir . "/widgets/*.php") as $filename) {
@@ -183,8 +180,6 @@ class WPCustom {
             require_once $filename;
 
             register_widget($class_name);
-
-            _log($class_name);
         }
     }
 
@@ -208,9 +203,8 @@ class WPCustom {
     }
 
     function admin_enqueue_styles () {
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",    "core_frontend_styles");
 
@@ -225,12 +219,10 @@ class WPCustom {
     }
 
     function wp_enqueue_styles () {
-        $themes = get_themes();
-        $theme  = get_current_theme();
-        $theme_dir  = $themes[$theme]["Stylesheet Dir"];
+        $theme      = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_styles",    "core_frontend_styles");
-
         loadStylesInPathWithIDPrefix    ($theme_dir . "/styles",       "theme_frontend_styles");
 		
     }
@@ -245,8 +237,6 @@ class WPCustom {
 
         if ($post_type == 'page')
             return $items;
-
-     #   _log ('nav_menu_set_current');
 
         $ancestor_ids = array();
         $parent_ids = array();
