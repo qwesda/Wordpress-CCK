@@ -7,6 +7,10 @@ function _debug_var (&$var){
         } else {
             error_log($var);
         }
+
+        if( function_exists( 'dbgx_trace_var' ) ) {
+            dbgx_trace_var($var);
+        }
     }
 }
 
@@ -32,7 +36,7 @@ function _log ($var){
 
 function _ping ($amount = 1){
   	if (WP_DEBUG === false)
-	    	return;
+	    return;
 
     $backtrace      = debug_backtrace();
     $backtrace_size = sizeof($backtrace);
@@ -102,8 +106,6 @@ function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
         $js_name_dependecies    = explode(".", $js_name);
         array_pop($js_name_dependecies);
 
-        _log(site_url(str_replace(WP_CONTENT_DIR, "wp-content", "$path/$js_name.js")));
-
         wp_enqueue_script("$id_prefix-$js_name", site_url(str_replace(WP_CONTENT_DIR, "wp-content", "$path/$js_name.js") ) );
     }
 }
@@ -111,18 +113,18 @@ function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
 function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
 	$filenames = glob("$path/*.css");
 	
-    if (file_exists("$path/reset.css")) 		wp_enqueue_style("$id_prefix-reset", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ) );
-//		if (file_exists("$path/grid.css")) 			wp_enqueue_style("$id_prefix-grid", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ) );
-    if (file_exists("$path/layout.css")) 		wp_enqueue_style("$id_prefix-layout", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ) );
-    if (file_exists("$path/typography.css")) 	wp_enqueue_style("$id_prefix-typography", 	site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/typography.css") ) );
-	dbgx_trace_var($path);
-    foreach ($filenames as $filename) {	dbgx_trace_var($filename);
+    if (file_exists("$path/reset.css")) 		wp_enqueue_style("$id_prefix-reset", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ), array(), false, false );
+//		if (file_exists("$path/grid.css")) 			wp_enqueue_style("$id_prefix-grid", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ), array(), false, false );
+    if (file_exists("$path/layout.css")) 		wp_enqueue_style("$id_prefix-layout", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ), array(), false, false );
+    if (file_exists("$path/typography.css")) 	wp_enqueue_style("$id_prefix-typography", 	site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/typography.css") ), array(), false, false );
+
+    foreach ($filenames as $filename) {
         $css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
 		
 		if ($css_name == "grid" || $css_name == "reset" || $css_name == "layout" || $css_name == "typography")
 			continue;
 		
-        wp_enqueue_style("$id_prefix-$css_name", site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") ) );
+        wp_enqueue_style("$id_prefix-$css_name", site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") ), array(), false, false );
     }
 }
 

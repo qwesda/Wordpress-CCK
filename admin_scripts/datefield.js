@@ -47,9 +47,9 @@ function ok (context) {
 			
     // the following selectors do not seem to work...
     
-	var d = jQuery("#wpc_input_date_d-"+id).val();
-    var m = jQuery("#wpc_input_date_m-"+id).val();
-    var Y = jQuery("#wpc_input_date_y-"+id).val();
+	var d = parseInt(jQuery("#wpc_input_date_d-"+id).val());
+    var m = parseInt(jQuery("#wpc_input_date_m-"+id).val());
+    var Y = parseInt(jQuery("#wpc_input_date_y-"+id).val());
 			
 	m = (m < 10 ? '0' : '') + m;
 	d = (d < 10 ? '0' : '') + d;

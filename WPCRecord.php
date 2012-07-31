@@ -74,12 +74,22 @@ abstract class WPCRecord extends WPCData {
 }
 
 // WP-style maker for the record
-function the_record () {
+function the_record ($id = null) {
+    if (!empty($id)) {
+        $the_record = WPCRecord::new_record($id);
+
+        return $the_record;
+    }
+    
     global $post;
 
-    $the_record = WPCRecord::new_record($post->ID, $post);
+    if (!empty($post)) {
+        $the_record = WPCRecord::new_record($post->ID, $post);
 
-    return $the_record;
+        return $the_record;
+    }
+
+    return null;
 }
 
 ?>

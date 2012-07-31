@@ -1,0 +1,32 @@
+
+a.wpc_file_field_file_name,
+span.wpc_file_field_mime_type,
+span.wpc_file_field_date {
+    font-style: italic;
+}
+
+
+span.wpc_file_field_not_set {
+    font-style: italic;
+}
+
+div.wpc_form_field_FileField {
+    width: 100%;
+}
+
+a.wpc_file_field_file_name,
+span.wpc_file_field_mime_type,
+span.wpc_file_field_date {
+    display: block;
+}
+
+div.wpc_file_field_preview {
+    margin: 8px 0;
+    padding: 8px;
+
+    border: 1px solid #bbb;
+    background: #ffffff;
+
+    overflow: hidden;
+
+}

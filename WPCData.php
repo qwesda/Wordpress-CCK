@@ -79,6 +79,7 @@ abstract class WPCData {
 
         _log(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
+		
         return "";
     }
 
