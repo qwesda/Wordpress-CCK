@@ -1,0 +1,14 @@
+
+div.wpc_form_field_TaxonomyField {
+    width: 100%;
+}
+
+div.wpc_field_taxonomy_selector {
+    margin: 8px 0;
+    padding: 8px;
+
+    border: 1px solid #bbb;
+    background: #ffffff;
+
+    overflow: hidden;
+}

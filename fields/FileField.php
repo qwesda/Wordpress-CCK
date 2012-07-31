@@ -29,7 +29,7 @@ class FileField extends GenericField {
         if ($file_id == '-1') {
             delete_post_meta($post_id, $this->id);
             
-            die($this->get_preview_html(null));
+            die($this->get_field_core(null));
         }
         
         if ($file_id && get_post($file_id)) {
@@ -46,20 +46,22 @@ class FileField extends GenericField {
         if (!empty($_GET['post_id'])) 
             $post_id = absint($_GET['post_id']);
         elseif (!empty($_POST))
-            $post_id = $post->post_parent;
+            $post_id = $file->post_parent;
         
         if (!empty($post_id)) {
              $post_type = get_post_type($post_id);
              
-             if ( !empty($wpc_content_types[$post_type]) ) {
-                 foreach ($wpc_content_types[$post_type]->fields as $field_key => $field_def) if ($field_def->type == "FileField") {                    
-                    $ajax_nonce    = wp_create_nonce("set-$this->key");
-                    $link          = "<input class='wpc_input_file_set $this->key button' id='$this->key-$file->ID' href='#' type='button' onclick='WPCFileFiedSet(\"$this->key\", \"$post_id\", \"$file->ID\", \"$ajax_nonce\") ' value='Set as $this->label' /";
-                                    
-                    $form_fields[$this->key] = array(
-                        'label' => $this->label,
-                        'input' => 'html',
-                        'html' => $link);
+             if ( !empty($wpc_content_types[$post_type]) && $this->parent->id == $post_type) {
+                 foreach ($wpc_content_types[$post_type]->fields as $field_key => $field_def) {
+                    if ($field_def->type == "FileField" || $field_def->type == "ImageField") {                    
+                        $ajax_nonce    = wp_create_nonce("set-$this->key");
+                        $link          = "<input class='wpc_input_file_set $this->key button' id='$this->key-$file->ID' href='#' type='button' onclick='WPCFileFiedSet(\"$this->key\", \"$post_id\", \"$file->ID\", \"$ajax_nonce\") ' value='Set as $this->label' /";
+                                        
+                        $form_fields[$this->key] = array(
+                            'label' => $this->label,
+                            'input' => 'html',
+                            'html' => $link);
+                     }
                  }
              }
              global $wpc_content_types;
@@ -100,10 +102,10 @@ class FileField extends GenericField {
                 value='remove' 
                 data-nonce='" . wp_create_nonce("set-$this->key") . "' 
                 data-file_field_key='$this->key'
-                data-file_id='-1' />";
+                data-file_id='$file_id' />";
         }
         
-        $ret .= "</div";
+        $ret .= "</div>";
         
         return $ret;
     }

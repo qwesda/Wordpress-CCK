@@ -11,13 +11,14 @@ abstract class GenericContentType {
     public $slug                = "";
     public $singular_label      = "";
     public $supports            = array('title','editor','excerpt');
-    public $has_archive   		= false;
+    public $has_archive         = false;
+    public $hierarchical        = false;
 
     private $is_first_metabox   = true;
     private $current_post_data  = array();
 
     function __construct () {
-		global $wpdb;
+        global $wpdb;
         global $wpc_content_types;
 
 //  SET DEFAULTS
@@ -29,31 +30,33 @@ abstract class GenericContentType {
 
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
-        if ( in_array($this->id, get_post_types()) ) {
-            die ("wpc content_type \"$this->id\" is not unique");
-
-            return ;
-        } else {
-            $wpc_content_types[$this->id] = $this;
-        }
-
+        #if ( in_array($this->id, get_post_types()) ) {
+        #    die ("wpc content_type \"$this->id\" is not unique");
+        #
+        #    return ;
+        #} else {
+        #    $wpc_content_types[$this->id] = $this;
+        #}
+        
 //  REGISTER POST TYPE
-        register_post_type ($this->id, array(
-            'label' 				=> ucfirst($this->label),
-            'singular_label' 		=> ucfirst($this->singular_label),
-            'public' 				=> true,
-            'show_ui' 				=> true,
-            'capability_type' 		=> 'post',
-            'hierarchical' 			=> false,
-            'menu_position' 		=> 5,
-            '_builtin' 				=> false,
-            'rewrite' 				=> array("slug" => $this->slug),
-            'query_var' 			=> $this->slug,
-            'supports' 				=> $this->supports,
-			'has_archive'			=> $this->has_archive,
-			'taxonomies' 			=> $this->taxonomies,
-            'register_meta_box_cb' 	=> array(&$this, "add_meta_boxes")
-        ) );
+        if(!post_type_exists($this->id)) {
+            register_post_type ($this->id, array(
+                'label'                 => ucfirst($this->label),
+                'singular_label'        => ucfirst($this->singular_label),
+                'public'                => true,
+                'show_ui'               => true,
+                'capability_type'       => 'post',
+                'hierarchical'          => $this->hierarchical,
+                'menu_position'         => 5,
+                '_builtin'              => false,
+                'rewrite'               => array("slug" => $this->slug),
+                'query_var'             => $this->slug,
+                'supports'              => $this->supports,
+                'has_archive'           => $this->has_archive,
+                'taxonomies'            => $this->taxonomies,
+                #'register_meta_box_cb'  => array(&$this, "add_meta_boxes")
+            ) );
+        }
 
 //  ADD HOOKS
         add_action ("save_post",                    array(&$this, "save_post") );
@@ -74,7 +77,7 @@ abstract class GenericContentType {
         global $post;
         global $content;
 
-		$content = $input_content;
+        $content = $input_content;
 
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
@@ -128,87 +131,15 @@ abstract class GenericContentType {
         }
     }
 
-    function add_meta_boxes ($post) {
-        global $wpc_relationships;
-
-        $this->load_post_data($post);
-
-        $theme  = wp_get_theme();
-        $theme_dir  = $theme["Stylesheet Dir"];
-
-//  ADD METABOXES
-        foreach ($this->fields as $field) {
-            if ($field->type == "RichTextField") {
-                add_meta_box(
-                    $this->id."_".$field->id,
-                    $field->label,
-                    array(&$this, "echo_richtext_metabox"),
-                    $this->id,
-                    "advanced",
-                    "high",
-                    array('field' => $field, 'post_data' => $this->current_post_data)
-                );
-            }
-        }
-
-        foreach (glob("$theme_dir/metaboxes/" . $this->slug . "_*.php") as $filename) {
-            $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
-            $metabox_class_id   = $metabox_class_name;
-
-            if ( !startsWith($metabox_class_name, "__") ) {
-                require_once $filename;
-
-                $instance_name  = lcfirst($metabox_class_name);
-                $$instance_name = new $metabox_class_name();
-
-                $$instance_name->content_type = $this;
-
-                add_meta_box(
-                    $$instance_name->metabox_id,
-                    $$instance_name->label,
-                    array(&$$instance_name, "echo_metabox"),
-                    $this->id,
-                    $$instance_name->context,
-                    $$instance_name->priority,
-                    array('post_data' => $this->current_post_data)
-                );
-            }
-        }
-
-		if ($wpc_relationships)
-        foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
-            if ($this->id == $wpc_relationship->post_type_from_id || $this->id == $wpc_relationship->post_type_to_id) {
-                add_meta_box(
-                    "$this->id-relationship",
-                    "Relationships",
-                    array("GenericRelationship", "echo_relations_metabox" ),
-                    $this->id
-                );
-
-                break;
-            }
-        }
-
-    }
-
-    function echo_richtext_metabox ($post, $metabox) {
-        $field      = $metabox['args']['field'];
-        $post_data  = $metabox['args']['post_data'];
-
-        $field->echo_field($post_data);
-
-        echo '<div class="clear"></div>';
-    }
-
     function admin_init() {
 
     }
 
     function load_post_data ($post) {
         $this->current_post_data = array();
-
+        
         if( !empty($post) && $post->post_type == $this->id ) {
-            $post_custom = get_post_custom();
+            $post_custom = get_post_custom($post->ID);
 
             foreach ($this->fields as $field_key => $field) {
                 if ( !empty($post_custom[$field_key]) ) {
@@ -224,7 +155,7 @@ abstract class GenericContentType {
                 }
             }
 
-            return true;
+            return $this->current_post_data;
         }
 
         return false;

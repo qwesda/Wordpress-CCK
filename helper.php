@@ -114,10 +114,10 @@ function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
 function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
 	$filenames = glob("$path/*.css");
 	
-    if (file_exists("$path/reset.css")) 		wp_enqueue_style("$id_prefix-reset", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ) );
-//		if (file_exists("$path/grid.css")) 			wp_enqueue_style("$id_prefix-grid", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ) );
-    if (file_exists("$path/layout.css")) 		wp_enqueue_style("$id_prefix-layout", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ) );
-    if (file_exists("$path/typography.css")) 	wp_enqueue_style("$id_prefix-typography", 	site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/typography.css") ) );
+    if (file_exists("$path/reset.css")) 		wp_enqueue_style("$id_prefix-reset", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ), array(), false, false );
+//		if (file_exists("$path/grid.css")) 			wp_enqueue_style("$id_prefix-grid", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ), array(), false, false );
+    if (file_exists("$path/layout.css")) 		wp_enqueue_style("$id_prefix-layout", 		site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ), array(), false, false );
+    if (file_exists("$path/typography.css")) 	wp_enqueue_style("$id_prefix-typography", 	site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/typography.css") ), array(), false, false );
 
     foreach ($filenames as $filename) {
         $css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
@@ -125,7 +125,7 @@ function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
 		if ($css_name == "grid" || $css_name == "reset" || $css_name == "layout" || $css_name == "typography")
 			continue;
 		
-        wp_enqueue_style("$id_prefix-$css_name", site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") ) );
+        wp_enqueue_style("$id_prefix-$css_name", site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") ), array(), false, false );
     }
 }
 

@@ -27,6 +27,8 @@ class WPCustom {
         add_action('plugins_loaded',        array($this, "plugins_loaded"));
 
         add_action('widgets_init',          array($this, "widgets_init") );
+        
+        add_action('add_meta_boxes',        array($this, "add_meta_boxes") );
 
         // register hook to set current item in nav menus (default priority)
         add_filter('wp_get_nav_menu_items', array($this, "nav_menu_set_current"), 10, 3);
@@ -42,8 +44,7 @@ class WPCustom {
    //     add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
    //     add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
 
-
-		if ( !is_admin() ) {
+		if ( !is_admin() ) { 
 	        $this->wp_enqueue_scripts();
 	        $this->wp_enqueue_styles();
 		} else {
@@ -74,6 +75,8 @@ class WPCustom {
 
             $instance_name  = lcfirst($class_name);
             $$instance_name = new $instance_name();
+            
+            $wpc_content_types[$instance_name] = $$instance_name;
         }
 
 //  LOAD TAXONOMIES
@@ -110,6 +113,87 @@ class WPCustom {
         if ( !empty($wpc_relationships) ) {
             GenericRelationship::hookup_ajax_functions();
         }
+    }
+
+
+    function add_meta_boxes ($post_type) {
+        global $wpc_relationships;
+        global $wpc_content_types;
+        
+        $post_id = get_the_ID();
+        
+        if (empty($wpc_content_types[$post_type]))
+            return ;
+        
+        $post      = get_post($post_id);
+
+        $post_type = $wpc_content_types[$post_type];
+        $post_data = $post_type->load_post_data($post);
+        
+        $theme      = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
+        
+//  ADD METABOXES
+        foreach ($post_type->fields as $field) {
+            if ($field->type == "RichTextField" && empty($field->dont_auto_echo_metabox) ) {
+                add_meta_box(
+                    $post_type->id."_".$field->id,
+                    $field->label,
+                    array(&$this, "echo_richtext_metabox"),
+                    $post_type->id,
+                    "advanced",
+                    "high",
+                    array('field' => $field, 'post_data' => $post_data)
+                );
+            }
+        }
+
+        foreach (glob("$theme_dir/metaboxes/" . $post_type->slug . "_*.php") as $filename) {
+            $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+            $metabox_class_id   = $metabox_class_name;
+
+            if ( !startsWith($metabox_class_name, "__") ) {
+                require_once $filename;
+
+                $instance_name  = lcfirst($metabox_class_name);
+                $$instance_name = new $metabox_class_name();
+
+                $$instance_name->content_type = $post_type;
+
+                add_meta_box(
+                    $$instance_name->metabox_id,
+                    $$instance_name->label,
+                    array(&$$instance_name, "echo_metabox"),
+                    $post_type->id,
+                    $$instance_name->context,
+                    $$instance_name->priority,
+                    array('post_data' => $post_data)
+                );
+            }
+        }
+
+        if ($wpc_relationships)
+        foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
+            if ($post_type->id == $wpc_relationship->post_type_from_id || $post_type->id == $wpc_relationship->post_type_to_id) {
+                add_meta_box(
+                    "$post_type->id-relationship",
+                    "Relationships",
+                    array("GenericRelationship", "echo_relations_metabox" ),
+                    $post_type->id
+                );
+
+                break;
+            }
+        }
+    }
+
+    function echo_richtext_metabox ($post, $metabox) {
+        $field      = $metabox['args']['field'];
+        $post_data  = $metabox['args']['post_data'];
+    
+        $field->echo_field($post_data);
+    
+        echo '<div class="clear"></div>';
     }
 
     function wpc_install() {
@@ -200,6 +284,12 @@ class WPCustom {
         <?php
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_libraries",    "core_admin_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_scripts",      "core_admin_scripts");
+
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
+
+        loadScriptsInPathWithIDPrefix   ($theme_dir . "/admin_scripts",   "theme_backend_scripts");
+		
     }
 
     function admin_enqueue_styles () {
@@ -207,7 +297,6 @@ class WPCustom {
         $theme_dir  = $theme["Stylesheet Dir"];
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",    "core_frontend_styles");
-
         loadStylesInPathWithIDPrefix    ($theme_dir . "/metaboxes",       "metabox_styles");
     }
 
@@ -216,6 +305,12 @@ class WPCustom {
 
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_libraries", "core_frontend_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_scripts",   "core_frontend_scripts");
+
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
+
+        loadScriptsInPathWithIDPrefix   ($theme_dir . "/scripts",   "theme_frontend_scripts");
+		
     }
 
     function wp_enqueue_styles () {

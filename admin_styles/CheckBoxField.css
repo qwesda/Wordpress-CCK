@@ -1,0 +1,9 @@
+
+div.wpc_form_field_CheckBoxField {
+    margin-right: 10px;
+}
+
+input[type='checkbox'] {
+    margin-top: -2px;
+    margin-right: 4px;
+}

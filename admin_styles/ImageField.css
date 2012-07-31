@@ -1,0 +1,10 @@
+div.wpc_file_field_preview img {
+    float: left;
+    margin-right: 10px;
+
+    border: 1px solid #333;
+}
+
+div.wpc_form_field_ImageField {
+    width: 100%;
+}

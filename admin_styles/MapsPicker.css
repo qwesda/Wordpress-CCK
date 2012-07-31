@@ -1,0 +1,35 @@
+#map_canvas {
+    height:300px;
+    border:1px solid #999;
+    margin-top: 10px;
+}
+#map_canvas_data {
+    margin-left:20px;
+    margin-top: 14px;
+    margin-right: 20px;
+    text-align: right;
+}
+
+#search-for-location {
+    width: 100%;
+    margin-left: 0px;
+}
+
+ul#search-for-location-results {
+    margin: 10px 0px;   
+    width: 100%;
+
+    border: 1px solid rgba(0,0,0,0.15);
+}
+#search-for-location-results li {
+    background-color: rgba(0,0,0,0.01);
+    padding: 4px;
+    margin: 0px;
+}
+#search-for-location-results li.odd {
+    background-color: rgba(0,0,0,0.05);
+}
+
+#map_canvas_data_use {
+    cursor: pointer;
+}

@@ -13,7 +13,8 @@ abstract class GenericMetabox {
 //  SET DEFAULTS
         if(empty($this->metabox_id))            $this->metabox_id       = strtolower(get_class($this));
         if(empty($this->label))                 $this->label            = strtolower(str_replace("_", " ", $this->metabox_id));
-
+        
+        //_log($this);
     }
 
     function register_metabox() {
@@ -23,8 +24,6 @@ abstract class GenericMetabox {
     function echo_metabox () {
         $this->content_type->first_metabox();
     }
-
-
 }
 
 ?>
