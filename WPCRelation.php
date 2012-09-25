@@ -12,8 +12,10 @@ abstract class WPCRelation extends WPCData {
      *
      *
      */
-    function __construct($id, $record, $other, $meta=null) {
-        if ($id === null || $record === null || $other === null) {
+    function __construct($id, $record_from, $record_to, $meta=null) {
+        global $wpc_relationships;
+        
+        if ($id === null || $record_from === null || $record_to === null) {
             _log(get_class($this).": Id, record or other_record not given!");
             throw new Exception("Cannot construct ".get_class($this).". Missing Parameter.");
         }
@@ -21,20 +23,27 @@ abstract class WPCRelation extends WPCData {
         $this->id = $id;
 
         // if only the record's or other record's id is given, construct a new record object
-        if (! is_object($record)) {
-            list($type, $other_type) = explode('_', $this->typeslug);
-            $record = WPCRecord::new_record($record, null, null, $type);
-        }
-        if (! is_object($other)) {
-            list($type, $other_type) = explode('_', $this->typeslug);
-            $other = WPCRecord::new_record($other, null, null, $other_type);
-        }
 
+        if (! is_object($record_from)) {
+            $type           = $wpc_relationships[$this->typeslug]->post_type_from_id;
+            $record_from    = WPCRecord::new_record($record_from, null, null, $type);
+        }
+        if (! is_object($record_to)) {
+            $record_to_type = $wpc_relationships[$this->typeslug]->post_type_to_id;
+            $record_to      = WPCRecord::new_record($record_to, null, null, $record_to_type);
+        }
+        
         $data = array(
-            "record"          => $record,
-            "other_record"    => $other,
+            "record_from"     => $record_from,
+            "record_to"       => $record_to,
+            "record_type"     => $type,
+            "record_to_type"  => $record_to_type,
             "relationship_id" => $this->typeslug
         );
+        
+        
+        #_log($data);
+        
         parent::__construct($data, $meta);
     }
 
@@ -45,20 +54,13 @@ abstract class WPCRelation extends WPCData {
     /**
      * returns a new object of the right type.
      */
-    static function new_relation($id, $record, $other, $meta=null, $typeslug=null) {
-        if ($typeslug === null) {
-            if (! is_object($record))
-                $record = WPCRecord::new_record($record);
-            if (! is_object($other))
-                $other = WPCRecord::new_record($other);
-            $typeslug = $record->post_type."_$other->post_type";
-        }
-
-        list($type1, $type2) = explode("_", $typeslug);
-        $classname = ucfirst($type1).ucfirst($type2)."Relation";
+    static function new_relation($id, $record_from, $record_to, $typeslug, $meta=null) {
+        #_log("WPCRelation::new_relation($id, $record_from, $record_to, $meta, $typeslug)");
+        
+        $classname = $typeslug."Relation";
         self::make_specific_class($classname, $typeslug);
 
-        return new $classname($id, $record, $other, $meta);
+        return new $classname($id, $record_from, $record_to, $meta);
     }
 }
 ?>

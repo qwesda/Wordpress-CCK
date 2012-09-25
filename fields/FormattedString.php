@@ -9,7 +9,7 @@ class FormattedString extends GenericField {
         parent::__construct ($parent, $params);
 
         $filter_id = "wpc_format_".$parent->id."_".$this->id;
-
+        
         add_filter($filter_id, $callback, 10, 2);
     }
 

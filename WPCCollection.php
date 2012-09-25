@@ -98,17 +98,19 @@ abstract class WPCCollection {
 
         if (count($this->iterate_results) <= $this->iterate_pointer)
             return false;
+        
+        $ret = $this->iterate_results[$this->iterate_pointer++];
 
-        return $this->iterate_results[$this->iterate_pointer++];
+        return $ret;
     }
-
     /**
      * gets the first result trough iterate() and next().
      */
     function first_record () {
         $this->iterate();
         $ret = $this->next();
-        return ( !empty($ret) ? $ret->other_record : NULL );
+        
+        return ( !empty($ret) ? $ret : NULL );
     }
 
     /**
@@ -176,6 +178,7 @@ abstract class WPCCollection {
     function filter($key, $val, $op="=") {
         $new = clone($this);
         $new->add_filter_($key, $val, $op);
+        
         return $new;
     }
 
@@ -199,6 +202,9 @@ abstract class WPCCollection {
             $this->where[] = $this->where_clause("$alias.meta_value", $val, $op);
         }
 
+        
+        #_log("add_filter_($key, $val, $op)");
+        
         // invalidate iterate_results
         unset($this->iterate_results);
     }
@@ -238,12 +244,15 @@ abstract class WPCCollection {
      * returns all filtered records as array.
      */
     function results() {
+        #_log("results() - $this->table_pk");
+        
         global $wpdb;
 
         $sql = "SELECT DISTINCT t.*, meta.meta_key, meta.meta_value FROM $this->table AS t
             LEFT JOIN $this->meta_table AS meta ON meta.$this->meta_fk = t.$this->table_pk\n";
 
         $sql.= join("\n", $this->join);
+        
 
         if (count($this->where))
             $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
@@ -261,7 +270,7 @@ abstract class WPCCollection {
         }
         $sql.= ";";
 
-     #   _log("SQL query about to execute:\n$sql");
+        #_log("SQL query about to execute:\n$sql");
 
         $res = array();
 
@@ -292,15 +301,15 @@ abstract class WPCCollection {
 
                 // copy the row and remove meta-fields
                 $r = $row;
-		unset($r["meta_key"]);
-		unset($r["meta_value"]);
+                unset($r["meta_key"]);
+                unset($r["meta_value"]);
             }
 
             if ($row["meta_value"] !== "") {
-				if ( empty( $meta[$row["meta_key"]] ) )	$meta[$row["meta_key"]] = $row["meta_value"];
-				elseif (is_array ($meta[$row["meta_key"]]) ) array_push($meta[$row["meta_key"]], $row["meta_value"]);
-				else $meta[$row["meta_key"]] = array($meta[$row["meta_key"]], $row["meta_value"]);
-			}
+                if ( empty( $meta[$row["meta_key"]] ) ) $meta[$row["meta_key"]] = $row["meta_value"];
+                elseif (is_array ($meta[$row["meta_key"]]) ) array_push($meta[$row["meta_key"]], $row["meta_value"]);
+                else $meta[$row["meta_key"]] = array($meta[$row["meta_key"]], $row["meta_value"]);
+            }
         }
         // add the last completed record
         if ($cur_id != -1)

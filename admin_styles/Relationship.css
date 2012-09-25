@@ -1,36 +1,37 @@
+/* @override 
+	http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
 
-ul#relation_src_list,
-ul#relation_conected_list {
-    margin: 10px 0px;   
-
-    height: 186px;
+div.relation_edit_connected_metadata_box,
+div.relation_connect_existing_metadata_box,
+div.relation_connect_new_metadata_box,
+ul.relation_src_list,
+ul.relation_conected_list {
+	margin: 0;
+    margin-bottom: 6px;
+    padding: 4px 8px;
+    
+    margin-left: 250px;
+	
+	height: 120px;
+	
     overflow: scroll;
 
     border: 1px solid rgba(0,0,0,0.15);
 }
-ul#relation_src_list {
-    height: 155px;
+ul.relation_src_list,
+ul.relation_conected_list {
+   padding: 0px;
 }
-
-div#relation_connect_new_metadata_box,
-div#relation_edit_connected_metadata_box,
-div#relation_connect_existing_metadata_box {
-    height: 166px;
-
-    margin: 10px 0px;
-    padding: 10px;
-
-    background: rgba(255,255,255,0.5);
-
-    border: 1px solid rgba(0,0,0,0.15);
-
-    overflow: scroll;	
+div.relation_connect_new_box,
+div.relation_connect_existing_box,
+div.relation_edit_connected_box,
+div.relation_add_search_box,
+div.relation_connected_box {
+    margin: 0px;
+    padding: 0px;
+ 
+ 	position: relative;   
 }
-
-div#relation_connect_new_metadata_box {
-    height: 135px;
-}
-
 
 label.wpc_label_left {
     font-weight: bold;
@@ -39,59 +40,60 @@ label.wpc_label_left {
     display: inline-block;
 }
 
-ul#relation_conected_list li {
+ul.relation_conected_list li {
     background-color: rgba(0,0,0,0.01);
     padding: 4px;
     margin: 0px;
 }
 
-ul#relation_conected_list li:nth-child(even) {
+ul.relation_conected_list li:nth-child(even) {
     background-color: rgba(0,0,0,0.05);
 }
 
 
-div#relation_add_existing_metadata_box {
+div.relation_add_existing_metadata_box {
     margin: 10px 0px;   
     width: 100%;
 
-    height: 190px;
     overflow: scroll;
 
     border: 1px solid rgba(0,0,0,0.15);	
 }
 
-ul#relation_conected_list li.odd {
+ul.relation_conected_list li.odd {
     background-color: rgba(0,0,0,0.05);
 }
 
 div.relation_nav_bar {
-    margin: 4px 0;
-    margin-bottom: 4px;
+    margin: 0px;
 
-    margin-left: 160px;
-
-    padding: 0px;
-    height: 22px;
+    padding: 4px;
+    padding-left: 0;
+    
+    height: 16px;
 
     background-color: rgba(0,0,0,0.05);
     border: 1px solid rgba(0,0,0,0.09);
+    border-bottom: none;
 
     overflow: hidden;
 }
 
-#relation_selector {
+.relation_selector {
     position: absolute;
     top: 3px;
 }
 div.relation_nav_bar div {
     float: left;
-    height: 18px;
-    padding-top: 4px;
+    height: 16px;
+    padding: 4px;
     padding-left: 10px;
     padding-right: 16px;
-
+	
     font-weight: bold;
     color: white;
+    
+    margin-top: -4px;
 
     background-image: -ms-linear-gradient(bottom, #6d6d6d, #808080); /* IE10 */
     background-image: -moz-linear-gradient(bottom, #6d6d6d, #808080); /* Firefox */
@@ -102,7 +104,6 @@ div.relation_nav_bar div {
 
     border-left: 1px solid rgba(255,255,255,0.2);
     border-right: 1px solid rgba(0,0,0,0.3);
-    box-shadow: 3px 0px 5px rgba(0,0,0,0.3);
 }
 div.relation_nav_bar div:first-child {
 
@@ -117,17 +118,17 @@ div.relation_nav_bar div:last-child {
     font-weight: normal;
 }
 div.relation_nav_bar div:before {
-
+	
 }
 
-div#relation_edit_boxes {
+div.relation_edit_boxes {
     height: 255px;
 
     position: relative;
 
     overflow: hidden;
 }
-div#relation_edit_boxes > div {
+div.relation_edit_boxes > div {
     height: 250px;
 
     position: absolute;
@@ -137,11 +138,11 @@ div#relation_edit_boxes > div {
 }
 
 
-#relation_conected_list li a.relation_edit_link {
+.relation_conected_list li a.relation_edit_link {
     visibility: hidden;
 }
 
-#relation_conected_list li:hover a.relation_edit_link {
+.relation_conected_list li:hover a.relation_edit_link {
     visibility: visible;
 }
 
@@ -167,7 +168,7 @@ h4.relation_heading {
 }
 
 
-ul#relation_src_list li.selected:before {
+ul.relation_src_list li.selected:before {
     content: "▶";
     padding-right: 4px;
     opacity: 0.5;
@@ -175,19 +176,19 @@ ul#relation_src_list li.selected:before {
     position: relative;
 }
 
-ul#relation_src_list li.selected {
+ul.relation_src_list li.selected {
     margin-left: 0px;
     padding-left: 6px;
     font-weight: bold;
 }
 
-div#add_src_box_header {
+div.add_src_box_header {
     margin: 0px -10px;
     padding: 4px;
     background: rgba(0,0,0,0.1);
 
 }
-div#add_src_box {
+div.add_src_box {
     margin: 10px 0px;
     padding: 0px 10px;
 
@@ -195,26 +196,49 @@ div#add_src_box {
     border: 1px solid rgba(0,0,0,0.15);
 }
 
-div#add_src_box_buttons {
+div.add_src_box_buttons {
     margin: 10px;
 }
-input#new_item_title,
-input#relation_src_search {
+input.new_item_title,
+input.relation_src_search {
     margin-top: 4px;
     margin-bottom: 0px;
 
 }
 
 div.relation_buttons_box {
-    text-align: right;
-    margin-right: 10px;
+    
+    margin: 10px 0;
+    
+    width: 250px;
+    float: left;
+    
+    position: absolute;
+    
+    top: 0;
+    bottom: 0;
 }
+
+div.relation_buttons_box_bottom {
+	bottom: 0;
+	right: 10px;
+	
+	position: absolute;
+}
+
 div.relation_buttons_box > a {
     margin-right: 6px;
-
 }
 
-#relation_conected_list div.relations_info img {
+div.relation_buttons_box > div {
+	float: left;
+	margin: 0;
+	padding: 0;
+	
+	height: 22px;
+}
+
+.relation_conected_list div.relations_info img {
     margin-bottom: -4px;
 }
 
@@ -225,14 +249,14 @@ div.relations_info {
     text-align: center;
 }
 
-ul#relation_src_list li {
+ul.relation_src_list li {
     background-color: rgba(0,0,0,0.02);
     padding: 4px;
     margin: 0px;
     padding-left: 20px;
 }
 
-ul#relation_src_list li:nth-child(even) {
+ul.relation_src_list li:nth-child(even) {
     background-color: rgba(0,0,0,0.05);
 }
 

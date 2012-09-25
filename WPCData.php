@@ -64,6 +64,7 @@ abstract class WPCData {
         if (isset($this->meta[$attribute])) {
             if (is_array($this->meta[$attribute]) && ! empty($this->meta[$attribute]))
                 return $this->meta[$attribute][0];
+            
             return $this->meta[$attribute];
         }
 
@@ -71,13 +72,17 @@ abstract class WPCData {
             return $this->data[$attribute];
 
         if (strpos($attribute, "connected_") === 0)
-            return $this->get_connected(substr($attribute, strlen("connected_")));
+            return $this->get_connected(substr($attribute, strlen("connected_")), false);
 
+        if (strpos($attribute, "reverse_connected_") === 0) {
+            return $this->get_connected(substr($attribute, strlen("reverse_connected_")), true);
+        }
+        
         $formatted_string = $this->formatted_string($attribute);
         if ( !empty( $formatted_string ) )
             return $formatted_string;
 
-        _log(get_class($this)." does not have attribute '$attribute'.");
+        //_log(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
 		
         return "";
@@ -94,7 +99,11 @@ abstract class WPCData {
             return true;
 
         if (strpos($attribute, "connected_") === 0
-            && $this->exist_connected(substr($attribute, strlen("connected_"))))
+            && $this->exist_connected(substr($attribute, strlen("connected_")), false))
+            return true;
+
+        if (strpos($attribute, "reverse_connected_") === 0
+            && $this->exist_connected(substr($attribute, strlen("reverse_connected_")), true))
             return true;
 
         if (strpos($attribute, "all_") === 0)
@@ -109,25 +118,29 @@ abstract class WPCData {
     protected function load_data() {}
     protected function load_meta() {}
 
-    protected function get_connected($other_type) {
-        if (! isset($this->connected_cache[$other_type])) {
-            $connection = $this->connected_for_type($other_type);
+    protected function get_connected($other_type, $reverse) {
+        $cahce_id = ($reverse ? "reverse_" : "") . "$other_type";
+        
+        if (! isset($this->connected_cache[$cahce_id])) {
+            $connection = $this->connected_by_id($other_type, $reverse);
+            
             if ($connection)
-                $this->connected_cache[$other_type] = $this->connected_for_type($other_type);
-            else {
+                $this->connected_cache[$cahce_id] = $connection;
+            
+            if (empty($connection)) {
                 _log("No connected ".$other_type."s found for $this->typeslug.");
                 return;
             }
         }
 
-        return $this->connected_cache[$other_type];
+        return $this->connected_cache[$cahce_id];
     }
     /**
      * checks, whether there exist connected thingies
      *
      * always returns false. Overwrite for connected thingies.
      */
-    protected function exist_connected($other_type) {
+    protected function exist_connected($other_type, $reverse) {
         return false;
     }
     /**
@@ -135,7 +148,11 @@ abstract class WPCData {
      *
      * always returns null, Overwrite for connected types.
      */
-    protected function connected_for_type($other_type) {
+    protected function connected_for_type($other_type, $reverse) {
+        return null;
+    }
+
+    protected function connected_by_id($db_relationslug, $reverse) {
         return null;
     }
 
@@ -175,6 +192,7 @@ abstract class WPCData {
 
         $classdef = "class $name extends ".get_called_class()." {
                 protected \$typeslug = '$typeslug';
+                
             }";
 
         eval($classdef);

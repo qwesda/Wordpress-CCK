@@ -144,3 +144,8 @@ span.wpc_file_field_mime_type,
 span.wpc_file_field_date {
 	font-style: italic;
 }
+
+input.validationError.validationError {
+    background-color : rgba(255,0,0,0.2);
+    border-color : rgba(255,50,50,0.2);
+}

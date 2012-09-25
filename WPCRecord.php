@@ -33,6 +33,9 @@ abstract class WPCRecord extends WPCData {
      * returns a new object of the right type.
      */
     static function new_record($id=null, $p=null, $m=null, $type=null) {
+        #_ping();
+        #_log("new_record($id, $type");
+        #
         if (! ($id || $p)) {
             // XXX: _error needed;
             _log("Cannot get new record with neither post nor id set.");
@@ -57,9 +60,13 @@ abstract class WPCRecord extends WPCData {
         return new $classname($id, $p, $m);
     }
 
-    protected function connected_for_type($other_type) {
-        return WPCRelationCollection::relations_for_types($this->typeslug, $other_type, $this->id);
+    protected function connected_for_type($other_type, $reverse) {
+        return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
+    protected function connected_by_id($db_relationslug, $reverse) {
+        return WPCRelationCollection::relations_by_id($db_relationslug, $reverse, $this->id);
+    }
+    
     protected function exists_connected($other_type) {
         // just say yes.
         return true;

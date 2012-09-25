@@ -6,11 +6,12 @@ $wpc_content_types = array();
 abstract class GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
+    public $relationships       = array();
 
     public $label               = "";
     public $slug                = "";
     public $singular_label      = "";
-    public $supports            = array('title','editor','excerpt');
+    public $supports            = array('title','editor');
     public $has_archive         = false;
     public $hierarchical        = false;
 
@@ -30,14 +31,6 @@ abstract class GenericContentType {
 
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
-        #if ( in_array($this->id, get_post_types()) ) {
-        #    die ("wpc content_type \"$this->id\" is not unique");
-        #
-        #    return ;
-        #} else {
-        #    $wpc_content_types[$this->id] = $this;
-        #}
-        
 //  REGISTER POST TYPE
         if(!post_type_exists($this->id)) {
             register_post_type ($this->id, array(
@@ -165,10 +158,6 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-            _ping();
-        //  _log($post);
-
-
             return true;
         }
 
@@ -180,9 +169,6 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-            _ping();
-        //  _log($post);
-
             return true;
         }
 
@@ -193,16 +179,10 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-    //      _ping();
-    //      _log($post);
-    //      _log($_POST);
-
             $fields_to_update = array();
             $fields_to_remove = array();
-
-            foreach ($this->fields as $field_key => $field) {
-                _log("checking postmeta " . $field_key);
-                
+            
+            foreach ($this->fields as $field_key => $field) {                
                 if ( !empty($_POST["wpc_$field_key"]) ) {
                     $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
                 } elseif ( !empty($this->fields[$field_key]->default) ) {
@@ -214,14 +194,10 @@ abstract class GenericContentType {
 
             foreach ($fields_to_update as $field_key => $field_value) {
                 update_post_meta($post_id, $field_key, $field_value);
-
-                //_log("update_post_meta($post_id, $field_key, \"$field_value\");");
             }
 
             foreach ($fields_to_remove as $field_key => $field_value) {
                 delete_post_meta($post_id, $field_key);
-
-                //_log("delete_post_meta($post_id, $field_key);");
             }
 
             return true;
@@ -234,9 +210,6 @@ abstract class GenericContentType {
         $post = get_post($post_id);
 
         if( !empty($post) && $post->post_type == $this->id) {
-        //  _ping();
-        //  _log($post);
-
 
             return true;
         }

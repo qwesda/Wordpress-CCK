@@ -148,7 +148,7 @@ class WPCustom {
             }
         }
 
-        foreach (glob("$theme_dir/metaboxes/" . $post_type->slug . "_*.php") as $filename) {
+        foreach (glob("$theme_dir/metaboxes/" . $post_type->id . "_*.php") as $filename) {
             $metabox_class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
             $metabox_class_id   = $metabox_class_name;
 
@@ -171,7 +171,7 @@ class WPCustom {
                 );
             }
         }
-
+        /*
         if ($wpc_relationships)
         foreach ($wpc_relationships as $wpc_relationship_key => $wpc_relationship) {
             if ($post_type->id == $wpc_relationship->post_type_from_id || $post_type->id == $wpc_relationship->post_type_to_id) {
@@ -185,6 +185,7 @@ class WPCustom {
                 break;
             }
         }
+        */
     }
 
     function echo_richtext_metabox ($post, $metabox) {
@@ -364,13 +365,15 @@ class WPCustom {
         $post_type = get_post_type();
 
         // the options to look for the nav_page for. first comes first.
-        $nav_page_for_options = array (
-            'wpc_nav_page_for_post_'.$post->ID,
-            'wpc_nav_page_for_type_'.$post_type
-        );
-
+        $nav_page_for_options = array ();
+        
+        if(!empty($post))       array_push($nav_page_for_options, 'wpc_nav_page_for_post_'.$post->ID);
+        if(!empty($post_type))  array_push($nav_page_for_options, 'wpc_nav_page_for_type_'.$post_type);
+        
+        
         foreach ($nav_page_for_options as $option) {
             $the_nav_id = get_option($option);
+            
             if ($nav_item_id == $the_nav_id)
                 return true;
         }

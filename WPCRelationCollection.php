@@ -6,16 +6,15 @@ require_once('WPCRelation.php');
  * relations records
  */
 class WPCRelationCollection extends WPCCollection {
-
-    protected $table = "wp_wpc_relations";
-    protected $table_pk = "relation_id";
-    protected $table_cols = array(
+    protected $table        = "wp_wpc_relations";
+    protected $table_pk     = "relation_id";
+    protected $table_cols   = array(
         "post_to_id",
         "post_from_id",
         "relationship_id"
     );
-    protected $meta_table = "wp_wpc_relations_meta";
-    protected $meta_fk = "relation_id";
+    protected $meta_table   = "wp_wpc_relations_meta";
+    protected $meta_fk      = "relation_id";
 
     /**
      * the relationship's name in the db
@@ -31,36 +30,33 @@ class WPCRelationCollection extends WPCCollection {
      * returns an instance of (a subclass of) WPCRelationCollection for both types.
      * if $id is set to a valid id of type $type, prefilter to get only connected relations.
      */
-    static function relations_for_types($type, $othertype, $id=null) {
+    static function relations_by_id($db_relationslug, $reverse, $id=null) {
         global $wpc_relationships;
-
-        $db_relationslug = $type."_".$othertype;
-        $db_is_reverse = "false";
-
+        
         if (! isset($wpc_relationships[$db_relationslug])) {
-            $db_relationslug = $othertype."_".$type;
-            $db_is_reverse = "true";
-
-            if (! isset($wpc_relationships[$db_relationslug])) {
-                // XXX: there should be an _error here!
-                _log("The relationship between $type and $othertype does not exist in the database.");
-                return null;
-            }
+            // XXX: there should be an _error here!
+            //_log("The relationship with id $db_relationslug does not exist in the database.");
+            return null;
         }
+        
+        $db_reverse = $reverse ? "true" : "false";
 
-        $classname = ucfirst($type).ucfirst($othertype)."RelationRecords";
+        $classname = ($reverse ? "Reverse" : "").str_replace(" ", "", ucwords(str_replace("_", " ", $db_relationslug)))."RelationRecords";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
               protected \$db_relationslug = '$db_relationslug';
-              protected \$db_is_reverse = $db_is_reverse;
+              protected \$db_is_reverse = $db_reverse;
             }";
             eval ($classdef);
         }
-
+        
         $relations = new $classname();
-
-        if ($id !== null)
+        
+        #_log("relations_by_id($db_relationslug, $reverse, $id=null)");
+        
+        if ( !empty($id) ) { 
             $relations = $relations->id_is($id);
+        }
 
         return $relations;
     }
@@ -75,23 +71,50 @@ class WPCRelationCollection extends WPCCollection {
      */
     function results() {
         $res = array_map(array($this, "row_to_relation"), parent::results());
+        
         return $res;
     }
+    
+
+    function next () {
+        #_log("WPCRelationCollection::next() - $this->db_relationslug - $this->db_is_reverse");
+        
+        $next_relation = parent::next();
+        $ret = null;
+        
+        
+        if (!empty($next_relation)) {
+            
+            if ($this->db_is_reverse)   $ret = $next_relation->record_from;
+            else                        $ret = $next_relation->record_to;
+            
+            if(!empty($ret)) {
+                if ($ret->post_status != "publish") {
+                    return $this->next();
+                }
+            }
+        } 
+
+        return $ret;
+    }
+    
+    
+    
+    
+    
     function row_to_relation ($record) {
+        global $wpc_relationships;
+        
         $row = $record[$this->table];
 
         $relationship_id = $row["relationship_id"];
-        if ($this->db_is_reverse) {
-          list($type, $othertype) = explode('_', $relationship_id);
-            $relationship_id = $othertype."_$type";
-        }
-
+        
         return WPCRelation::new_relation(
             $row["relation_id"],
-            $this->db_is_reverse ? $row["post_to_id"] : $row["post_from_id"],
-            $this->db_is_reverse ? $row["post_from_id"] : $row["post_to_id"],
-            $record["meta"],
-            $relationship_id
+            $row["post_from_id"],
+            $row["post_to_id"],
+            $relationship_id,
+            $record["meta"]
         );
     }
 
