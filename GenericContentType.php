@@ -61,10 +61,59 @@ abstract class GenericContentType {
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
 
+        add_filter("manage_edit-{$this->slug}_columns",
+            array(&$this, "wp_manage_edit_columnms"));
+        add_filter("manage_edit-{$this->slug}_columns",
+            array(&$this, "wp_manage_edit_columnms"));
+        add_filter("manage_edit-{$this->slug}_sortable_columns",
+            array(&$this, "wp_manage_edit_sortable_columns"));
 
         add_filter( "the_content",  array($this, "the_content") );
 
         WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");
+    }
+
+    /**
+     * wp callback to add columns in overview for this post type
+     */
+    public function wp_manage_edit_columns($cols) {
+        $manage_cols = array_keys(array_filter($this->cols, function($col) {
+            return isset($col['edit_column']) && $col['edit_column'] == true;
+        }));
+
+        $manage_cols = array_combine($manage_cols, $manage_cols);
+
+        return $cols + $manage_cols;
+    }
+
+    /**
+     * wp callback to display columns in overview for this post type
+     */
+    public function wp_manage_edit_columns_display($col, $id) {
+        // all columns with key edit_column
+        $manage_cols = array_filter($this->cols, function($col) {
+            return isset($col['edit_column']) && $col['edit_column'] == true;
+        });
+        if (! isset($manage_cols[$col]))
+            return;
+
+        $element = $this->element_by_wp_id($id);
+        echo $element->formatted_string($col);
+    }
+
+    /**
+     * wp callback to sort columns in overview for this post type
+     */
+    public function wp_manage_edit_sortable_columns($cols) {
+        // all columns with key edit_column
+        $manage_cols = array_keys(array_filter($this->cols, function($col) {
+            return isset($col['edit_column']) && $col['edit_column'] == true;
+        }));
+
+        // [$col => $col]
+        $manage_cols = array_combine($manage_cols, $manage_cols);
+
+        return $cols + $manage_cols;
     }
 
     function the_content ($input_content) {
