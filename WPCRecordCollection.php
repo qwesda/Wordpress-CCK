@@ -34,8 +34,7 @@ class WPCRecordCollection extends WPCCollection {
         global $wpc_content_types;
 
         if (! isset($wpc_content_types[$type])) {
-            // XXX: there should be an _error here!
-            _log("The type $type does not exist in the database.");
+            ButterLog::error("The type $type does not exist in the database.");
             return null;
         }
 

@@ -44,15 +44,15 @@ class OptionPage {
 
     foreach (array_keys($defaults) as $key) {
       if (! array_key_exists($key, $args)) {
-        _log("OptionPage: key '$key' not recognized.");
+        ButterLog::info("OptionPage: key '$key' not recognized.");
         next;
       }
       if (is_array($args[$key]) && empty($args[$key])) {
-        _log("OptionPage: nothing to do. Key $key is empty.");
+        ButterLog::info("OptionPage: nothing to do. Key $key is empty.");
         return;
       }
       if ($args[$key] == "") {
-        _log("OptionPage: key '$key' has to be set!
+        ButterLog::info ("OptionPage: key '$key' has to be set!
           Not adding this option page.");
         return;
       }

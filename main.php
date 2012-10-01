@@ -7,6 +7,7 @@ Author: Daniel Schwarz (qwesda@live.com), Tobias Florek (tob@bytesandbutter.de) 
 Version: 1.0
 */
 
+require_once "vendor/butterlog/ButterLog.php";
 require_once "helper.php";
 
 global $wpc_version;
@@ -27,7 +28,7 @@ class WPCustom {
         add_action('plugins_loaded',        array($this, "plugins_loaded"));
 
         add_action('widgets_init',          array($this, "widgets_init") );
-        
+
         add_action('add_meta_boxes',        array($this, "add_meta_boxes") );
 
         // register hook to set current item in nav menus (default priority)
@@ -44,7 +45,7 @@ class WPCustom {
    //     add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
    //     add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
 
-		if ( !is_admin() ) { 
+		if ( !is_admin() ) {
 	        $this->wp_enqueue_scripts();
 	        $this->wp_enqueue_styles();
 		} else {
@@ -75,7 +76,7 @@ class WPCustom {
 
             $instance_name  = lcfirst($class_name);
             $$instance_name = new $instance_name();
-            
+
             $wpc_content_types[$instance_name] = $$instance_name;
         }
 
@@ -119,20 +120,20 @@ class WPCustom {
     function add_meta_boxes ($post_type) {
         global $wpc_relationships;
         global $wpc_content_types;
-        
+
         $post_id = get_the_ID();
-        
+
         if (empty($wpc_content_types[$post_type]))
             return ;
-        
+
         $post      = get_post($post_id);
 
         $post_type = $wpc_content_types[$post_type];
         $post_data = $post_type->load_post_data($post);
-        
+
         $theme      = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
-        
+
 //  ADD METABOXES
         foreach ($post_type->fields as $field) {
             if ($field->type == "RichTextField" && empty($field->dont_auto_echo_metabox) ) {
@@ -191,9 +192,9 @@ class WPCustom {
     function echo_richtext_metabox ($post, $metabox) {
         $field      = $metabox['args']['field'];
         $post_data  = $metabox['args']['post_data'];
-    
+
         $field->echo_field($post_data);
-    
+
         echo '<div class="clear"></div>';
     }
 
@@ -290,7 +291,7 @@ class WPCustom {
         $theme_dir  = $theme["Stylesheet Dir"];
 
         loadScriptsInPathWithIDPrefix   ($theme_dir . "/admin_scripts",   "theme_backend_scripts");
-		
+
     }
 
     function admin_enqueue_styles () {
@@ -311,7 +312,7 @@ class WPCustom {
         $theme_dir  = $theme["Stylesheet Dir"];
 
         loadScriptsInPathWithIDPrefix   ($theme_dir . "/scripts",   "theme_frontend_scripts");
-		
+
     }
 
     function wp_enqueue_styles () {
@@ -366,14 +367,14 @@ class WPCustom {
 
         // the options to look for the nav_page for. first comes first.
         $nav_page_for_options = array ();
-        
+
         if(!empty($post))       array_push($nav_page_for_options, 'wpc_nav_page_for_post_'.$post->ID);
         if(!empty($post_type))  array_push($nav_page_for_options, 'wpc_nav_page_for_type_'.$post_type);
-        
-        
+
+
         foreach ($nav_page_for_options as $option) {
             $the_nav_id = get_option($option);
-            
+
             if ($nav_item_id == $the_nav_id)
                 return true;
         }

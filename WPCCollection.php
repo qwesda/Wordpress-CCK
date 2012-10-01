@@ -98,7 +98,7 @@ abstract class WPCCollection {
 
         if (count($this->iterate_results) <= $this->iterate_pointer)
             return false;
-        
+
         $ret = $this->iterate_results[$this->iterate_pointer++];
 
         return $ret;
@@ -109,7 +109,7 @@ abstract class WPCCollection {
     function first_record () {
         $this->iterate();
         $ret = $this->next();
-        
+
         return ( !empty($ret) ? $ret : NULL );
     }
 
@@ -122,7 +122,7 @@ abstract class WPCCollection {
     function order_by($c, $dir = "ASC"){
         if (! in_array($dir, array("ASC", "DESC"))) {
             // XXX: _error would be more appropriate
-            _log("$dir is neither ASC nor DESC. Ignoring Order By clause.");
+            ButterLog::warn("$dir is neither ASC nor DESC. Ignoring Order By clause.");
             return $this;
         }
 
@@ -131,12 +131,12 @@ abstract class WPCCollection {
         // callback
         if (is_callable($c)) {
             if (! empty($this->order_by))
-                _log('You cannot have both: sorting with SQL and sorting with callback. Callback sorting will win.');
+                ButterLog::warn('You cannot have both: sorting with SQL and sorting with callback. Callback sorting will win.');
             $this->sort_by_cb = $c;
         }
         else {
             if (!empty($this->sort_by_cb))
-                _log('You cannot have both: sorting with SQL and sorting with callback. This Sorting will most likely have no effect.');
+                ButterLog::warn('You cannot have both: sorting with SQL and sorting with callback. This Sorting will most likely have no effect.');
 
             // regular column
             if (in_array($c, $this->table_cols))
@@ -178,7 +178,7 @@ abstract class WPCCollection {
     function filter($key, $val, $op="=") {
         $new = clone($this);
         $new->add_filter_($key, $val, $op);
-        
+
         return $new;
     }
 
@@ -202,9 +202,9 @@ abstract class WPCCollection {
             $this->where[] = $this->where_clause("$alias.meta_value", $val, $op);
         }
 
-        
-        #_log("add_filter_($key, $val, $op)");
-        
+
+        ButterLog::debug("add_filter_($key, $val, $op)");
+
         // invalidate iterate_results
         unset($this->iterate_results);
     }
@@ -244,15 +244,15 @@ abstract class WPCCollection {
      * returns all filtered records as array.
      */
     function results() {
-        #_log("results() - $this->table_pk");
-        
+        ButterLog::debug("results() - $this->table_pk");
+
         global $wpdb;
 
         $sql = "SELECT DISTINCT t.*, meta.meta_key, meta.meta_value FROM $this->table AS t
             LEFT JOIN $this->meta_table AS meta ON meta.$this->meta_fk = t.$this->table_pk\n";
 
         $sql.= join("\n", $this->join);
-        
+
 
         if (count($this->where))
             $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
@@ -270,14 +270,14 @@ abstract class WPCCollection {
         }
         $sql.= ";";
 
-        #_log("SQL query about to execute:\n$sql");
+        ButterLog::debug("SQL query about to execute:\n$sql");
 
         $res = array();
 
         $dbres = mysql_query($sql);
         if (! $dbres) {
             // XXX: this should display an error (_error function needed?)
-            _log("Could not execute the following SQL.\n$sql\nmysql_error:\n".mysql_error());
+            ButterLog::error("Could not execute the following SQL.\n$sql\nmysql_error:\n".mysql_error());
             return array();
         }
 
@@ -342,8 +342,7 @@ abstract class WPCCollection {
         case "IN":
         case "NOT IN":
             if (!is_array($val)) {
-                // XXX: _error would be more appropiate
-                _log("$op needs an array. '".print_r($val)."' given");
+                ButterLog::warn("$op needs an array. '".print_r($val)."' given");
                 return;
             }
             $c = count($val);
@@ -352,8 +351,7 @@ abstract class WPCCollection {
         case "BETWEEN":
         case "NOT BETWEEN":
             if (!is_array($val) || $c=count($val) != 2) {
-                // XXX: _error would be more appropiate
-                _log("$op needs an array of length 2. '".print_r($val)."' given");
+                ButterLog::warn("$op needs an array of length 2. '".print_r($val)."' given");
                 return;
             }
             $filter = $wpdb->prepare($filter."%s AND %s", $val);
@@ -362,7 +360,7 @@ abstract class WPCCollection {
         case "IS NOT":
             $allowed_values = array("FALSE", "TRUE", "UNKNOWN", "NULL");
             if (! in_array(strtoupper($val), $allowed_values)) {
-                _log("$op only supports the values ".join(', ', $allowed_values)."\n$val given");
+                ButterLog::warn("$op only supports the values ".join(', ', $allowed_values)."\n$val given");
                 return;
             }
             $filter.= $val;
@@ -373,13 +371,12 @@ abstract class WPCCollection {
             break;
         default:
             if (! in_array($op, array("=", "!=", "<=>","<","<=",">","=>"))) {
-                // XXX: _error would be more appropiate
-                _log("operator is not valid: $op");
+                ButterLog::warn("operator is not valid: $op");
                 return;
             }
             $filter = $wpdb->prepare($filter."%s", $val);
         }
-      #  _log($filter);
+        ButterLog::debug($filter);
         return $filter;
     }
 

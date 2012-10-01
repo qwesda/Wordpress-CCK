@@ -32,13 +32,13 @@ class WPCRelationCollection extends WPCCollection {
      */
     static function relations_by_id($db_relationslug, $reverse, $id=null) {
         global $wpc_relationships;
-        
+
         if (! isset($wpc_relationships[$db_relationslug])) {
             // XXX: there should be an _error here!
-            //_log("The relationship with id $db_relationslug does not exist in the database.");
+            ButterLog::warn("The relationship with id $db_relationslug does not exist in the database.");
             return null;
         }
-        
+
         $db_reverse = $reverse ? "true" : "false";
 
         $classname = ($reverse ? "Reverse" : "").str_replace(" ", "", ucwords(str_replace("_", " ", $db_relationslug)))."RelationRecords";
@@ -49,12 +49,12 @@ class WPCRelationCollection extends WPCCollection {
             }";
             eval ($classdef);
         }
-        
+
         $relations = new $classname();
-        
-        #_log("relations_by_id($db_relationslug, $reverse, $id=null)");
-        
-        if ( !empty($id) ) { 
+
+        ButterLog::debug("relations_by_id($db_relationslug, $reverse, $id=null)");
+
+        if ( !empty($id) ) {
             $relations = $relations->id_is($id);
         }
 
@@ -71,44 +71,44 @@ class WPCRelationCollection extends WPCCollection {
      */
     function results() {
         $res = array_map(array($this, "row_to_relation"), parent::results());
-        
+
         return $res;
     }
-    
+
 
     function next () {
-        #_log("WPCRelationCollection::next() - $this->db_relationslug - $this->db_is_reverse");
-        
+        ButterLog::debug("WPCRelationCollection::next() - $this->db_relationslug - $this->db_is_reverse");
+
         $next_relation = parent::next();
         $ret = null;
-        
-        
+
+
         if (!empty($next_relation)) {
-            
+
             if ($this->db_is_reverse)   $ret = $next_relation->record_from;
             else                        $ret = $next_relation->record_to;
-            
+
             if(!empty($ret)) {
                 if ($ret->post_status != "publish") {
                     return $this->next();
                 }
             }
-        } 
+        }
 
         return $ret;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     function row_to_relation ($record) {
         global $wpc_relationships;
-        
+
         $row = $record[$this->table];
 
         $relationship_id = $row["relationship_id"];
-        
+
         return WPCRelation::new_relation(
             $row["relation_id"],
             $row["post_from_id"],

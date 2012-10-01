@@ -78,7 +78,7 @@ abstract class GenericRegexValidatingField extends GenericField {
 		else {
 			echo "set value";
 		}
-        _log($this->display_value($post_data[$this->id]));
+        ButterLog::debug($this->display_value($post_data[$this->id]));
         //echo "</span>";
         echo "</span>\n";
 

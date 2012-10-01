@@ -64,7 +64,7 @@ abstract class WPCData {
         if (isset($this->meta[$attribute])) {
             if (is_array($this->meta[$attribute]) && ! empty($this->meta[$attribute]))
                 return $this->meta[$attribute][0];
-            
+
             return $this->meta[$attribute];
         }
 
@@ -77,14 +77,14 @@ abstract class WPCData {
         if (strpos($attribute, "reverse_connected_") === 0) {
             return $this->get_connected(substr($attribute, strlen("reverse_connected_")), true);
         }
-        
+
         $formatted_string = $this->formatted_string($attribute);
         if ( !empty( $formatted_string ) )
             return $formatted_string;
 
-        //_log(get_class($this)." does not have attribute '$attribute'.");
+        ButterLog::debug(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
-		
+
         return "";
     }
 
@@ -120,15 +120,15 @@ abstract class WPCData {
 
     protected function get_connected($other_type, $reverse) {
         $cahce_id = ($reverse ? "reverse_" : "") . "$other_type";
-        
+
         if (! isset($this->connected_cache[$cahce_id])) {
             $connection = $this->connected_by_id($other_type, $reverse);
-            
+
             if ($connection)
                 $this->connected_cache[$cahce_id] = $connection;
-            
+
             if (empty($connection)) {
-                _log("No connected ".$other_type."s found for $this->typeslug.");
+                ButterLog::warn("No connected ".$other_type."s found for $this->typeslug.");
                 return;
             }
         }
@@ -192,7 +192,7 @@ abstract class WPCData {
 
         $classdef = "class $name extends ".get_called_class()." {
                 protected \$typeslug = '$typeslug';
-                
+
             }";
 
         eval($classdef);

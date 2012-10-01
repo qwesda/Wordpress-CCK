@@ -14,9 +14,9 @@ abstract class WPCRelation extends WPCData {
      */
     function __construct($id, $record_from, $record_to, $meta=null) {
         global $wpc_relationships;
-        
+
         if ($id === null || $record_from === null || $record_to === null) {
-            _log(get_class($this).": Id, record or other_record not given!");
+            ButterLog::warn(get_class($this).": Id, record or other_record not given!");
             throw new Exception("Cannot construct ".get_class($this).". Missing Parameter.");
         }
 
@@ -32,7 +32,7 @@ abstract class WPCRelation extends WPCData {
             $record_to_type = $wpc_relationships[$this->typeslug]->post_type_to_id;
             $record_to      = WPCRecord::new_record($record_to, null, null, $record_to_type);
         }
-        
+
         $data = array(
             "record_from"     => $record_from,
             "record_to"       => $record_to,
@@ -40,10 +40,10 @@ abstract class WPCRelation extends WPCData {
             "record_to_type"  => $record_to_type,
             "relationship_id" => $this->typeslug
         );
-        
-        
-        #_log($data);
-        
+
+
+        ButterLog::debug($data);
+
         parent::__construct($data, $meta);
     }
 
@@ -55,8 +55,8 @@ abstract class WPCRelation extends WPCData {
      * returns a new object of the right type.
      */
     static function new_relation($id, $record_from, $record_to, $typeslug, $meta=null) {
-        #_log("WPCRelation::new_relation($id, $record_from, $record_to, $meta, $typeslug)");
-        
+        ButterLog::debug("WPCRelation::new_relation($id, $record_from, $record_to, $meta, $typeslug)");
+
         $classname = $typeslug."Relation";
         self::make_specific_class($classname, $typeslug);
 

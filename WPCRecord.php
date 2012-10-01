@@ -18,7 +18,7 @@ abstract class WPCRecord extends WPCData {
      */
     function __construct($id=null, $post=null, $meta=null) {
         if ($id === null && $post === null) {
-            _log(get_class($this).": Neither id nor post given!");
+            ButterLog::warn(get_class($this).": Neither id nor post given!");
             throw new Exception("Cannot construct ".get_class($this).". Id and post are not set.");
         }
 
@@ -34,11 +34,10 @@ abstract class WPCRecord extends WPCData {
      */
     static function new_record($id=null, $p=null, $m=null, $type=null) {
         #_ping();
-        #_log("new_record($id, $type");
+        ButterLog::debug("new_record($id, $type");
         #
         if (! ($id || $p)) {
-            // XXX: _error needed;
-            _log("Cannot get new record with neither post nor id set.");
+            ButterLog::error("Cannot get new record with neither post nor id set.");
             return;
         }
 
@@ -66,7 +65,7 @@ abstract class WPCRecord extends WPCData {
     protected function connected_by_id($db_relationslug, $reverse) {
         return WPCRelationCollection::relations_by_id($db_relationslug, $reverse, $this->id);
     }
-    
+
     protected function exists_connected($other_type) {
         // just say yes.
         return true;
@@ -87,7 +86,7 @@ function the_record ($id = null) {
 
         return $the_record;
     }
-    
+
     global $post;
 
     if (!empty($post)) {

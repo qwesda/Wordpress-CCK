@@ -32,7 +32,7 @@ abstract class GenericRelationship {
             return ;
         } else {
             $this->post_type_from       = get_post_type_object($this->post_type_from_id);
-            
+
             $wpc_content_types[$this->post_type_from_id]->relationships[$this->id] = $this;
         }
 
@@ -42,7 +42,7 @@ abstract class GenericRelationship {
             return ;
         } else {
             $this->post_type_to         = get_post_type_object($this->post_type_to_id);
-            
+
             $wpc_content_types[$this->post_type_to_id]->relationships[$this->id] = $this;
         }
 
@@ -55,7 +55,7 @@ abstract class GenericRelationship {
             $wpc_relationships[$this->id] = $this;
         }
     }
-    
+
     static function echo_relations_metabox ($post) {
 		include("metaboxes/relations_metabox.php");
     }
@@ -74,7 +74,7 @@ abstract class GenericRelationship {
 
         return htmlspecialchars($html_str);
     }
-    
+
     static function hookup_ajax_functions () {
         add_action('wp_ajax_get_post_type_items',               array(__CLASS__, 'get_post_type_items_ajax'));
         add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
@@ -113,7 +113,7 @@ abstract class GenericRelationship {
                 $req->from_id = $new_post_id;
             }
 
-            _log ("add_relation_ajax: created post $new_post_id");
+            ButterLog::debug("add_relation_ajax: created post $new_post_id");
         }
 
         if ($req->from_id <= 0)
@@ -144,7 +144,7 @@ abstract class GenericRelationship {
 
         if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
             _ping();
-            _log ("wp_verify_nonce($req->nonce) failed.");
+            ButterLog::debug("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
 
@@ -196,7 +196,7 @@ abstract class GenericRelationship {
 
         if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
             _ping();
-            _log ("wp_verify_nonce($req->nonce) failed.");
+            ButterLog::info("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
 
@@ -295,7 +295,7 @@ abstract class GenericRelationship {
 
         if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
             _ping();
-            _log ("wp_verify_nonce($req->nonce) failed.");
+            ButterLog::info("wp_verify_nonce($req->nonce) failed.");
             _die();
         }
 
@@ -387,8 +387,8 @@ $prepared_sql_limit" );
 
         die();
     }
-    
-    function echo_relationship($post, $reverse_direction = false){ 
+
+    function echo_relationship($post, $reverse_direction = false){
         $rel_direction = $reverse_direction ? "from_to" : "to_from";
 
         $src_id  = $rel_direction == "to_from" ? $this->post_type_to_id   : $this->post_type_from_id;
@@ -398,15 +398,15 @@ $prepared_sql_limit" );
         $dst    = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
     ?>
         <div      class ="relation_edit_box <?php echo $this->id ?>"
-  
+
            data-rel-dir = "<?php echo $rel_direction ?>"
-  
+
             data-rel-id = "<?php echo $this->id ?>"
             data-src-id = "<?php echo $src_id ?>"
             data-dst-id = "<?php echo $dst_id ?>"
-  
+
 data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
-  
+
          data-src-label = "<?php echo $src->label ?>"
          data-dst-label = "<?php echo $dst->label ?>"
           data-edit-box = "<?php echo $this->echo_item_metabox_str() ?>"
@@ -420,7 +420,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                     <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a><br><br>
                     <a class="relation_open_all_connected button" href='#'>open all <?php echo $dst->label ?></a>
                 </div>
-                
+
                 <ul class="relation_conected_list">
 
                 </ul>
@@ -430,7 +430,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_add_buttons_box relation_buttons_box">
                     <label for="relation_src_search">search</label>
                     <input type="text" class="wpc_input_text relation_src_search"/>
-                    
+
                     <div class="relation_buttons_box_bottom">
                         <a class="button relation_add_search_cancel" href='#'>cancel</a>
                     </div>
@@ -440,7 +440,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
             </div>
 
             <div class="relation_edit_connected_box hidden">
-                <div class="relation_edit_connected_buttons_box relation_buttons_box">                    
+                <div class="relation_edit_connected_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_edit_connected_cancel button" href='#'>cancel</a>
                         <a class="relation_edit_connected_delete button" href='#'>delete</a>
@@ -466,7 +466,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_connect_new_buttons_box relation_buttons_box">
                     <label for="new_item_title">title for the new <?php echo $dst->singular_label ?></label>
                     <input type="text" class="wpc_input wpc_input_text new_item_title" id="wpc_<?php echo $this->id ?>_field_new_item_title" />
-                    
+
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_connect_new_cancel button" href='#'>cancel</a>
                         <a class="relation_connect_new_add button-primary" href='#'>add</a>
@@ -476,18 +476,18 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_connect_new_metadata_box"></div>
             </div>
         </div>
-        
+
         <script type="text/javascript" charset="utf-8">
             var admin_url_wpspin_light  = "<?php echo admin_url('images/wpspin_light.gif'); ?>";
             var admin_url_post_php      = "<?php echo admin_url('post.php'); ?>";
             var noce_relations_ajax     = "<?php echo wp_create_nonce('relations_ajax'); ?>";
-        
+
             jQuery(document).ready(function() {
                 var relation_metabox_id = ".relation_edit_box.<?php echo $this->id ?>";
 
                 relation_setup_delegates(relation_metabox_id);
             });
-            
+
         </script>
     <?php }
 }

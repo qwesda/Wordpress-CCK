@@ -1,20 +1,5 @@
 <?php
 
-function _debug_var (&$var){
-    if (WP_DEBUG === true){
-        if (is_array($var) || is_object($var)){
-            error_log(print_r($var, true));
-        } else {
-            error_log($var);
-        }
-
-
-        if( function_exists( 'dbgx_trace_var' ) ) {
-            dbgx_trace_var($var);
-        }
-    }
-}
-
 function _die () {
     die (
         array_rand ( array(
@@ -30,11 +15,6 @@ function _die () {
     );
 }
 
-function _log ($var){
-    if (WP_DEBUG === true)
-        _debug_var($var);
-}
-
 function _ping ($amount = 1){
     if (WP_DEBUG === false)
         return;
@@ -42,8 +22,6 @@ function _ping ($amount = 1){
     $backtrace      = debug_backtrace();
     $backtrace_size = sizeof($backtrace);
     $i_end          = $amount == 0 ? $backtrace_size : min($backtrace_size, $amount + 1);
-
-    _log("");
 
     for ($i = 1; $i < $i_end; $i++) {
         $parent_scope   = (object)$backtrace[$i];
@@ -100,22 +78,22 @@ function endsWith ($haystack, $needle) {
 
 function loadScriptsInPathWithIDPrefix ($path, $id_prefix) {
     $filenames = glob("$path/*.js");
-    
+
     foreach ($filenames as $filename) {
         $js_name = preg_replace("/\/?[^\/]+\/|\.js/", "", $filename);
-        
+
         $js_name_dependecies    = explode(".", $js_name);
         array_pop($js_name_dependecies);
-        
+
         $url = site_url(str_replace(WP_CONTENT_DIR, "wp-content", "$path/$js_name.js") );
-        
+
         wp_enqueue_script("$id_prefix-$js_name", $url );
     }
 }
 
 function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
     $filenames = glob("$path/*.css");
-    
+
     if (file_exists("$path/reset.css"))         wp_enqueue_style("$id_prefix-reset",        site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/reset.css") ), array(), false, false );
 //      if (file_exists("$path/grid.css"))          wp_enqueue_style("$id_prefix-grid",         site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/grid.css") ), array(), false, false );
     if (file_exists("$path/layout.css"))        wp_enqueue_style("$id_prefix-layout",       site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/layout.css") ), array(), false, false );
@@ -123,12 +101,12 @@ function loadStylesInPathWithIDPrefix ($path, $id_prefix) {
 
     foreach ($filenames as $filename) {
         $css_name = preg_replace("/\/?[^\/]+\/|\.css/", "", $filename);
-        
+
         if ($css_name == "grid" || $css_name == "reset" || $css_name == "layout" || $css_name == "typography")
             continue;
-        
+
         $url = site_url( str_replace(WP_CONTENT_DIR, "wp-content", "$path/$css_name.css") );
-        
+
         wp_enqueue_style("$id_prefix-$css_name", $url, array(), false, false );
     }
 }
