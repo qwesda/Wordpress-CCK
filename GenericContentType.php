@@ -14,6 +14,7 @@ abstract class GenericContentType {
     public $supports            = array('title','editor');
     public $has_archive         = false;
     public $hierarchical        = false;
+    public $menu_position       = 5;
 
     private $is_first_metabox   = true;
     private $current_post_data  = array();
@@ -40,7 +41,7 @@ abstract class GenericContentType {
                 'show_ui'               => true,
                 'capability_type'       => 'post',
                 'hierarchical'          => $this->hierarchical,
-                'menu_position'         => 5,
+                'menu_position'         => $this->menu_position,
                 '_builtin'              => false,
                 'rewrite'               => array("slug" => $this->slug),
                 'query_var'             => $this->slug,
@@ -74,7 +75,7 @@ abstract class GenericContentType {
 
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
-		
+
         if(!empty($post)) foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
             if ($post->post_type == $this->id) {
 
@@ -98,7 +99,7 @@ abstract class GenericContentType {
         ?>
             <script type="text/javascript">
                 var postID = <?php the_ID(); ?>;
-                
+
                 function check_text_input_value(event) {
                     var input = jQuery(this);
                     var label = jQuery("label.wpc_hint[for='" + input.attr('id') + "']");
@@ -130,7 +131,7 @@ abstract class GenericContentType {
 
     function load_post_data ($post) {
         $this->current_post_data = array();
-        
+
         if( !empty($post) && $post->post_type == $this->id ) {
             $post_custom = get_post_custom($post->ID);
 
@@ -181,8 +182,8 @@ abstract class GenericContentType {
         if( !empty($post) && $post->post_type == $this->id) {
             $fields_to_update = array();
             $fields_to_remove = array();
-            
-            foreach ($this->fields as $field_key => $field) {                
+
+            foreach ($this->fields as $field_key => $field) {
                 if ( !empty($_POST["wpc_$field_key"]) ) {
                     $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
                 } elseif ( !empty($this->fields[$field_key]->default) ) {
