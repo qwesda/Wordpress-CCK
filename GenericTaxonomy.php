@@ -16,7 +16,7 @@ abstract class GenericTaxonomy {
         global $wpc_taxonomies;
 
 //  SET DEFAULTS
-        if ( empty($this->id) )             	$this->id               = strtolower ( get_class($this) );
+        if ( empty($this->id) )             	$this->id               = strtolower ( get_class_name($this) );
 
         if ( empty($this->label) )          	$this->label            = $this->id . "s";
         if ( empty($this->singular_label) ) 	$this->singular_label   = $this->id;

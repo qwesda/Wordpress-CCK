@@ -11,7 +11,7 @@ abstract class GenericIndex {
         add_action ('wp_loaded',            array($this, 'wp_loaded') );
 
         foreach ($this->rewrite_rules as $key => $value) {
-            $this->rewrite_rules[$key] .= "&index=".get_class($this);
+            $this->rewrite_rules[$key] .= "&index=".get_class_name($this);
         }
 
     }
@@ -48,7 +48,7 @@ abstract class GenericIndex {
         global $wp;
         global $wp_rewrite;
 
-        if ( !empty($wp->query_vars["index"]) && $wp->query_vars["index"] == get_class($this) ) {
+        if ( !empty($wp->query_vars["index"]) && $wp->query_vars["index"] == get_class_name($this) ) {
             $this->echo_index();
 
             die();

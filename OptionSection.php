@@ -86,7 +86,7 @@ abstract class OptionSection {
 
     // maybe this should be unique per call to allow multiple (identical?)
     // sections...
-    $this->section_id = "wpc_" + get_class();
+    $this->section_id = "wpc_" + get_class_name();
 
     add_settings_section($this->section_id, $this->section_title, $intro, $settings_id);
     $this->options();

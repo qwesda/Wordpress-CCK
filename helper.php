@@ -15,6 +15,19 @@ function _die () {
     );
 }
 
+if (! function_exists('get_class_name')) {
+    function get_class_name ($class) {
+        if (is_object($class))
+            $class = get_class($class);
+
+        if (! is_string($class))
+            return false;
+
+        $components = explode('\\', $class);
+        return $components[count($components) - 1];
+    }
+}
+
 function _ping ($amount = 1){
     if (WP_DEBUG === false)
         return;

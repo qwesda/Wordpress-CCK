@@ -11,9 +11,9 @@ abstract class GenericMetabox {
     function __construct () {
 
 //  SET DEFAULTS
-        if(empty($this->metabox_id))            $this->metabox_id       = strtolower(get_class($this));
+        if(empty($this->metabox_id))            $this->metabox_id       = strtolower(get_class_name($this));
         if(empty($this->label))                 $this->label            = strtolower(str_replace("_", " ", $this->metabox_id));
-        
+
         //_log($this);
     }
 
