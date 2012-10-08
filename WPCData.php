@@ -39,7 +39,7 @@ abstract class WPCData {
      * If $data and $meta are set, use them (for when they are already fetched one way or another).
      * Both must be an associative array.
      */
-    function __construct($data=null, $meta=null) {
+    protected function __construct($data=null, $meta=null) {
         $this->data = $data;
         $this->meta = $meta;
     }
@@ -157,7 +157,7 @@ abstract class WPCData {
     }
 
     protected function formatted_string ($key) {
-        // shortcur if it is already cached
+        // shortcut if it is already cached
         if (isset($this->formatted_string_cache[$key]))
             return $this->formatted_string_cache[$key];
 

@@ -16,7 +16,9 @@ abstract class WPCRecord extends WPCData {
      * If $post and $meta are set, use them (for when they are already fetched one way or another).
      * Both must be an associative array.
      */
-    function __construct($id=null, $post=null, $meta=null) {
+    protected function __construct($id=null, $post=null, $meta=null) {
+        global $wpc_content_types;
+
         if ($id === null && $post === null) {
             ButterLog::warn(get_class($this).": Neither id nor post given!");
             throw new Exception("Cannot construct ".get_class($this).". Id and post are not set.");
@@ -33,9 +35,6 @@ abstract class WPCRecord extends WPCData {
      * returns a new object of the right type.
      */
     static function new_record($id=null, $p=null, $m=null, $type=null) {
-        #_ping();
-        ButterLog::debug("new_record($id, $type");
-        #
         if (! ($id || $p)) {
             ButterLog::error("Cannot get new record with neither post nor id set.");
             return;
@@ -56,6 +55,8 @@ abstract class WPCRecord extends WPCData {
         $classname = ucfirst($type)."Record";
         self::make_specific_class($classname, $type);
 
+        ButterLog::debug("new_record(id: $id, type: $type)");
+
         return new $classname($id, $p, $m);
     }
 
@@ -72,7 +73,14 @@ abstract class WPCRecord extends WPCData {
     }
 
     protected function load_meta() {
-        $this->meta = get_post_custom($this->id);
+        global $wpdb, $wpc_content_types;
+
+        $type = $wpc_content_types[$this->typeslug];
+        $table = $type->table;
+        $wpid_col = $type->wpid_col;
+        $stmt = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;",
+            $this->id);
+        $this->meta = $wpdb->get_row($stmt, 'ARRAY_A');
     }
     protected function load_data() {
         $this->data = get_post($this->id, 'ARRAY_A');
@@ -81,13 +89,13 @@ abstract class WPCRecord extends WPCData {
 
 // WP-style maker for the record
 function the_record ($id = null) {
+    global $post;
+
     if (!empty($id)) {
         $the_record = WPCRecord::new_record($id);
 
         return $the_record;
     }
-
-    global $post;
 
     if (!empty($post)) {
         $the_record = WPCRecord::new_record($post->ID, $post);

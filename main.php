@@ -129,10 +129,10 @@ class WPCustom {
         $post      = get_post($post_id);
 
         $post_type = $wpc_content_types[$post_type];
-        $post_data = $post_type->load_post_data($post);
+        $wpcrecord = WPCRecord::new_record(NULL, $post);
 
-        $theme      = wp_get_theme();
-        $theme_dir  = $theme["Stylesheet Dir"];
+        $theme     = wp_get_theme();
+        $theme_dir = $theme["Stylesheet Dir"];
 
 //  ADD METABOXES
         foreach ($post_type->fields as $field) {
@@ -144,7 +144,7 @@ class WPCustom {
                     $post_type->id,
                     "advanced",
                     "high",
-                    array('field' => $field, 'post_data' => $post_data)
+                    array('field' => $field, 'post_record' => $wpcrecord)
                 );
             }
         }
@@ -168,7 +168,7 @@ class WPCustom {
                     $post_type->id,
                     $$instance_name->context,
                     $$instance_name->priority,
-                    array('post_data' => $post_data)
+                    array('post_record' => $wpcrecord)
                 );
             }
         }
@@ -190,10 +190,10 @@ class WPCustom {
     }
 
     function echo_richtext_metabox ($post, $metabox) {
-        $field      = $metabox['args']['field'];
-        $post_data  = $metabox['args']['post_data'];
+        $field  = $metabox['args']['field'];
+        $record = $metabox['args']['post_record'];
 
-        $field->echo_field($post_data);
+        $field->echo_field($record);
 
         echo '<div class="clear"></div>';
     }

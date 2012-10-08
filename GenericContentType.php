@@ -30,7 +30,9 @@ abstract class GenericContentType {
         if ( empty($this->label) )          $this->label            = $this->id . "s";
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
         if ( empty($this->slug) )           $this->slug             = $this->id;
-
+        if ( empty($this->table) )          $this->table            = ucfirst($this->id . "s");
+        if ( empty($this->id_col) )         $this->id_col           = 'id';
+        if ( empty($this->wpid_col) )       $this->wpid_col         = 'wp_id';
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
 //  REGISTER POST TYPE
@@ -49,40 +51,51 @@ abstract class GenericContentType {
                 'supports'              => $this->supports,
                 'has_archive'           => $this->has_archive,
                 'taxonomies'            => $this->taxonomies,
-                #'register_meta_box_cb'  => array(&$this, "add_meta_boxes")
+                'register_meta_box_cb'  => array($this, 'wp_register_meta_box')
             ) );
         }
 
 //  ADD HOOKS
-        add_action ("save_post",                    array(&$this, "save_post") );
-        add_action ("wp_insert_post",               array(&$this, "wp_insert_post") );
-        add_action ("wp_update_post",               array(&$this, "wp_update_post") );
-    //  add_action ("delete_post",                  array(&$this, "delete_post") ); // NOT ACTUALLY NEEDED - RELATED POSTMETA GETS DELETED AUTOMATICALLY
+        add_action ("save_post",                    array($this, "save_post") );
+        add_action ("wp_insert_post",               array($this, "wp_insert_post", 10, 2) );
+        add_action ("wp_update_post",               array($this, "wp_update_post") );
+        add_action ("delete_post",                  array($this, "delete_post") );
 
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
 
         add_filter("manage_edit-{$this->slug}_columns",
-            array(&$this, "wp_manage_edit_columnms"));
+            array($this, "wp_manage_edit_columns"));
+        add_filter("manage_edit-{$this->slug}_display",
+            array($this, "wp_manage_edit_columns_display"));
         add_filter("manage_edit-{$this->slug}_columns",
-            array(&$this, "wp_manage_edit_columnms"));
+            array($this, "wp_manage_edit_columns"));
         add_filter("manage_edit-{$this->slug}_sortable_columns",
-            array(&$this, "wp_manage_edit_sortable_columns"));
+            array($this, "wp_manage_edit_sortable_columns"));
 
         add_filter( "the_content",  array($this, "the_content") );
 
         WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");
+
+        $wpc_content_types[$this->id] = $this;
+    }
+
+    /**
+     * stub which does nothing. overwrite if needed
+     */
+    public function wp_register_meta_box() {
     }
 
     /**
      * wp callback to add columns in overview for this post type
      */
     public function wp_manage_edit_columns($cols) {
-        $manage_cols = array_keys(array_filter($this->cols, function($col) {
+        $manage_cols = array_keys(array_filter($this->fields, function($col) {
             return isset($col['edit_column']) && $col['edit_column'] == true;
         }));
 
-        $manage_cols = array_combine($manage_cols, $manage_cols);
+        if (! empty($manage_cols))
+            $manage_cols = array_combine($manage_cols, $manage_cols);
 
         return $cols + $manage_cols;
     }
@@ -90,12 +103,12 @@ abstract class GenericContentType {
     /**
      * wp callback to display columns in overview for this post type
      */
-    public function wp_manage_edit_columns_display($col, $id) {
+    public function wp_manage_edit_columns_display($column, $id) {
         // all columns with key edit_column
-        $manage_cols = array_filter($this->cols, function($col) {
-            return isset($col['edit_column']) && $col['edit_column'] == true;
+        $manage_cols = array_filter($this->fields, function($col) {
+            return isset($col['sortable_column']) && $col['sortable_column'] == true;
         });
-        if (! isset($manage_cols[$col]))
+        if (! isset($manage_cols[$column]))
             return;
 
         $element = $this->element_by_wp_id($id);
@@ -107,12 +120,13 @@ abstract class GenericContentType {
      */
     public function wp_manage_edit_sortable_columns($cols) {
         // all columns with key edit_column
-        $manage_cols = array_keys(array_filter($this->cols, function($col) {
+        $manage_cols = array_keys(array_filter($this->fields, function($col) {
             return isset($col['edit_column']) && $col['edit_column'] == true;
         }));
 
         // [$col => $col]
-        $manage_cols = array_combine($manage_cols, $manage_cols);
+        if (! empty($manage_cols))
+            $manage_cols = array_combine($manage_cols, $manage_cols);
 
         return $cols + $manage_cols;
     }
@@ -126,11 +140,10 @@ abstract class GenericContentType {
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
 
-        if(!empty($post)) foreach (glob("$theme_dir/content_overrides/" . $post->post_type . ".php") as $filename) {
-            if ($post->post_type == $this->id) {
-
+        if (!empty($post) && $post->post_type == $this->id) {
+            $filename = "$theme_dir/content_overrides/{$post->post_type}.php";
+            if (file_exists($filename))
                 $content = _compile($filename);
-            }
         }
 
         return $content;
@@ -177,32 +190,6 @@ abstract class GenericContentType {
 
     function admin_init() {
 
-    }
-
-    function load_post_data ($post) {
-        $this->current_post_data = array();
-
-        if( !empty($post) && $post->post_type == $this->id ) {
-            $post_custom = get_post_custom($post->ID);
-
-            foreach ($this->fields as $field_key => $field) {
-                if ( !empty($post_custom[$field_key]) ) {
-                    if ( sizeof($post_custom[$field_key]) == 1 ) {
-                        $this->current_post_data[$field_key] = $post_custom[$field_key][0];
-                    } else {
-                        $this->current_post_data[$field_key] = $post_custom[$field_key];
-                    }
-                } elseif ( !empty($this->fields[$field_key]->default) ) {
-                    $this->current_post_data[$field_key] = $this->fields[$field_key]->default;
-                } else {
-                    $this->current_post_data[$field_key] = "";
-                }
-            }
-
-            return $this->current_post_data;
-        }
-
-        return false;
     }
 
     function delete_post ($post_id) {
@@ -257,9 +244,7 @@ abstract class GenericContentType {
         return false;
     }
 
-    function wp_insert_post ($post_id) {
-        $post = get_post($post_id);
-
+    function wp_insert_post ($post_id, $post) {
         if( !empty($post) && $post->post_type == $this->id) {
 
             return true;

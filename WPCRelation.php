@@ -12,7 +12,7 @@ abstract class WPCRelation extends WPCData {
      *
      *
      */
-    function __construct($id, $record_from, $record_to, $meta=null) {
+    protected function __construct($id, $record_from, $record_to, $meta=null) {
         global $wpc_relationships;
 
         if ($id === null || $record_from === null || $record_to === null) {
@@ -23,7 +23,6 @@ abstract class WPCRelation extends WPCData {
         $this->id = $id;
 
         // if only the record's or other record's id is given, construct a new record object
-
         if (! is_object($record_from)) {
             $type           = $wpc_relationships[$this->typeslug]->post_type_from_id;
             $record_from    = WPCRecord::new_record($record_from, null, null, $type);
