@@ -16,11 +16,12 @@ abstract class GenericContentType {
     public $hierarchical        = false;
     public $menu_position       = 5;
 
-    private $is_first_metabox   = true;
-    private $current_post_data  = array();
+    protected $is_first_metabox   = true;
+    protected $current_post_data  = array();
+
+    public $table;
 
     function __construct () {
-        global $wpdb;
         global $wpc_content_types;
 
 //  SET DEFAULTS
