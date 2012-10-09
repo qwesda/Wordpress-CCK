@@ -40,23 +40,25 @@ abstract class GenericField {
 
     abstract function echo_field_core ();
 
-    function echo_field_with_label_above ($post_data = array(), $label = "") { ?>
+    function echo_field_with_label_above ($label = "") {
+        $label = !empty($label) ? $label : $this->label;
+    ?>
         <div class="wpc_form_field wpc_form_field_<?php echo $this->type ?>" id="wpc_form_field_id_<?php echo $this->id ?>">
-            <label class="wpc_label_top" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->label ?></label>
-            <?php $this->echo_field_core ($post_data); ?>
+            <label class="wpc_label_top" for="<?php echo "wpc_$this->id" ?>"><?php echo $label ?></label>
+            <?php $this->echo_field_core (); ?>
         </div><?php
     }
 
     function echo_field_with_label_left ($label = "") { ?>
         <div class="wpc_form_field wpc_form_field_<?php echo $this->type ?>" id="wpc_form_field_id_<?php echo $this->id ?>">
-            <label class="wpc_label_left" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->label ?></label>
-            <?php $this->echo_field_core ($post_data); ?>
+            <label class="wpc_label_left" for="<?php echo "wpc_$this->id" ?>"><?php echo $label ?></label>
+            <?php $this->echo_field_core (); ?>
         </div><?php
     }
 
     function echo_field() { ?>
         <div class="wpc_form_field wpc_form_field_<?php echo $this->type ?>" id="wpc_form_field_id_<?php echo $this->id ?>">
-            <?php $this->echo_field_core ($post_data); ?>
+            <?php $this->echo_field_core (); ?>
         </div><?php
     }
 
