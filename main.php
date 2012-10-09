@@ -42,19 +42,19 @@ class WPCustom {
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
 
-   //     add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
-   //     add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
+   //     add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
+   //     add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
 
-		if ( !is_admin() ) {
-	        $this->wp_enqueue_scripts();
-	        $this->wp_enqueue_styles();
-		} else {
-	//		$this->admin_enqueue_scripts();
-			$this->admin_enqueue_styles();
+    if ( !is_admin() ) {
+          $this->wp_enqueue_scripts();
+          $this->wp_enqueue_styles();
+    } else {
+  //    $this->admin_enqueue_scripts();
+      $this->admin_enqueue_styles();
 
-			add_action('admin_enqueue_scripts',	array($this, "admin_enqueue_scripts") );
-	//		add_action('admin_enqueue_styles',	array($this, "admin_enqueue_styles") );
-		}
+      add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
+  //    add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
+    }
 
 
 
@@ -129,7 +129,6 @@ class WPCustom {
         $post      = get_post($post_id);
 
         $post_type = $wpc_content_types[$post_type];
-        $wpcrecord = WPCRecord::new_record(NULL, $post);
 
         $theme     = wp_get_theme();
         $theme_dir = $theme["Stylesheet Dir"];
@@ -144,7 +143,7 @@ class WPCustom {
                     $post_type->id,
                     "advanced",
                     "high",
-                    array('field' => $field, 'post_record' => $wpcrecord)
+                    array('field' => $field)
                 );
             }
         }

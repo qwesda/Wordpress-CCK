@@ -16,7 +16,7 @@ class ImageField extends FileField {
             $att         = get_post($file_id);
             $meta        = (object) wp_get_attachment_metadata($file_id);
             $thumb_url   = wp_get_attachment_thumb_url($file_id);
-                        
+
             $ret .= "<img src='$thumb_url'>";
             $ret .= "<a target='_blank' class='wpc_file_field_file_name' href='$att->guid'>$att->post_title</a><br>";
             $ret .= "<span class='wpc_file_field_mime_type'>$att->post_mime_type</span><br>";

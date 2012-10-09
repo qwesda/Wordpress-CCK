@@ -31,8 +31,8 @@ abstract class GenericContentType {
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
         if ( empty($this->slug) )           $this->slug             = $this->id;
         if ( empty($this->table) )          $this->table            = ucfirst($this->id . "s");
-        if ( empty($this->id_col) )         $this->id_col           = 'id';
-        if ( empty($this->wpid_col) )       $this->wpid_col         = 'wp_id';
+        if ( empty($this->id_col) )         $this->id_col           = 'meta_id';
+        if ( empty($this->wpid_col) )       $this->wpid_col         = 'post_id';
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
 //  REGISTER POST TYPE
@@ -64,7 +64,7 @@ abstract class GenericContentType {
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
 
-        add_filter("manage_edit-{$this->slug}_columns",
+/*        add_filter("manage_edit-{$this->slug}_columns",
             array($this, "wp_manage_edit_columns"));
         add_filter("manage_edit-{$this->slug}_display",
             array($this, "wp_manage_edit_columns_display"));
@@ -72,7 +72,7 @@ abstract class GenericContentType {
             array($this, "wp_manage_edit_columns"));
         add_filter("manage_edit-{$this->slug}_sortable_columns",
             array($this, "wp_manage_edit_sortable_columns"));
-
+*/
         add_filter( "the_content",  array($this, "the_content") );
 
         WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");

@@ -9,13 +9,15 @@ class TextField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-    function echo_field_core ($post_data = array ()) {
+    function echo_field_core () {
+        $record = the_record();
+        $value  = $record->__get($this->id);
      ?>
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"
                class="wpc_input wpc_input_text <?php if ($this->localized) echo "wpc_localized_input";?>"
                name="<?php echo "wpc_$this->id"; ?>"
-               value="<?php if ( !empty($post_data) ) echo $post_data[$this->id]; ?>"
+               value="<?php if ( !empty($value) ) echo htmlspecialchars($value, ENT_QUOTES); ?>"
                placeholder="<?php echo $this->hint; ?>" />
     <?php }
 }

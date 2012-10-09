@@ -7,13 +7,16 @@
 class RichTextField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params);
-		
-		$this->dont_auto_echo_metabox = !empty($params['dont_auto_echo_metabox']) ? true : false;
+
+        $this->dont_auto_echo_metabox = !empty($params['dont_auto_echo_metabox']) ? true : false;
     }
 
-    function echo_field_core ($post_data = array ()) {
-        if (isset($post_data[$this->id]))
-            $content = $post_data[$this->id];
+    function echo_field_core () {
+        $record = the_record();
+        $value  = $record->__get($this->id);
+
+        if (isset($value))
+            $content = $value;
         else
             $content = "";
 
