@@ -13,13 +13,16 @@ class DateField extends GenericField {
      * the non-js-version is not localized at all. it would need a save-hook to convert the localized date back.
      * the js-version is partly localized. it needs a date_format in js.
      */
-    function echo_field_core ($post_data = array ()) {
+    function echo_field_core () {
+        $record = the_record();
+        $value  = $record->__get($this->id);
+
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
             placeholder="<?php echo $this->hint;?>"
-            id="<?php echo "wpc_field_$this->id" ?>" value="<?php 
-                if ( !empty($post_data) ) {
-                    if ( $post_data[$this->id] == "NOW" ) echo date("Y-m-d"); 
-                    else echo $post_data[$this->id]; 
+            id="<?php echo "wpc_field_$this->id" ?>" value="<?php
+                if ( !empty($value) ) {
+                    if ( $value == "NOW" ) echo date("Y-m-d");
+                    else echo $post_data[$this->id];
                 } ?>"; />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
         <span class='wpc_input_date_date hide-if-no-js'>
