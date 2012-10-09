@@ -64,7 +64,7 @@ abstract class GenericContentType {
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
 
-/*        add_filter("manage_edit-{$this->slug}_columns",
+        add_filter("manage_edit-{$this->slug}_columns",
             array($this, "wp_manage_edit_columns"));
         add_filter("manage_edit-{$this->slug}_display",
             array($this, "wp_manage_edit_columns_display"));
@@ -72,7 +72,7 @@ abstract class GenericContentType {
             array($this, "wp_manage_edit_columns"));
         add_filter("manage_edit-{$this->slug}_sortable_columns",
             array($this, "wp_manage_edit_sortable_columns"));
-*/
+
         add_filter( "the_content",  array($this, "the_content") );
 
         WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");
@@ -91,7 +91,7 @@ abstract class GenericContentType {
      */
     public function wp_manage_edit_columns($cols) {
         $manage_cols = array_keys(array_filter($this->fields, function($col) {
-            return isset($col['edit_column']) && $col['edit_column'] == true;
+            return $col->edit_column;
         }));
 
         if (! empty($manage_cols))
@@ -106,7 +106,7 @@ abstract class GenericContentType {
     public function wp_manage_edit_columns_display($column, $id) {
         // all columns with key edit_column
         $manage_cols = array_filter($this->fields, function($col) {
-            return isset($col['sortable_column']) && $col['sortable_column'] == true;
+            return $col->sortable_column;
         });
         if (! isset($manage_cols[$column]))
             return;
@@ -121,7 +121,7 @@ abstract class GenericContentType {
     public function wp_manage_edit_sortable_columns($cols) {
         // all columns with key edit_column
         $manage_cols = array_keys(array_filter($this->fields, function($col) {
-            return isset($col['edit_column']) && $col['edit_column'] == true;
+            return $col->edit_column;
         }));
 
         // [$col => $col]

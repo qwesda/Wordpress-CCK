@@ -9,7 +9,10 @@ abstract class GenericField {
     public $default         = "";
     public $hint            = "";
 
-    public $required        = FALSE;
+    public $edit_column     = false;
+    public $sortable_column = false;
+
+    public $required        = false;
 
     /**
      * set to true to have qtranslate-like localization (e.g. [:en]english text[:de]german text)
