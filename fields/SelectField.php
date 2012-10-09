@@ -20,8 +20,8 @@ class SelectField extends GenericField {
         <select id="<?php echo "wpc_field_$this->id" ?>" class="wpc_input wpc_input_select"   name="<?php echo "wpc_$this->id" ?>" width="100%">
             <option value=""></option>
             <?php foreach ($this->options as $option): ?>
-                <option value="<?php echo $option ?>" <?php
-                    if ( !empty($post_data) ) {
+                <option value="<?php echo $option; ?>" <?php
+                    if ( !empty($value) ) {
                         echo $value == $option ? 'selected' : '';
                     } else {
                         echo $this->default == $value ? 'selected' : '';
