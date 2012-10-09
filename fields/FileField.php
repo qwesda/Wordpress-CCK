@@ -112,8 +112,8 @@ class FileField extends GenericField {
 
         return $ret;
     }
-    function echo_field_core ($post_data = array ()) {
-        echo $this->get_field_core ($post_data);
+    function echo_field_core () {
+        echo $this->get_field_core ();
     }
 }
 

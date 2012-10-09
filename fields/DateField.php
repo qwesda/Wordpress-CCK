@@ -13,28 +13,29 @@ class DateField extends GenericField {
      * the non-js-version is not localized at all. it would need a save-hook to convert the localized date back.
      * the js-version is partly localized. it needs a date_format in js.
      */
-    function echo_field_core ($post_data = array ()) {
+    function echo_field_core () {
+        $record = the_record();
+        $value = $record->get($this->id);
+
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
             placeholder="<?php echo $this->hint;?>"
-            id="<?php echo "wpc_field_$this->id" ?>" value="<?php 
-                if ( !empty($post_data) ) {
-                    if ( $post_data[$this->id] == "NOW" ) echo date("Y-m-d"); 
-                    else echo $post_data[$this->id]; 
-                } ?>"; />
+            id="<?php echo "wpc_field_$this->id" ?>" value="<?php
+                  if ( $value == "NOW" ) echo date("Y-m-d");
+                  else echo $value;
+                ?>"; />
         <label class="wpc_hint hide-if-js" for="<?php echo "wpc_$this->id" ?>"><?php echo $this->hint ?></label>
         <span class='wpc_input_date_date hide-if-no-js'>
             <a class='wpc_input_date_edit_link' href='#'><span id="wpc_input_date_timestamp-<?php echo $this->id;?>">
-                <?php if ($post_data[$this->id] !== '') echo date_i18n(__('Y-m-d'), mysql2date('U', $post_data[$this->id], false)); //date_i18n(__('M, j Y'), mysql2date('U', $post_data[$this->id], false));
+                <?php if ($value !== '') echo date_i18n(__('Y-m-d'), mysql2date('U', $value, false)); //date_i18n(__('M, j Y'), mysql2date('U', $value, false));
                       else echo _e('Set Date'); ?> </span></a>
         </span>
         <div class='wpc_input_date_edit_container hidden'>
             <?php
             $m = $d = $y = '';
-            if ($post_data[$this->id] !== '') {
-                $post_date = $post_data[$this->id];
-                $m = mysql2date('m', $post_date, false);
-                $d = mysql2date('j', $post_date, false);
-                $y = mysql2date('Y', $post_date, false);
+            if ($value !== '') {
+                $m = mysql2date('m', $value, false);
+                $d = mysql2date('j', $value, false);
+                $y = mysql2date('Y', $value, false);
             }
               $month = "<select id='wpc_input_date_m-$this->id' name='wpc_date_m-$this->id'>\n";
               for ($i=1; $i<=12; $i+=1) {
