@@ -52,6 +52,10 @@ abstract class WPCData {
      * with prefix "connected_" return the connected items of a specific type.
      */
     function __get($attribute) {
+        return $this->get($attribute);
+    }
+
+    function get($attribute) {
         if (empty($this->data)) {
             $this->load_data();
         }
