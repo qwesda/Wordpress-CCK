@@ -17,6 +17,8 @@ abstract class GenericContentType {
     public $menu_position       = 5;
 
     protected $is_first_metabox   = true;
+
+    // is this still neccessary?
     protected $current_post_data  = array();
 
     public $table;
