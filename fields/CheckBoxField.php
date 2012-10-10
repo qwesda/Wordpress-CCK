@@ -9,8 +9,11 @@ class CheckBoxField extends GenericField {
         parent::__construct ($parent, $params);
     }
 
-    function echo_field_core ($post_data = array ()) {  ?>
-        <input type="checkbox" class="wpc_input wpc_input_checkbox" name="<?php echo "wpc_$this->id" ?>" id="<?php echo "wpc_field_$this->id" ?>" value="true" <?php if ( !empty($post_data) ) echo $post_data[$this->id] == "true" ? "checked=\"checked\"" : ""; ?> /> <label for="<?php echo "wpc_field_$this->id" ?>"><?php echo $this->label ?></label> 
+    function echo_field_core ($post_data = array ()) {
+        $record = the_record();
+        $value  = $record->__get($this->id);
+    ?>
+        <input type="checkbox" class="wpc_input wpc_input_checkbox" name="<?php echo "wpc_$this->id" ?>" id="<?php echo "wpc_field_$this->id" ?>" value="1" <?php if ( !empty($value) ) echo "checked=\"checked\""; ?> /> <label for="<?php echo "wpc_field_$this->id" ?>"><?php echo $this->label ?></label>
     <?php }
 }
 
