@@ -60,7 +60,6 @@ abstract class GenericContentType {
         }
 
 //  ADD HOOKS
-        add_action ("save_post",                    array($this, "save_post"), 10, 2);
         add_action ("wp_insert_post",               array($this, "wp_insert_post"), 10, 2);
         add_action ("wp_update_post",               array($this, "wp_update_post") );
         add_action ("delete_post",                  array($this, "delete_post") );
@@ -220,35 +219,31 @@ abstract class GenericContentType {
     function save_post ($post_id, $post) {
         global $wpdb;
 
-        if( !empty($post) && $post->post_type == $this->id) {
-            ButterLog::debug("saving post with post_id: $post_id");
-            $fields_to_update = array();
+        ButterLog::debug("saving post with post_id: $post_id");
+        $fields_to_update = array();
 
-            foreach ($this->fields as $field_key => $field) {
-                if ( !empty($_POST["wpc_$field_key"]) ) {
-                    $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
-                } elseif ( !empty($this->fields[$field_key]->default) ) {
-                    $fields_to_update[$field_key] = $this->fields[$field_key]->default;
-                } else {
-                    $fields_to_update[$field_key] = NULL;
-                }
+        foreach ($this->fields as $field_key => $field) {
+            if ( !empty($_POST["wpc_$field_key"]) ) {
+                $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
+            } elseif ( !empty($this->fields[$field_key]->default) ) {
+                $fields_to_update[$field_key] = $this->fields[$field_key]->default;
+            } else {
+                $fields_to_update[$field_key] = NULL;
             }
-
-            if( $wpdb->update($this->table,
-                $fields_to_update,                  // col = val
-                array($this->wpid_col => $post_id), // where
-                array_map(function($col) {          // printf formats for set
-                    return $col->printf_specifier;
-                }, $this->fields),
-                '%d'                                // printf format for where
-                ) === false) {
-                    ButterLog::error("Could not update data for post_id $post_id.");
-                    return false;
-            }
-            return true;
         }
 
-        return false;
+        if( $wpdb->update($this->table,
+            $fields_to_update,                  // col = val
+            array($this->wpid_col => $post_id), // where
+            array_map(function($col) {          // printf formats for set
+                return $col->printf_specifier;
+            }, $this->fields),
+            '%d'                                // printf format for where
+            ) === false) {
+                ButterLog::error("Could not update data for post_id $post_id.");
+                return false;
+        }
+        return true;
     }
 
     function wp_insert_post ($post_id, $post) {

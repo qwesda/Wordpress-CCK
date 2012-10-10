@@ -29,6 +29,7 @@ class WPCustom {
 
         add_action('widgets_init',          array($this, "widgets_init") );
 
+        add_action('save_post',             array($this, 'save_post'), 10, 2);
         add_action('add_meta_boxes',        array($this, "add_meta_boxes") );
 
         // register hook to set current item in nav menus (default priority)
@@ -116,6 +117,11 @@ class WPCustom {
         }
     }
 
+    function save_post ($post_id, $post) {
+        global $wpc_content_types;
+        $type = $wpc_content_types[$post->post_type];
+        return $type->save_post($post_id, $post);
+    }
 
     function add_meta_boxes ($post_type) {
         global $wpc_relationships;
