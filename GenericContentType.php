@@ -60,8 +60,8 @@ abstract class GenericContentType {
         }
 
 //  ADD HOOKS
-        add_action ("save_post",                    array($this, "save_post") );
-        add_action ("wp_insert_post",               array($this, "wp_insert_post", 10, 2) );
+        add_action ("save_post",                    array($this, "save_post"), 10, 2);
+        add_action ("wp_insert_post",               array($this, "wp_insert_post"), 10, 2);
         add_action ("wp_update_post",               array($this, "wp_update_post") );
         add_action ("delete_post",                  array($this, "delete_post") );
 
@@ -217,12 +217,12 @@ abstract class GenericContentType {
         return false;
     }
 
-    function save_post ($post_id) {
-        $post = get_post($post_id);
+    function save_post ($post_id, $post) {
+        global $wpdb;
 
         if( !empty($post) && $post->post_type == $this->id) {
+            ButterLog::debug("saving post with post_id: $post_id");
             $fields_to_update = array();
-            $fields_to_remove = array();
 
             foreach ($this->fields as $field_key => $field) {
                 if ( !empty($_POST["wpc_$field_key"]) ) {
@@ -230,18 +230,21 @@ abstract class GenericContentType {
                 } elseif ( !empty($this->fields[$field_key]->default) ) {
                     $fields_to_update[$field_key] = $this->fields[$field_key]->default;
                 } else {
-                    $fields_to_remove[$field_key] = true;
+                    $fields_to_update[$field_key] = NULL;
                 }
             }
 
-            foreach ($fields_to_update as $field_key => $field_value) {
-                update_post_meta($post_id, $field_key, $field_value);
+            if( $wpdb->update($this->table,
+                $fields_to_update,                  // col = val
+                array($this->wpid_col => $post_id), // where
+                array_map(function($col) {          // printf formats for set
+                    return $col->printf_specifier;
+                }, $this->fields),
+                '%d'                                // printf format for where
+                ) === false) {
+                    ButterLog::error("Could not update data for post_id $post_id.");
+                    return false;
             }
-
-            foreach ($fields_to_remove as $field_key => $field_value) {
-                delete_post_meta($post_id, $field_key);
-            }
-
             return true;
         }
 

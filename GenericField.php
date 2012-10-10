@@ -19,6 +19,8 @@ abstract class GenericField {
      */
     public $localized = false;
 
+    public $printf_specifier = '%s';
+
     function __construct ($parent, $params) {
         $this->type = get_class_name($this);
 
