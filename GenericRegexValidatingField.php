@@ -54,7 +54,9 @@ abstract class GenericRegexValidatingField extends GenericField {
      * the one span, initially hidden, contains a textbox, the other one
      * contains the user visible string and edit button.
      */
-    function echo_field_core ($post_data = array()) {
+    function echo_field_core () {
+        $record = the_record();
+        $value = $record->get($this->id);
         echo "<script type='text/javascript'>\n";
         // insert wpc_regexval = [[/regex/, "replace_for_db", "replace_for_ui"]
         echo "if (typeof wpc_regexval === 'undefined') wpc_regexval = [];\n";
@@ -67,18 +69,18 @@ abstract class GenericRegexValidatingField extends GenericField {
         echo "</script>";
 
         echo "<input type='hidden' id='wpc_$this->id' name='wpc_$this->id' ";
-        if ($post_data[$this->id] !== '')
-            echo "value='{$post_data[$this->id]}' ";
+        if ($value !== '')
+            echo "value='$value' ";
         echo "/>\n";
 
         echo "<span id='wpc_regexval_display_$this->id' class='wpc_regexval_display'>";
         //echo "<span class='wpc_regexval_display_val'>";
-        if ($post_data[$this->id] !== '')
-            echo $this->display_value($post_data[$this->id]);
+        if ($value !== '')
+            echo $this->display_value($value);
 		else {
 			echo "set value";
 		}
-        ButterLog::debug($this->display_value($post_data[$this->id]));
+        ButterLog::debug($this->display_value($value));
         //echo "</span>";
         echo "</span>\n";
 
@@ -87,7 +89,7 @@ abstract class GenericRegexValidatingField extends GenericField {
             id='wpc_input_regexval_$this->id'
             class='wpc_input wpc_input_text wpc_input_regexval_input'
             name='_wpc_$this->id'
-            value='{$post_data[$this->id]}' />";
+            value='$value' />";
         echo "<a class='wpc_val_apply' href='#'><img src='".esc_url(admin_url('images/yes.png'))."' alt='apply' /></a>";
         echo "<a class='wpc_val_cancel' href='#'><img src='".esc_url(admin_url('images/no.png'))."' alt='cancel' /></a>";
         echo "</span>\n";

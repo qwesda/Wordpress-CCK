@@ -167,7 +167,7 @@ class WPCustom {
                     $post_type->id,
                     $$instance_name->context,
                     $$instance_name->priority,
-                    array('post_record' => $wpcrecord)
+                    array()
                 );
             }
         }
@@ -190,9 +190,8 @@ class WPCustom {
 
     function echo_richtext_metabox ($post, $metabox) {
         $field  = $metabox['args']['field'];
-        $record = $metabox['args']['post_record'];
 
-        $field->echo_field($record);
+        $field->echo_field();
 
         echo '<div class="clear"></div>';
     }
