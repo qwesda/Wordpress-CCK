@@ -22,6 +22,8 @@ abstract class GenericContentType {
     protected $current_post_data  = array();
 
     public $table;
+    public $id_col;
+    public $wpid_col;
 
     function __construct () {
         global $wpc_content_types;
