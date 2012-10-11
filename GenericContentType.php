@@ -234,6 +234,8 @@ abstract class GenericContentType {
             } elseif ( !empty($this->fields[$field_key]->default) ) {
                 $fields_to_update[$field_key] = $this->fields[$field_key]->default;
             } else {
+                // this won't work as long as bug #15158 is not fixed.
+                // https://core.trac.wordpress.org/ticket/15158
                 $fields_to_update[$field_key] = NULL;
             }
         }
