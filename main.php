@@ -119,6 +119,10 @@ class WPCustom {
 
     function save_post ($post_id, $post) {
         global $wpc_content_types;
+
+        if (! isset($wpc_content_types[$post->post_type]))
+            return;
+
         $type = $wpc_content_types[$post->post_type];
         return $type->save_post($post_id, $post);
     }
