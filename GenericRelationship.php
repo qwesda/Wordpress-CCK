@@ -235,28 +235,29 @@ abstract class GenericRelationship {
         }
 
         if ( !empty($id) ) {
-            $wpc_relationships[$req->rel_id];
+            $rel = $wpc_relationships[$req->rel_id];
             ButterLog::debug("", $req);
 
-            $sql = "SELECT * FROM $rel->table WHERE $col = %d";
+            $sql = "SELECT $rel->table.*, wp_posts.post_title FROM $rel->table ".
+            "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
+            "WHERE $col = %d";
 
             ButterLog::debug("", $sql);
 
-
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
-            // add metadata
-            $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
-              WHERE relation_id = %d";
+            ButterLog::debug("", $sql_result);
 
             foreach ($sql_result as &$relation_row) {
-                $sql_metadata_result = $wpdb->get_results($wpdb->prepare($sql, $relation_row->relation_id));
-
                 $relation_row->metadata = array();
 
-                foreach ($sql_metadata_result as &$metadata_row) {
-                    $relation_row->metadata[ $metadata_row->meta_key ] = $metadata_row->meta_value;
+                foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id' && $key != 'metadata') {
+                    $relation_row->metadata[ $key] = $value;
+
+#                    delete ($relation_row[$key]);
                 }
+
+                #ButterLog::debug("", $relation_row);
 
                 $ret->results[] = $relation_row;
             }
