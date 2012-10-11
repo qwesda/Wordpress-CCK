@@ -1,5 +1,6 @@
 /* @override 
-	http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
+	http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
+	http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
 
 div.relation_edit_connected_metadata_box,
 div.relation_connect_existing_metadata_box,
@@ -31,6 +32,12 @@ div.relation_connected_box {
     padding: 0px;
  
  	position: relative;   
+}
+
+ul.relation_conected_list li span.connected_item_info {
+	width: 150px;
+	display: inline-block;
+	text-align: right;
 }
 
 label.wpc_label_left {

@@ -236,17 +236,17 @@ abstract class GenericRelationship {
 
         if ( !empty($id) ) {
             $rel = $wpc_relationships[$req->rel_id];
-            ButterLog::debug("", $req);
+            #ButterLog::debug("", $req);
 
             $sql = "SELECT $rel->table.*, wp_posts.post_title FROM $rel->table ".
             "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
             "WHERE $col = %d";
 
-            ButterLog::debug("", $sql);
+            #ButterLog::debug("", $sql);
 
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
-            ButterLog::debug("", $sql_result);
+            #ButterLog::debug("", $sql_result);
 
             foreach ($sql_result as &$relation_row) {
                 $relation_row->metadata = array();
@@ -424,7 +424,7 @@ data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
 data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
-            <div class="relation_connected_box">
+            <div class="relation_connected_box" style="display: block;">
                 <div class="relation_buttons_box">
                     <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a><br><br>
                     <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a><br><br>
@@ -436,7 +436,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 </ul>
             </div>
 
-            <div class="relation_add_search_box hidden">
+            <div class="relation_add_search_box hidden" style="display: none;">
                 <div class="relation_add_buttons_box relation_buttons_box">
                     <label for="relation_src_search">search</label>
                     <input type="text" class="wpc_input_text relation_src_search"/>
@@ -449,7 +449,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <ul class="relation_src_list"></ul>
             </div>
 
-            <div class="relation_edit_connected_box hidden">
+            <div class="relation_edit_connected_box hidden" style="display: none;">
                 <div class="relation_edit_connected_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_edit_connected_cancel button" href='#'>cancel</a>
@@ -461,7 +461,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_edit_connected_metadata_box"></div>
             </div>
 
-            <div class="relation_connect_existing_box hidden">
+            <div class="relation_connect_existing_box hidden" style="display: none;">
                 <div class="relation_connect_existing_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_connect_existing_cancel button" href='#'>cancel</a>
@@ -472,7 +472,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_connect_existing_metadata_box"></div>
             </div>
 
-            <div class="relation_connect_new_box hidden">
+            <div class="relation_connect_new_box hidden" style="display: none;">
                 <div class="relation_connect_new_buttons_box relation_buttons_box">
                     <label for="new_item_title">title for the new <?php echo $dst->singular_label ?></label>
                     <input type="text" class="wpc_input wpc_input_text new_item_title" id="wpc_<?php echo $this->id ?>_field_new_item_title" />
