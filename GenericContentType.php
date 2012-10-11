@@ -243,7 +243,7 @@ abstract class GenericContentType {
             array($this->wpid_col => $post_id), // where
             array_map(function($col) {          // printf formats for set
                 return $col->printf_specifier;
-            }, $this->fields),
+            }, $candidate_fields),
             '%d'                                // printf format for where
             ) === false) {
                 ButterLog::error("Could not update data for post_id $post_id.");
