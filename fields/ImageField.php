@@ -26,6 +26,8 @@ class ImageField extends FileField {
             $ret .= "<span class='wpc_file_field_not_set'>not set</span>";
         }
 
+        ButterLog::debug("ImageField get_preview_html: $ret");
+
         return $ret;
     }
 }

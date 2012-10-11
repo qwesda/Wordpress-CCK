@@ -26,15 +26,16 @@ class FileField extends GenericField {
 
         check_ajax_referer("set-$this->key");
 
+
         if ($file_id == '-1') {
             delete_post_meta($post_id, $this->id);
 
-            die($this->get_field_core(null));
+            die($this->get_field_core());
         }
 
         if ($file_id && get_post($file_id)) {
             update_post_meta($post_id, $this->id, $file_id);
-            die($this->get_field_core(array("$this->id" => $file_id)));
+            die($this->get_field_core_for_file_id($file_id));
         }
 
         die('0');
@@ -86,15 +87,8 @@ class FileField extends GenericField {
         return $ret;
     }
 
-    function get_field_core () {
-        $record = the_record();
-        $value  = $record->__get($this->id);
-
-        $ret = "";
-
-        $file_id = !empty($value) ? intval($value) : '';
-
-        $ret .= "<div id='wpc_file_field_container_$this->key'><div id='wpc_file_field_preview_$this->key' class='$this->key wpc_file_field_preview'>".
+    function get_field_core_for_file_id ($file_id) {
+        $ret = "<div id='wpc_file_field_container_$this->key'><div id='wpc_file_field_preview_$this->key' class='$this->key wpc_file_field_preview'>".
             $this->get_preview_html( $file_id ) . "
         </div>
         <input type='button' class='button wpc_input wpc_input_file_select' id='' value='select' />
@@ -111,6 +105,17 @@ class FileField extends GenericField {
         $ret .= "</div>";
 
         return $ret;
+    }
+    function get_field_core () {
+        $ret    = "";
+        $record = the_record();
+
+        if (!empty($record))
+            $value  = $record->get($this->id);
+
+        $file_id = !empty($value) ? intval($value) : '';
+
+        return $this->get_field_core_for_file_id($file_id);
     }
     function echo_field_core () {
         echo $this->get_field_core ();
