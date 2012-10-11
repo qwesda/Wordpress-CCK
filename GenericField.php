@@ -21,6 +21,9 @@ abstract class GenericField {
 
     public $printf_specifier = '%s';
 
+    // set to 'r', 'w' or 'rw' for read only, write only and read-write access
+    protected $access = 'rw';
+
     function __construct ($parent, $params) {
         $this->type = get_class_name($this);
 
@@ -44,6 +47,10 @@ abstract class GenericField {
     }
 
     abstract function echo_field_core ();
+
+    function may_write($post_id = NULL) {
+        return $this->access == 'rw' || $this->access == 'w';
+    }
 
     function echo_field_with_label_above ($label = "") {
         $label = !empty($label) ? $label : $this->label;

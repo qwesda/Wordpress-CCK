@@ -222,7 +222,13 @@ abstract class GenericContentType {
         ButterLog::debug("saving post with post_id: $post_id");
         $fields_to_update = array();
 
-        foreach ($this->fields as $field_key => $field) {
+        $candidate_fields = array_filter($this->fields,
+            function($field) use ($post_id) {
+                return $field->may_write($post_id);
+            }
+        );
+
+        foreach ($candidate_fields as $field_key => $field) {
             if ( !empty($_POST["wpc_$field_key"]) ) {
                 $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
             } elseif ( !empty($this->fields[$field_key]->default) ) {
