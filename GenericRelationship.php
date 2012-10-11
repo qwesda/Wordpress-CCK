@@ -14,8 +14,9 @@ abstract class GenericRelationship {
     public $post_type_from        = NULL;
     public $post_type_to_id       = "";
     public $post_type_to          = NULL;
+    public $table                 = NULL;
 
-    public $field_to_show_in_list	= "";
+    public $field_to_show_in_list = "";
 
     function __construct () {
         global $wpc_relationships;
@@ -25,6 +26,8 @@ abstract class GenericRelationship {
         if (empty($this->id))       $this->id       = strtolower( get_class_name($this) );
 
         if (empty($this->label))    $this->label    = $this->id;
+        if (empty($this->table))    $this->table    = "wp_wpc__$this->id";
+
 
         if ( !in_array( $this->post_type_from_id, get_post_types() ) ) {
             die ("in wpc relation \"$this->id\" is post_type_from not a valid wpc content_type\npost_type_from_id == \"$this->post_type_from_id\"");
@@ -57,7 +60,7 @@ abstract class GenericRelationship {
     }
 
     static function echo_relations_metabox ($post) {
-		include("metaboxes/relations_metabox.php");
+    include("metaboxes/relations_metabox.php");
     }
 
     function echo_item_metabox () {
@@ -176,10 +179,10 @@ abstract class GenericRelationship {
         } else if (empty($rel->relation_id)) {
             $ret->errors[] = "relation_id has invalid value '$rel->relation_id'";
         } else {
-            $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
+            $stmt = $wpdb->query($wpdb->prepare ("UPDATE $rel->table SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
 
             if ( !empty($req->metadata) ) {
-                $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
+                $sql = 'UPDATE $rel->table SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
 
                 foreach ($req->metadata as $key => $value) {
                     $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
@@ -209,6 +212,7 @@ abstract class GenericRelationship {
 
     static function get_connected_items ($req) {
         global $wpdb;
+        global $wpc_relationships;
 
         $ret = (object)array(
                      "errors" => array (),
@@ -231,9 +235,14 @@ abstract class GenericRelationship {
         }
 
         if ( !empty($id) ) {
-            $sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
-              JOIN $wpdb->posts ON $wpdb->posts.id = wp_wpc_relations.$othercol
-              WHERE $col = %d AND relationship_id = %s";
+            $wpc_relationships[$req->rel_id];
+            ButterLog::debug("", $req);
+
+            $sql = "SELECT * FROM $rel->table WHERE $col = %d";
+
+            ButterLog::debug("", $sql);
+
+
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
             // add metadata
