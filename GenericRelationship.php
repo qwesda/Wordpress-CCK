@@ -14,8 +14,9 @@ abstract class GenericRelationship {
     public $post_type_from        = NULL;
     public $post_type_to_id       = "";
     public $post_type_to          = NULL;
+    public $table                 = NULL;
 
-    public $field_to_show_in_list	= "";
+    public $field_to_show_in_list = "";
 
     function __construct () {
         global $wpc_relationships;
@@ -25,6 +26,8 @@ abstract class GenericRelationship {
         if (empty($this->id))       $this->id       = strtolower( get_class_name($this) );
 
         if (empty($this->label))    $this->label    = $this->id;
+        if (empty($this->table))    $this->table    = "wp_wpc__$this->id";
+
 
         if ( !in_array( $this->post_type_from_id, get_post_types() ) ) {
             die ("in wpc relation \"$this->id\" is post_type_from not a valid wpc content_type\npost_type_from_id == \"$this->post_type_from_id\"");
@@ -57,7 +60,7 @@ abstract class GenericRelationship {
     }
 
     static function echo_relations_metabox ($post) {
-		include("metaboxes/relations_metabox.php");
+    include("metaboxes/relations_metabox.php");
     }
 
     function echo_item_metabox () {
@@ -176,10 +179,10 @@ abstract class GenericRelationship {
         } else if (empty($rel->relation_id)) {
             $ret->errors[] = "relation_id has invalid value '$rel->relation_id'";
         } else {
-            $stmt = $wpdb->query($wpdb->prepare ("UPDATE wp_wpc_relations SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
+            $stmt = $wpdb->query($wpdb->prepare ("UPDATE $rel->table SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
 
             if ( !empty($req->metadata) ) {
-                $sql = 'UPDATE wp_wpc_relations_meta SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
+                $sql = 'UPDATE $rel->table SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
 
                 foreach ($req->metadata as $key => $value) {
                     $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
@@ -209,6 +212,7 @@ abstract class GenericRelationship {
 
     static function get_connected_items ($req) {
         global $wpdb;
+        global $wpc_relationships;
 
         $ret = (object)array(
                      "errors" => array (),
@@ -231,23 +235,29 @@ abstract class GenericRelationship {
         }
 
         if ( !empty($id) ) {
-            $sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID, wp_wpc_relations.* FROM wp_wpc_relations
-              JOIN $wpdb->posts ON $wpdb->posts.id = wp_wpc_relations.$othercol
-              WHERE $col = %d AND relationship_id = %s";
+            $rel = $wpc_relationships[$req->rel_id];
+            #ButterLog::debug("", $req);
+
+            $sql = "SELECT $rel->table.*, wp_posts.post_title FROM $rel->table ".
+            "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
+            "WHERE $col = %d";
+
+            #ButterLog::debug("", $sql);
+
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
-            // add metadata
-            $sql = "SELECT meta_id, meta_key, meta_value FROM wp_wpc_relations_meta
-              WHERE relation_id = %d";
+            #ButterLog::debug("", $sql_result);
 
             foreach ($sql_result as &$relation_row) {
-                $sql_metadata_result = $wpdb->get_results($wpdb->prepare($sql, $relation_row->relation_id));
-
                 $relation_row->metadata = array();
 
-                foreach ($sql_metadata_result as &$metadata_row) {
-                    $relation_row->metadata[ $metadata_row->meta_key ] = $metadata_row->meta_value;
+                foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id' && $key != 'metadata') {
+                    $relation_row->metadata[ $key] = $value;
+
+#                    delete ($relation_row[$key]);
                 }
+
+                #ButterLog::debug("", $relation_row);
 
                 $ret->results[] = $relation_row;
             }
@@ -414,7 +424,7 @@ data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
 data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
-            <div class="relation_connected_box">
+            <div class="relation_connected_box" style="display: block;">
                 <div class="relation_buttons_box">
                     <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a><br><br>
                     <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a><br><br>
@@ -426,7 +436,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 </ul>
             </div>
 
-            <div class="relation_add_search_box hidden">
+            <div class="relation_add_search_box hidden" style="display: none;">
                 <div class="relation_add_buttons_box relation_buttons_box">
                     <label for="relation_src_search">search</label>
                     <input type="text" class="wpc_input_text relation_src_search"/>
@@ -439,7 +449,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <ul class="relation_src_list"></ul>
             </div>
 
-            <div class="relation_edit_connected_box hidden">
+            <div class="relation_edit_connected_box hidden" style="display: none;">
                 <div class="relation_edit_connected_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_edit_connected_cancel button" href='#'>cancel</a>
@@ -451,7 +461,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_edit_connected_metadata_box"></div>
             </div>
 
-            <div class="relation_connect_existing_box hidden">
+            <div class="relation_connect_existing_box hidden" style="display: none;">
                 <div class="relation_connect_existing_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_connect_existing_cancel button" href='#'>cancel</a>
@@ -462,7 +472,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_connect_existing_metadata_box"></div>
             </div>
 
-            <div class="relation_connect_new_box hidden">
+            <div class="relation_connect_new_box hidden" style="display: none;">
                 <div class="relation_connect_new_buttons_box relation_buttons_box">
                     <label for="new_item_title">title for the new <?php echo $dst->singular_label ?></label>
                     <input type="text" class="wpc_input wpc_input_text new_item_title" id="wpc_<?php echo $this->id ?>_field_new_item_title" />
