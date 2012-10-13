@@ -252,10 +252,13 @@ abstract class GenericRelationship {
                 $relation_row->metadata = array();
 
                 foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id' && $key != 'metadata') {
-                    $relation_row->metadata[ $key] = $value;
+                    $relation_row->metadata[$key] = $value;
 
 #                    delete ($relation_row[$key]);
                 }
+
+                $relation_row->relation_id = $relation_row->id;
+
 
                 #ButterLog::debug("", $relation_row);
 
@@ -278,6 +281,7 @@ abstract class GenericRelationship {
 
     static function delete_relation ($req) {
         global $wpdb;
+        global $wpc_relationships;
 
         $ret = (object)array(
              "errors" => array (),
@@ -285,14 +289,12 @@ abstract class GenericRelationship {
             "results" => array (),
             );
 
-        if ( empty($req->relation_id) ) {
+        if ( empty($req->relation_id) || empty($wpc_relationships[$req->rel_id])) {
             $ret->errors[] = "relation_id was not specified or is not a valid id";
         } else {
-            $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
-            $wpdb->query($wpdb->prepare($sql, $req->relation_id));
+            $rel = $wpc_relationships[$req->rel_id];
 
-            // delete row itself
-            $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
+            $sql = "DELETE FROM $rel->table WHERE id = %d;";
             $ret->results = $wpdb->query( $wpdb->prepare($sql, $req->relation_id) );
         }
 
