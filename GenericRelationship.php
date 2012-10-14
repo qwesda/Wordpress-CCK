@@ -138,8 +138,6 @@ abstract class GenericRelationship {
             }
 
             $rel = $wpc_relationships[$req->rel_id];
-            ButterLog::debug("row:",$row);
-            ButterLog::debug("formats:",$formats);
             if (! $wpdb->insert($rel->table, $row, $formats)) {
                     ButterLog::error("Could not insert relation: ".
                         "$req->rel_id with data", $row);

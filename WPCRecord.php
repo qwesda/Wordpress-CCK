@@ -55,7 +55,7 @@ abstract class WPCRecord extends WPCData {
         $classname = ucfirst($type)."Record";
         self::make_specific_class($classname, $type);
 
-        ButterLog::debug("new_record(id: $id, type: $type)");
+        // ButterLog::debug("new_record(id: $id, type: $type)");
 
         return new $classname($id, $p, $m);
     }
