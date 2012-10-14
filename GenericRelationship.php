@@ -270,6 +270,9 @@ abstract class GenericRelationship {
 #                    delete ($relation_row[$key]);
                 }
 
+                $relation_row->id = $relation_row->id;
+
+
                 #ButterLog::debug("", $relation_row);
 
                 $ret->results[] = $relation_row;

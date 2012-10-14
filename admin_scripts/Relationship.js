@@ -228,9 +228,17 @@ function set_connected_items (relation_data) {
                 + "</li>\n" + html_to_append;
             }
 
+            var relation_tab = jQuery("a[href='#tab_rel_" + relation_data.relId + "']");
+            var text = relation_tab.text();
+            text = text.replace(/ \([0-9]+\)$/, "");
+
             if (ret.results.length == 0) {
                 html_to_append = "<div class='relations_info'>no "+relation_data.dstLabel+" connected yet<br>click on \"add connection\" to get started</div>";
+            } else {
+                text = text + " ("+ret.results.length+")";
             }
+
+            relation_tab.text(text);
 
             jQuery(base_id + '.relation_conected_list').empty().append(html_to_append);
         }
