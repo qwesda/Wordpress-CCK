@@ -490,7 +490,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
         <script type="text/javascript" charset="utf-8">
             var admin_url_wpspin_light  = "<?php echo admin_url('images/wpspin_light.gif'); ?>";
             var admin_url_post_php      = "<?php echo admin_url('post.php'); ?>";
-            var noce_relations_ajax     = "<?php echo wp_create_nonce('relations_ajax'); ?>";
+            var nonce_relations_ajax     = "<?php echo wp_create_nonce('relations_ajax'); ?>";
 
             jQuery(document).ready(function() {
                 var relation_metabox_id = ".relation_edit_box.<?php echo $this->id ?>";
