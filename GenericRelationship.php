@@ -116,7 +116,7 @@ abstract class GenericRelationship {
                 $req->from_id = $new_post_id;
             }
 
-            ButterLog::debug("add_relation_ajax: created post $new_post_id");
+            ButterLog::debug("created post $new_post_id");
         }
 
         if ($req->from_id <= 0)
