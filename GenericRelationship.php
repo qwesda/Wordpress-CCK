@@ -252,7 +252,7 @@ abstract class GenericRelationship {
                 $relation_row->metadata = array();
 
                 foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id' && $key != 'metadata') {
-                    $relation_row->metadata[ $key] = $value;
+                    $relation_row->metadata[$key] = $value;
 
 #                    delete ($relation_row[$key]);
                 }
