@@ -126,18 +126,26 @@ abstract class GenericRelationship {
         if (empty($wpc_relationships[$req->rel_id]))
             $ret->errors[] = "rel_id has invalid value '$req->rel_id'";
         else {
-            $stmt = $wpdb->query($wpdb->prepare ("INSERT INTO wp_wpc_relations (post_from_id, post_to_id, relationship_id) VALUES (%d, %d, %s)", $req->from_id, $req->to_id, $req->rel_id));
-            $id = $wpdb->insert_id;
+            $row = array(
+                'post_from_id' => $req->from_id,
+                'post_to_id'   => $req->to_id
+            );
+            $formats = array("%d", "%d");
 
-            if ( !empty($req->metadata) ) {
-                $sql = 'INSERT INTO wp_wpc_relations_meta (relation_id, meta_key, meta_value) VALUES (%d, %s, %s);';
-
-                foreach ($req->metadata as $key => $value) {
-                    $wpdb->query($wpdb->prepare ($sql, $id, $key, $value));
-                }
+            if (isset($req->metadata)) {
+                $formats += array_fill(2, count($req->metadata), "%s");
+                $row += $req->metadata;
             }
-        }
 
+            $rel = $wpc_relationships[$req->rel_id];
+            ButterLog::debug("row:",$row);
+            ButterLog::debug("formats:",$formats);
+            if (! $wpdb->insert($rel->table, $row, $formats)) {
+                    ButterLog::error("Could not insert relation: ".
+                        "$req->rel_id with data", $row);
+                    $ret["errors"][] = 'Could not insert relation';
+                }
+        }
         return $ret;
     }
     static function add_relation_ajax () {
@@ -176,17 +184,22 @@ abstract class GenericRelationship {
             $ret->errors[] = "to_id has invalid value '$rel->to_id'";
         } else if (empty($wpc_relationships[$rel->rel_id])) {
             $ret->errors[] = "rel_id has invalid value '$rel->rel_id'";
-        } else if (empty($rel->relation_id)) {
-            $ret->errors[] = "relation_id has invalid value '$rel->relation_id'";
+        } else if (empty($rel->id)) {
+            $ret->errors[] = "id has invalid value";
+        } else if (! isset($req->metadata)) {
+            $ret->errors[] = "cannot update without anything to update.";
         } else {
-            $stmt = $wpdb->query($wpdb->prepare ("UPDATE $rel->table SET post_from_id=%d, post_to_id=%d, relationship_id=%s WHERE relation_id=%d;", $req->from_id, $req->to_id, $req->rel_id, $req->relation_id ) );
+            $rel = $wpc_relationships[$req->rel_id];
 
-            if ( !empty($req->metadata) ) {
-                $sql = 'UPDATE $rel->table SET meta_value=%s WHERE relation_id=%d AND meta_key=%s;';
-
-                foreach ($req->metadata as $key => $value) {
-                    $wpdb->query($wpdb->prepare ($sql, $value, $req->relation_id, $key) );
-                }
+            if (! $wpdb->update($rel->table,
+                $req->metadata, // data
+                array("id" => $req->id), // where
+                "%s", //formats
+                array("%d"))
+            ) {
+                ButterLog::error("Could not update relation: ".
+                    "$req->rel_id with data", $row);
+                $ret["errors"][] = 'Could not update relation';
             }
         }
 
@@ -277,7 +290,7 @@ abstract class GenericRelationship {
     }
 
     static function delete_relation ($req) {
-        global $wpdb;
+        global $wpdb, $wpc_relationships;
 
         $ret = (object)array(
              "errors" => array (),
@@ -285,15 +298,17 @@ abstract class GenericRelationship {
             "results" => array (),
             );
 
-        if ( empty($req->relation_id) ) {
-            $ret->errors[] = "relation_id was not specified or is not a valid id";
+        if (! isset($req->rel_id) || !isset($wpc_relationships[$req->rel_id])) {
+            $ret->errors[] = "rel_id was not specified or is not registered.";
+        } else if (! isset($req->id)) {
+            $ret->errors[] = "id was not specified";
         } else {
-            $sql = 'DELETE FROM wp_wpc_relations_meta WHERE relation_id = %d;';
-            $wpdb->query($wpdb->prepare($sql, $req->relation_id));
-
-            // delete row itself
-            $sql = 'DELETE FROM wp_wpc_relations WHERE relation_id = %d;';
-            $ret->results = $wpdb->query( $wpdb->prepare($sql, $req->relation_id) );
+            $rel = $wpc_relationships[$req->rel_id];
+            $stmt = "DELETE FROM $rel->table WHERE id = %d;";
+            if (! $wpdb->query($wpdb->prepare($stmt, $req->id))) {
+                ButterLog::error("Could not delete id $req->id in table $req->table.");
+                $ret->errors[] = 'Could not delete relation.';
+            }
         }
 
         return $ret;

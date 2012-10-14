@@ -59,7 +59,7 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var info_text               =
             "<b>" + selected_item_data.data.post_title + "</b> <a class='relation_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a><br/>"
             + "<table>"
-            + "<tr><td class='table_label'>relation id</td><td>" + selected_item_data.data.relation_id + "</td></tr>"
+            + "<tr><td class='table_label'>relation id</td><td>" + selected_item_data.data.id + "</td></tr>"
             + "<tr><td class='table_label'>object id</td><td>" + object_id + "</td></tr>"
             + "</table>" + htmlspecialchars_decode(relation_data.editBox);
 
@@ -100,13 +100,13 @@ function relation_edit_connected_update (relation_data) {
     var metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .wpc_input');
 
     var data = {
-            action       : "update_relation",
-            nonce        : nonce_relations_ajax,
-            rel_id       : relation_data.relId,
-            relation_id  : selected_item_data.data.relation_id,
-            from_id      : selected_item_data.data.post_from_id,
-            to_id        : selected_item_data.data.post_to_id,
-            metadata     : {}
+            action   : "update_relation",
+            nonce    : nonce_relations_ajax,
+            rel_id   : relation_data.relId,
+            id       : selected_item_data.data.id,
+            from_id  : selected_item_data.data.post_from_id,
+            to_id    : selected_item_data.data.post_to_id,
+            metadata : {}
         };
 
     for (var i = metadata_fields.length - 1; i >= 0; i--) {
@@ -136,10 +136,10 @@ function relation_edit_connected_delete (relation_data) {
     var metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .wpc_input');
 
     var data = {
-            action       : "delete_relation",
-            nonce        : nonce_relations_ajax,
-            rel_id       : relation_data.relId,
-            relation_id  : selected_item_data.data.relation_id
+            action : "delete_relation",
+            nonce  : nonce_relations_ajax,
+            rel_id : relation_data.relId,
+            id     : selected_item_data.data.id
         };
 
     jQuery.ajax({
@@ -222,7 +222,7 @@ function set_connected_items (relation_data) {
                 var result = ret.results[i];
 
                 html_to_append =
-                "<li data-relation_id='"+result.relation_id+"' data-data='"+json_encode(result)+"'>" +
+                "<li data-id='"+result.id+"' data-data='"+json_encode(result)+"'>" +
                     (relation_data.fieldToShowInList != "" && result.metadata[relation_data.fieldToShowInList] != undefined ? "<span class='connected_item_info'>"+result.metadata[relation_data.fieldToShowInList]+"</span> " : "") +
                     "<a href='#' class='relation_connected_item'>"+result.post_title+"</a> "
                 + "</li>\n" + html_to_append;
