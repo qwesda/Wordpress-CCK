@@ -30,10 +30,13 @@ class WPCustom {
         add_action('widgets_init',          array($this, "widgets_init") );
 
         add_action('save_post',             array($this, 'save_post'), 10, 2);
+        add_action('delete_post',           array($this, 'delete_post'));
         add_action('add_meta_boxes',        array($this, "add_meta_boxes") );
 
         // register hook to set current item in nav menus (default priority)
         add_filter('wp_get_nav_menu_items', array($this, "nav_menu_set_current"), 10, 3);
+
+        add_filter('the_content',           array($this, 'the_content') );
     }
 
     function init () {
@@ -125,6 +128,17 @@ class WPCustom {
 
         $type = $wpc_content_types[$post->post_type];
         return $type->save_post($post_id, $post);
+
+    function delete_post ($post_id) {
+        global $wpc_content_types;
+
+        $post = get_post($post_id);
+
+        if (! isset($wpc_content_types[$post->post_type]))
+            return;
+
+        $type = $wpc_content_types[$post->post_type];
+        return $type->delete_post($post_id, $post);
     }
 
     function add_meta_boxes ($post_type) {
@@ -196,6 +210,24 @@ class WPCustom {
             }
         }
         */
+    }
+
+    function the_content ($input_content) {
+        global $post, $content;
+        global $wpc_content_types;
+
+        $content = $input_content;
+
+        $theme  = wp_get_theme();
+        $theme_dir  = $theme["Stylesheet Dir"];
+
+        if (!empty($post) && isset($wpc_content_types[$post->post_type])) {
+            $filename = "$theme_dir/content_overrides/{$post->post_type}.php";
+            if (file_exists($filename))
+                $content = _compile($filename);
+        }
+
+        return $content;
     }
 
     function echo_richtext_metabox ($post, $metabox) {

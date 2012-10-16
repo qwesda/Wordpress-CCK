@@ -60,10 +60,6 @@ abstract class GenericContentType {
         }
 
 //  ADD HOOKS
-        add_action ("wp_insert_post",               array($this, "wp_insert_post"), 10, 2);
-        add_action ("wp_update_post",               array($this, "wp_update_post") );
-        add_action ("delete_post",                  array($this, "delete_post") );
-
         add_action ('admin_print_scripts',          array($this, "custom_print_scripts") );
         add_action ('admin_print_styles',           array($this, "custom_print_styles") );
 
@@ -134,24 +130,6 @@ abstract class GenericContentType {
         return $cols + $manage_cols;
     }
 
-    function the_content ($input_content) {
-        global $post;
-        global $content;
-
-        $content = $input_content;
-
-        $theme  = wp_get_theme();
-        $theme_dir  = $theme["Stylesheet Dir"];
-
-        if (!empty($post) && $post->post_type == $this->id) {
-            $filename = "$theme_dir/content_overrides/{$post->post_type}.php";
-            if (file_exists($filename))
-                $content = _compile($filename);
-        }
-
-        return $content;
-    }
-
     function custom_print_scripts () {
     }
 
@@ -192,28 +170,12 @@ abstract class GenericContentType {
     }
 
     function admin_init() {
-
     }
 
-    function delete_post ($post_id) {
-        $post = get_post($post_id);
-
-        if( !empty($post) && $post->post_type == $this->id) {
-            return true;
-        }
-
-        return false;
+    function delete_post ($post_id, $post) {
     }
 
-
-    function wp_update_post ($post_id) {
-        $post = get_post($post_id);
-
-        if( !empty($post) && $post->post_type == $this->id) {
-            return true;
-        }
-
-        return false;
+    function new_post ($post_id, $post) {
     }
 
     function save_post ($post_id, $post) {
@@ -253,16 +215,6 @@ abstract class GenericContentType {
         }
         return true;
     }
-
-    function wp_insert_post ($post_id, $post) {
-        if( !empty($post) && $post->post_type == $this->id) {
-
-            return true;
-        }
-
-        return false;
-    }
-
 }
 
 ?>
