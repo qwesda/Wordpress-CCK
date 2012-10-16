@@ -127,7 +127,12 @@ class WPCustom {
             return;
 
         $type = $wpc_content_types[$post->post_type];
-        return $type->save_post($post_id, $post);
+
+        if ($post->post_modified == $post->post_date)
+            return $type->new_post($post_id, $post);
+        else
+            return $type->update_post($post_id, $post);
+    }
 
     function delete_post ($post_id) {
         global $wpc_content_types;

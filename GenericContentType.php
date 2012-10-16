@@ -178,7 +178,7 @@ abstract class GenericContentType {
     function new_post ($post_id, $post) {
     }
 
-    function save_post ($post_id, $post) {
+    function update_post ($post_id, $post) {
         global $wpdb;
 
         ButterLog::debug("saving post with post_id: $post_id");
