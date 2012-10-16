@@ -195,7 +195,7 @@ abstract class GenericContentType {
     function update_post ($post_id, $post) {
         global $wpdb;
 
-        ButterLog::debug("saving post with post_id: $post_id");
+        ButterLog::debug("saving post with post_id $post_id");
         $fields_to_update = array();
 
         $candidate_fields = array_filter($this->fields,
@@ -217,7 +217,7 @@ abstract class GenericContentType {
         }
 
         if (empty($fields_to_update)) {
-            ButterLog::debug("Nothing to save for post $post_id.", $post);
+            ButterLog::debug("Nothing to save for post $post_id.");
             return;
         }
 
