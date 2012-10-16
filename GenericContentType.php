@@ -176,6 +176,20 @@ abstract class GenericContentType {
     }
 
     function new_post ($post_id, $post) {
+        global $wpdb;
+
+        ButterLog::debug("new post with post_id $post_id", $post);
+
+        $data = array($this->wpid_col => $post_id);
+
+        if (! $wpdb->insert($this->table, $data, '%d')) {
+            ButterLog::error("Could not insert initial row for $post_id.");
+        }
+
+        // this might be unneccessary.
+        // custom fields might always be unset at this point
+        // look for 'new post' not followed by 'nothing to save' log messages
+        $this->update_post($post_id, $post);
     }
 
     function update_post ($post_id, $post) {
