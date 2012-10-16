@@ -202,7 +202,12 @@ abstract class GenericContentType {
             }
         }
 
-        if( $wpdb->update($this->table,
+        if (empty($fields_to_update)) {
+            ButterLog::debug("Nothing to save for post $post_id.", $post);
+            return;
+        }
+
+        if ($wpdb->update($this->table,
             $fields_to_update,                  // col = val
             array($this->wpid_col => $post_id), // where
             array_map(function($col) {          // printf formats for set
