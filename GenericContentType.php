@@ -205,6 +205,9 @@ abstract class GenericContentType {
         );
 
         foreach ($candidate_fields as $field_key => $field) {
+            if (! isset($_POST["wpc_$field_key"]))
+                continue;
+
             if ( !empty($_POST["wpc_$field_key"]) ) {
                 $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
             } elseif ( !empty($this->fields[$field_key]->default) ) {
