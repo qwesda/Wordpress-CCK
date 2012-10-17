@@ -13,6 +13,10 @@ class FormattedString extends GenericField {
         add_filter($filter_id, $callback, 10, 2);
     }
 
+    function may_write () {
+        return false;
+    }
+
     function echo_field_core () {
         $record = the_record();
         $value  = $record->__get($this->id);
