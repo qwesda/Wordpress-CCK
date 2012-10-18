@@ -469,7 +469,7 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_edit_connected_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_edit_connected_cancel button" href='#'>cancel</a>
-                        <a class="relation_edit_connected_delete button" href='#'>delete</a>
+                        <a class="relation_edit_connected_delete button" href='#'>remove</a>
                         <a class="relation_edit_connected_update button-primary" href='#'>save</a>
                     </div>
                 </div>

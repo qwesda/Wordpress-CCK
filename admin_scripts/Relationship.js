@@ -27,6 +27,10 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
 
     switch (to_box_id) {
+        case "relation_add_search_box":
+            jQuery(base_id + '.relation_src_search').val('');
+            jQuery(base_id + '.relation_src_list').empty();
+            break;
         case "relation_connected_box" :
             set_connected_items(relation_data);
             break;
@@ -96,6 +100,7 @@ function relation_edit_connected_update (relation_data) {
 
     var selected_item       = jQuery(base_id + '.relation_conected_list li.selected');
     var selected_item_data  = jQuery(base_id + '.relation_conected_list li.selected').data();
+    var selected_item_label = jQuery(base_id + '.relation_conected_list li.selected').text();
 
     var metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .wpc_input');
 
@@ -122,9 +127,15 @@ function relation_edit_connected_update (relation_data) {
         dataType: "json",
         data : data,
         cache : false,
+        context : {
+            "selected_item" : selected_item,
+            "selected_item_label" : selected_item_label,
+            "selected_item_data" : selected_item_data,
+            "data" : data
+        },
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
-            show_status_message(relation_data, relation_data.dstLabel + " updated");
+            show_status_message(relation_data, this.selected_item_label + " updated");
         }
     });
 }
@@ -133,6 +144,7 @@ function relation_edit_connected_delete (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
     var selected_item       = jQuery(base_id + '.relation_conected_list li.selected');
     var selected_item_data  = jQuery(base_id + '.relation_conected_list li.selected').data();
+    var selected_item_label = jQuery(base_id + '.relation_conected_list li.selected').text();
 
     var metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .wpc_input');
 
@@ -148,21 +160,28 @@ function relation_edit_connected_delete (relation_data) {
         dataType: "json",
         data : data,
         cache : false,
+        context : {
+            "selected_item" : selected_item,
+            "selected_item_label" : selected_item_label,
+            "selected_item_data" : selected_item_data,
+            "data" : data
+        },
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
-            show_status_message(relation_data, relation_data.dstLabel + " deleted");
+            show_status_message(relation_data, this.selected_item_label + " removed");
         }
     });
 }
 
 function show_status_message(relation_data, message) {
-    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text("asdf").show().delay(2000).fadeOut();
+    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text(message).show().delay(2000).fadeOut();
 }
 
 function relation_connect_existing_add (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
 
     var selected_item       = jQuery(base_id + '.relation_src_list li.selected');
+    var selected_item_label = selected_item.text();
 
     var metadata_fields     = jQuery(base_id + '.relation_connect_existing_box .wpc_input');
 
@@ -188,16 +207,25 @@ function relation_connect_existing_add (relation_data) {
         url: ajaxurl,
         dataType: "json",
         data : data,
+        context : {
+            "selected_item" : selected_item,
+            "selected_item_label" : selected_item_label,
+            "data" : data
+        },
         cache : false,
-        success: function (data) {
+        success: function (ret) {
             goto_box(relation_data, 'relation_add_search_box', 'relation_connect_existing_box', 'back');
-            show_status_message(relation_data, relation_data.dstLabel + " added");
+            show_status_message(relation_data, this.selected_item_label + " added");
+
+            jQuery(base_id + '.relation_src_search').focus();
         }
     });
 }
 
 function relation_connect_existing_cancel (relation_data) {
     goto_box(relation_data, 'relation_add_search_box', 'relation_connect_existing_box', 'back');
+
+    jQuery(base_id + '.relation_src_search').focus();
 }
 
 function set_connected_items (relation_data) {
@@ -268,6 +296,7 @@ function relation_connect_new_add (relation_data) {
 
             metadata     : {}
         };
+    var selected_item_label = data.new_post_title;
 
     for (var i = metadata_fields.length - 1; i >= 0; i--) {
         var metadata_field = jQuery(metadata_fields[i]);
@@ -289,9 +318,14 @@ function relation_connect_new_add (relation_data) {
         url: ajaxurl,
         dataType: "json",
         data : data,
+        context : {
+            "selected_item" : selected_item,
+            "selected_item_label" : selected_item_label,
+            "data" : data
+        },
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_connect_new_box', 'back');
-            show_status_message(relation_data, relation_data.dstLabel + " added");
+            show_status_message(relation_data, this.selected_item_label + " added");
         }
     });
 }
