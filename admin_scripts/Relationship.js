@@ -124,6 +124,7 @@ function relation_edit_connected_update (relation_data) {
         cache : false,
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
+            show_status_message(relation_data, relation_data.dstLabel + " updated");
         }
     });
 }
@@ -149,8 +150,13 @@ function relation_edit_connected_delete (relation_data) {
         cache : false,
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
+            show_status_message(relation_data, relation_data.dstLabel + " deleted");
         }
     });
+}
+
+function show_status_message(relation_data, message) {
+    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text("asdf").show().delay(2000).fadeOut();
 }
 
 function relation_connect_existing_add (relation_data) {
@@ -185,6 +191,7 @@ function relation_connect_existing_add (relation_data) {
         cache : false,
         success: function (data) {
             goto_box(relation_data, 'relation_add_search_box', 'relation_connect_existing_box', 'back');
+            show_status_message(relation_data, relation_data.dstLabel + " added");
         }
     });
 }
@@ -284,6 +291,7 @@ function relation_connect_new_add (relation_data) {
         data : data,
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_connect_new_box', 'back');
+            show_status_message(relation_data, relation_data.dstLabel + " added");
         }
     });
 }

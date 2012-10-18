@@ -501,6 +501,10 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
 
                 <div class="relation_connect_new_metadata_box"></div>
             </div>
+
+            <div class="status-update" style="display:none">
+                lol
+            </div>
         </div>
 
         <script type="text/javascript" charset="utf-8">
