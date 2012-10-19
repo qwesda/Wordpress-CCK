@@ -86,6 +86,12 @@ abstract class GenericContentType {
     }
 
     /**
+     * stub which does nothing. overwrite if needed
+     */
+    public function the_content() {
+    }
+
+    /**
      * wp callback to add columns in overview for this post type
      */
     public function wp_manage_edit_columns($cols) {
