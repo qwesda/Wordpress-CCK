@@ -17,6 +17,8 @@ $wpc_version    = "1.0";
 $wpc_db_version = "1.1";
 
 class WPCustom {
+    protected $post_is_updated = false;
+
     function __construct () {
         // setup autoloading of class files
         spl_autoload_register(array(__CLASS__, 'autoload'));
@@ -30,6 +32,7 @@ class WPCustom {
         add_action('widgets_init',          array($this, "widgets_init") );
 
         add_action('save_post',             array($this, 'save_post'), 10, 2);
+        add_action('pre_post_update',       array($this, 'pre_post_update'));
         add_action('delete_post',           array($this, 'delete_post'));
         add_action('add_meta_boxes',        array($this, "add_meta_boxes") );
 
@@ -129,10 +132,16 @@ class WPCustom {
 
         $type = $wpc_content_types[$post->post_type];
 
-        if ($post->post_modified == $post->post_date)
-            return $type->new_post($post_id, $post);
-        else
+        if ($this->post_is_updated) {
+            $this->post_is_updated = false;
             return $type->update_post($post_id, $post);
+        }
+        else
+            return $type->new_post($post_id, $post);
+    }
+
+    function pre_post_update($post_id) {
+        $this->post_is_updated  = true;
     }
 
     function delete_post ($post_id) {
