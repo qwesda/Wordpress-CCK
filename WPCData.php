@@ -86,7 +86,7 @@ abstract class WPCData {
         if ( !empty( $formatted_string ) )
             return $formatted_string;
 
-        ButterLog::debug(get_class($this)." does not have attribute '$attribute'.");
+        // ButterLog::debug(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
 
         return "";
@@ -203,18 +203,18 @@ abstract class WPCData {
     }
 
 
-	protected function sub_dump($key, $val) {
-		$type = gettype($key);
+  protected function sub_dump($key, $val) {
+    $type = gettype($key);
 
-		switch (gettype($val)) {
-			case 'string':
+    switch (gettype($val)) {
+      case 'string':
 ?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php echo substr($val, 0, 100); if (strlen($val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
-				break;
-			default:
+        break;
+      default:
 ?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$value; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
-				break;
-		}
-	}
+        break;
+    }
+  }
 
     public function dump() {
         if (empty($this->meta))
@@ -223,24 +223,24 @@ abstract class WPCData {
         if (empty($this->meta))
             $this->load_meta();
 
-	   	?>
+       ?>
 
-   		<a class="var_dump_toggle" href="#" onclick="jQuery(this).next().toggle(); return false;"><span class="var_typeslug"><?php echo ucfirst($this->typeslug) ?> <span class="var_count">(<?php echo count($this->data)+count($this->meta) ?>)</span></a>
-		<div class="var_dump" style="display: none;">
-			<table border="0" cellspacing="5" cellpadding="5" class="var_dump">
-			<tr class="var_dump_heading"><td>Data <span class="var_count">(<?php echo count($this->data) ?>)</td><td></td></tr>
-			<?php foreach ($this->data as $key => $value) {
-				$this->sub_dump($key, $value);
-			} ?>
+       <a class="var_dump_toggle" href="#" onclick="jQuery(this).next().toggle(); return false;"><span class="var_typeslug"><?php echo ucfirst($this->typeslug) ?> <span class="var_count">(<?php echo count($this->data)+count($this->meta) ?>)</span></a>
+    <div class="var_dump" style="display: none;">
+      <table border="0" cellspacing="5" cellpadding="5" class="var_dump">
+      <tr class="var_dump_heading"><td>Data <span class="var_count">(<?php echo count($this->data) ?>)</td><td></td></tr>
+      <?php foreach ($this->data as $key => $value) {
+        $this->sub_dump($key, $value);
+      } ?>
 
-			<tr class="var_dump_heading"><td>Meta <span class="var_count">(<?php echo count($this->meta) ?>)</td><td></td></tr>
+      <tr class="var_dump_heading"><td>Meta <span class="var_count">(<?php echo count($this->meta) ?>)</td><td></td></tr>
 
-			<?php foreach ($this->meta as $key => $value) {
-				$this->sub_dump($key, $value);
-			} ?>
-			</table>
+      <?php foreach ($this->meta as $key => $value) {
+        $this->sub_dump($key, $value);
+      } ?>
+      </table>
 
-	   	<div><?php
+       <div><?php
     }
 
 }
