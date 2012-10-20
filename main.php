@@ -37,6 +37,7 @@ class WPCustom {
         add_filter('wp_get_nav_menu_items', array($this, "nav_menu_set_current"), 10, 3);
 
         add_filter('the_content',           array($this, 'the_content') );
+        add_action('wp_insert_post_data',   array($this, 'wp_insert_post_data', 10, 2));
     }
 
     function init () {
@@ -233,6 +234,17 @@ class WPCustom {
         }
 
         return $content;
+    }
+
+    function wp_insert_post_data($data, $postarr) {
+        global $wpc_content_type;
+
+        $type = $data->post_type;
+        if (! isset($wpc_content_type[$type]))
+            return $data;
+
+        $wpctype = $wpc_content_type[$type];
+        return $wpctype->wp_insert_post_data($data, $postarr);
     }
 
     function echo_richtext_metabox ($post, $metabox) {
