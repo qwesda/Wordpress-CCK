@@ -84,6 +84,22 @@ abstract class GenericContentType {
 
     }
 
+    function echo_relation_item_metabox () {
+        return "";
+    }
+
+    public function echo_relation_item_metabox_str () {
+        ob_start();
+
+        $this->echo_relation_item_metabox();
+
+        $html_str = ob_get_clean();
+        $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);
+        $html_str = htmlspecialchars($html_str);
+
+        return htmlspecialchars($html_str);
+    }
+
     /**
      * stub which does nothing. overwrite if needed
      */
@@ -184,7 +200,7 @@ abstract class GenericContentType {
     function new_post ($post_id, $post) {
         global $wpdb;
 
-        ButterLog::debug("new post with post_id $post_id", $post);
+        //ButterLog::debug("new post with post_id $post_id", $post);
 
         $data = array($this->wpid_col => $post_id);
 

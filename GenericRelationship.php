@@ -34,7 +34,7 @@ abstract class GenericRelationship {
 
             return ;
         } else {
-            $this->post_type_from       = get_post_type_object($this->post_type_from_id);
+            $this->post_type_from       = $wpc_content_types["$this->post_type_from_id"];
 
             $wpc_content_types[$this->post_type_from_id]->relationships[$this->id] = $this;
         }
@@ -44,7 +44,7 @@ abstract class GenericRelationship {
 
             return ;
         } else {
-            $this->post_type_to         = get_post_type_object($this->post_type_to_id);
+            $this->post_type_to         = $wpc_content_types["$this->post_type_to_id"];
 
             $wpc_content_types[$this->post_type_to_id]->relationships[$this->id] = $this;
         }
@@ -60,7 +60,7 @@ abstract class GenericRelationship {
     }
 
     static function echo_relations_metabox ($post) {
-    include("metaboxes/relations_metabox.php");
+        include("metaboxes/relations_metabox.php");
     }
 
     function echo_item_metabox () {
@@ -80,6 +80,7 @@ abstract class GenericRelationship {
 
     static function hookup_ajax_functions () {
         add_action('wp_ajax_get_post_type_items',               array(__CLASS__, 'get_post_type_items_ajax'));
+        add_action('wp_ajax_get_post_metadata',                 array(__CLASS__, 'get_post_metadata_ajax'));
         add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
         add_action('wp_ajax_add_relation_with_new_post',        array(__CLASS__, 'add_relation_ajax'));
         add_action('wp_ajax_update_relation',                   array(__CLASS__, 'update_relation_ajax'));
@@ -176,6 +177,8 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
+        ButterLog::debug("update_relation", $req);
+
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
         } else if ($rel->to_id <= 0) {
@@ -190,7 +193,7 @@ abstract class GenericRelationship {
             $rel = $wpc_relationships[$req->rel_id];
 
             if (! $wpdb->update($rel->table,
-                $req->metadata, // data
+                $req->relation_metadata, // data
                 array("id" => $req->id), // where
                 "%s", //formats
                 array("%d"))
@@ -233,47 +236,57 @@ abstract class GenericRelationship {
 
         if ( empty($req->rel_id) ) {
             $ret->errors[] = "rel_id was not specified";
-        } else if ( !empty($req->from_id) ) {
-            $id         = $req->from_id;
-            $col        = 'post_from_id';
-            $othercol   = 'post_to_id';
-        } else if ( !empty($req->to_id) ) {
-            $id         = $req->to_id;
-            $col        = 'post_to_id';
-            $othercol   = 'post_from_id';
         } else {
-            $ret->errors[] = "neither from_id nor to_id were specified";
+            $rel = $wpc_relationships[$req->rel_id];
+
+            if ( !empty($req->from_id) ) {
+                $id         = $req->from_id;
+                $col        = 'post_from_id';
+                $othercol   = 'post_to_id';
+                $othertable = $rel->post_type_to->table;
+            } else if ( !empty($req->to_id) ) {
+                $id         = $req->to_id;
+                $col        = 'post_to_id';
+                $othercol   = 'post_from_id';
+                $othertable = $rel->post_type_form->table;
+            } else {
+                $ret->errors[] = "neither from_id nor to_id were specified";
+            }
         }
 
         if ( !empty($id) ) {
-            $rel = $wpc_relationships[$req->rel_id];
-            #ButterLog::debug("", $req);
-
-            $sql = "SELECT $rel->table.*, wp_posts.post_title FROM $rel->table ".
+            $sql = "SELECT $rel->table.* FROM $rel->table ".
             "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
             "WHERE $col = %d";
 
-            #ButterLog::debug("", $sql);
-
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
 
-            #ButterLog::debug("", $sql_result);
-
             foreach ($sql_result as &$relation_row) {
-                $relation_row->metadata = array();
+                $row_ret->item_metadata     = array();
+                $row_ret->relation_metadata = array();
 
-                foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id' && $key != 'metadata') {
-                    $relation_row->metadata[$key] = $value;
-
-#                    delete ($relation_row[$key]);
+                foreach ($relation_row as $key => $value) if ($key != 'post_from_id' && $key != 'post_to_id') {
+                    $row_ret->relation_metadata[$key] = $value;
                 }
 
-                $relation_row->id = $relation_row->id;
+                $row_ret->id            = $relation_row->id;
+                $row_ret->post_from_id  = $relation_row->post_from_id;
+                $row_ret->post_to_id    = $relation_row->post_to_id;
 
 
-                #ButterLog::debug("", $relation_row);
+                $sql = "SELECT wp_posts.post_title FROM $rel->table ".
+                "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
+                "WHERE $col = %d";
 
-                $ret->results[] = $relation_row;
+                $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
+
+                foreach ($sql_result as &$relation_item_row) {
+                    foreach ($relation_item_row as $key => $value){
+                        $row_ret->item_metadata[$key] = $value;
+                    }
+                }
+
+                $ret->results[] = $row_ret;
             }
         }
 
@@ -290,6 +303,54 @@ abstract class GenericRelationship {
         die();
     }
 
+    static function get_post_metadata ($req) {
+        global $wpdb, $wpc_content_types;
+
+        $ret = (object)array(
+             "errors" => array (),
+             "status" => array (),
+            "results" => array (),
+            );
+
+        ButterLog::debug("get_post_metadata",       $req);
+        if ( !isset($req->post_id) ) {
+            $ret->errors[] = "post_id was not specified.";
+        ButterLog::debug("post_id was not specified",       $req);
+        } else {
+            $post_id        = $req->post_id;
+            $post_type      = get_post_type($post_id);
+            $content_type   = $wpc_content_types[$post_type];
+
+            ButterLog::debug("post_id",         $post_id);
+            ButterLog::debug("post_type",       $post_type);
+
+            $sql = "SELECT * FROM $content_type->table WHERE post_id = %d";
+
+            ButterLog::debug("sql",             $sql);
+
+            $sql_result = $wpdb->get_results($wpdb->prepare($sql, $post_id));
+
+            foreach ($sql_result as &$item_metadata_row) {
+                $item_metadata = array();
+
+                foreach ($item_metadata_row as $key => $value){
+                    $ret->results[$key] = $value;
+                }
+            }
+        }
+
+        return $ret;
+    }
+    static function get_post_metadata_ajax () {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+        $ret = self::get_post_metadata($req);
+
+        echo json_encode($ret);
+
+        die();
+    }
     static function delete_relation ($req) {
         global $wpdb, $wpc_relationships;
 
@@ -415,13 +476,19 @@ $prepared_sql_limit" );
     }
 
     function echo_relationship($post, $reverse_direction = false){
-        $rel_direction = $reverse_direction ? "from_to" : "to_from";
+        global $wpc_content_types;
 
-        $src_id  = $rel_direction == "to_from" ? $this->post_type_to_id   : $this->post_type_from_id;
-        $dst_id  = $rel_direction == "to_from" ? $this->post_type_from_id : $this->post_type_to_id;
+        $rel_direction  = $reverse_direction ? "from_to" : "to_from";
 
-        $src    = $rel_direction == "from_to" ? $this->post_type_to     : $this->post_type_from;
-        $dst    = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
+        $src_id         = $rel_direction == "to_from" ? $this->post_type_to_id   : $this->post_type_from_id;
+        $dst_id         = $rel_direction == "to_from" ? $this->post_type_from_id : $this->post_type_to_id;
+
+        $src            = $rel_direction == "from_to" ? $this->post_type_to     : $this->post_type_from;
+        $dst            = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
+
+
+
+        $item_data_box  = $rel_direction == "from_to" ? $this->post_type_from->echo_relation_item_metabox_str() : $this->post_type_to->echo_relation_item_metabox_str();
     ?>
         <div      class ="relation_edit_box <?php echo $this->id ?>"
 
@@ -436,23 +503,24 @@ data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
          data-src-label = "<?php echo $src->label ?>"
          data-dst-label = "<?php echo $dst->label ?>"
           data-edit-box = "<?php echo $this->echo_item_metabox_str() ?>"
+          data-item-edit-box = "<?php echo $item_data_box ?>"
 
 data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
             <div class="relation_connected_box" style="display: block;">
+                <ul class="relation_conected_list"></ul>
+
                 <div class="relation_buttons_box">
-                    <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a><br><br>
-                    <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a><br><br>
+                    <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a>
+                    <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a>
                     <a class="relation_open_all_connected button" href='#'>open all <?php echo $dst->label ?></a>
                 </div>
-
-                <ul class="relation_conected_list">
-
-                </ul>
             </div>
 
             <div class="relation_add_search_box hidden" style="display: none;">
+                <ul class="relation_src_list"></ul>
+
                 <div class="relation_add_buttons_box relation_buttons_box">
                     <label for="relation_src_search">search</label>
                     <input type="text" class="wpc_input_text relation_src_search"/>
@@ -461,11 +529,11 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                         <a class="button relation_add_search_cancel" href='#'>cancel</a>
                     </div>
                 </div>
-
-                <ul class="relation_src_list"></ul>
             </div>
 
             <div class="relation_edit_connected_box hidden" style="display: none;">
+                <div class="relation_edit_connected_metadata_box"></div>
+
                 <div class="relation_edit_connected_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_edit_connected_cancel button" href='#'>cancel</a>
@@ -473,22 +541,22 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                         <a class="relation_edit_connected_update button-primary" href='#'>save</a>
                     </div>
                 </div>
-
-                <div class="relation_edit_connected_metadata_box"></div>
             </div>
 
             <div class="relation_connect_existing_box hidden" style="display: none;">
+                <div class="relation_connect_existing_metadata_box"></div>
+
                 <div class="relation_connect_existing_buttons_box relation_buttons_box">
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_connect_existing_cancel button" href='#'>cancel</a>
                         <a class="relation_connect_existing_add button-primary" href='#'>add</a>
                     </div>
                 </div>
-
-                <div class="relation_connect_existing_metadata_box"></div>
             </div>
 
             <div class="relation_connect_new_box hidden" style="display: none;">
+                <div class="relation_connect_new_metadata_box"></div>
+
                 <div class="relation_connect_new_buttons_box relation_buttons_box">
                     <label for="new_item_title">title for the new <?php echo $dst->singular_label ?></label>
                     <input type="text" class="wpc_input wpc_input_text new_item_title" id="wpc_<?php echo $this->id ?>_field_new_item_title" />
@@ -498,12 +566,10 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                         <a class="relation_connect_new_add button-primary" href='#'>add</a>
                     </div>
                 </div>
-
-                <div class="relation_connect_new_metadata_box"></div>
             </div>
 
             <div class="status-update" style="display:none">
-                lol
+
             </div>
         </div>
 

@@ -11,9 +11,8 @@ ul.relation_conected_list {
     margin-bottom: 6px;
     padding: 4px 8px;
     
-    margin-left: 250px;
 	
-	height: 120px;
+	height: 200px;
 	
     overflow: scroll;
 
@@ -229,23 +228,24 @@ input.relation_src_search {
 }
 
 div.relation_buttons_box {
-    
     margin: 10px 0;
-    
-    width: 250px;
-    float: left;
-    
-    position: absolute;
-    
-    top: 0;
-    bottom: 0;
+    width: 100%;    
 }
 
-div.relation_buttons_box_bottom {
-	bottom: 0;
-	right: 10px;
-	
+div.relation_buttons_box_bottom {	
+	float: right;
+}
+
+table.relation_metadata {
 	position: absolute;
+	
+	top: 0;
+	right: 20px;
+}
+
+table.relation_metadata td.table_label {
+	font-weight: bold;
+	text-align: right;
 }
 
 div.relation_buttons_box > a {
@@ -253,7 +253,6 @@ div.relation_buttons_box > a {
 }
 
 div.relation_buttons_box > div {
-	float: left;
 	margin: 0;
 	padding: 0;
 	
