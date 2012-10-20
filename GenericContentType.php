@@ -72,8 +72,6 @@ abstract class GenericContentType {
         add_filter("manage_edit-{$this->slug}_sortable_columns",
             array($this, "wp_manage_edit_sortable_columns"));
 
-        add_filter( "the_content",  array($this, "the_content") );
-
         WPCRecord::make_specific_class(ucfirst($this->id)."Record", "$this->id");
 
         $wpc_content_types[$this->id] = $this;
@@ -82,20 +80,15 @@ abstract class GenericContentType {
     /**
      * stub which does nothing. overwrite if needed
      */
-    public function wp_register_meta_box() {
+    public function wp_register_meta_box () {
+
     }
 
     /**
      * stub which does nothing. overwrite if needed
      */
-    public function the_content($content) {
-        return $content;
-    }
-
-    /**
-     * stub which does nothing. overwrite if needed
-     */
-    public function wp_insert_post_data() {
+    public function wp_insert_post_data($data, $postarr) {
+        return $data;
     }
 
     /**
