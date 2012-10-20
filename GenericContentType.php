@@ -88,7 +88,8 @@ abstract class GenericContentType {
     /**
      * stub which does nothing. overwrite if needed
      */
-    public function the_content() {
+    public function the_content($content) {
+        return $content;
     }
 
     /**
