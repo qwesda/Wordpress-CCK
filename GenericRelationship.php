@@ -100,25 +100,33 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
-        if ( (!isset($req->from_id) xor !isset($req->to_id)) and !empty($req->new_post_title) && !empty($wpc_relationships[$req->rel_id]) ) {
+        ButterLog::debug("add_relation", $req);
+
+        if ( (!isset($req->from_id) xor !isset($req->to_id)) && !empty($wpc_relationships[$req->rel_id]) ) {
             $relation = $wpc_relationships[$req->rel_id];
 
             if ( !isset($req->to_id) ) {
                 $new_post_id = wp_insert_post (
-                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_to_id)
+                    array('post_type' => $relation->post_type_to_id)
                 );
 
-                $req->to_id   = $new_post_id;
+                $req->to_id     = $new_post_id;
+                $req->item_id   = $new_post_id;
+                $req->item_type = $relation->post_type_to_id;
             } else {
                 $new_post_id = wp_insert_post (
-                    array('post_title' => $req->new_post_title, 'post_type' => $relation->post_type_from_id)
+                    array('post_type' => $relation->post_type_from_id)
                 );
 
-                $req->from_id = $new_post_id;
+                $req->from_id   = $new_post_id;
+                $req->item_id   = $new_post_id;
+                $req->item_type = $relation->post_type_from_id;
             }
 
             ButterLog::debug("created post $new_post_id");
         }
+
+        ButterLog::debug("add_relation", $req);
 
         if ($req->from_id <= 0)
             $ret->errors[] = "from_id has invalid value '$req->from_id'";
@@ -133,9 +141,9 @@ abstract class GenericRelationship {
             );
             $formats = array("%d", "%d");
 
-            if (isset($req->metadata)) {
-                $formats += array_fill(2, count($req->metadata), "%s");
-                $row += $req->metadata;
+            if (isset($req->relation_metadata)) {
+                $formats += array_fill(2, count($req->relation_metadata), "%s");
+                $row += $req->relation_metadata;
             }
 
             $rel = $wpc_relationships[$req->rel_id];
@@ -144,6 +152,12 @@ abstract class GenericRelationship {
                         "$req->rel_id with data", $row);
                     $ret["errors"][] = 'Could not insert relation';
                 }
+
+            if ( !empty($req->item_metadata)) {
+                $type = $wpc_content_types[$req->item_type];
+
+                $type->update_post($req->item_id, array(), $req->item_metadata);
+            }
         }
         return $ret;
     }
@@ -191,7 +205,7 @@ abstract class GenericRelationship {
             $rel = $wpc_relationships[$req->rel_id];
 
             if (
-                $wpdb->update($rel->table,  /*data*/$req->relation_metadata, /*where*/array("id" => $req->id), /*formats*/"%s", array("%d")) === FALSE
+                $wpdb->update($rel->table, /*data*/$req->relation_metadata, /*where*/array("id" => $req->id), /*formats*/"%s", array("%d")) === FALSE
             ) {
                 ButterLog::error("Could not update relation: $req->rel_id with data", $req->relation_metadata);
                 $ret["errors"][] = 'Could not update relation';
@@ -259,9 +273,11 @@ abstract class GenericRelationship {
             "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
             "WHERE $col = %d";
 
-            $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
+            $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id));
 
-            foreach ($sql_result as &$relation_row) {
+            foreach ($sql_result as $relation_row) {
+
+                $row_ret = new stdClass();
                 $row_ret->item_metadata     = array();
                 $row_ret->relation_metadata = array();
 
@@ -274,11 +290,9 @@ abstract class GenericRelationship {
                 $row_ret->post_to_id    = $relation_row->post_to_id;
 
 
-                $sql = "SELECT wp_posts.post_title FROM $rel->table ".
-                "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
-                "WHERE $col = %d";
+                $sql = "SELECT post_title FROM wp_posts WHERE ID = %d";
 
-                $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id, $req->rel_id));
+                $sql_result = $wpdb->get_results($wpdb->prepare($sql, $row_ret->$othercol));
 
                 foreach ($sql_result as &$relation_item_row) {
                     foreach ($relation_item_row as $key => $value){
@@ -286,7 +300,7 @@ abstract class GenericRelationship {
                     }
                 }
 
-                $ret->results[] = $row_ret;
+                array_push($ret->results, $row_ret);
             }
         }
 
@@ -414,7 +428,6 @@ abstract class GenericRelationship {
                     $prepared_sql_like  = $wpdb->prepare("   AND $wpdb->posts.post_title LIKE '%%%s%%' ", $req->filter);
                 }
 
-
                 if ( !isset($req->limit) )
                     $req->limit = 100;
 
@@ -425,20 +438,33 @@ abstract class GenericRelationship {
                     $prepared_sql_limit  = $wpdb->prepare(" LIMIT %d OFFSET %d", absint($req->limit), absint($req->offset));
                 }
 
+                $ret->status['result_type'] = 'search';
 
-                if ( !isset($req->order_by) )
-                    $req->order_by = "NULL";
+                if ( empty($req->filter) ) {
+                    $count = wp_count_posts($req->post_type);
 
-                if ( ( isset($req->order_by) && in_array ($req->order_by, array ("id",  "title", "NULL")) )
+                    if ($count->publish > 25) {
+                        $req->order_by              = "date";
+                        $req->order                 = "desc";
+                        $ret->status['result_type'] = 'latest';
+                    } else {
+                        $req->order_by              = "title";
+                        $req->order                 = "asc";
+                        $ret->status['result_type'] = 'available';
+                    }
+                } else if ( !isset($req->order_by) )
+                    $req->order_by  = "NULL";
+
+                if ( ( isset($req->order_by) && in_array ($req->order_by, array ("id",  "title", "date", "NULL")) )
                   && ( empty($req->order)    || in_array ($req->order,    array ("asc", "desc")) ) ){
-                    $req->order_by  = str_replace(array("id",  "title", "NULL"), array("$wpdb->posts.ID",  "$wpdb->posts.post_title", "NULL"), $req->order_by);
+                    $req->order_by  = str_replace(array("id",  "title", "date", "NULL"), array("$wpdb->posts.ID",  "$wpdb->posts.post_title",  "$wpdb->posts.post_date", "NULL"), $req->order_by);
                     $req->order     = ( isset($req->order) && $req->order == "desc" ) ? "DESC" : "ASC";
 
                     $prepared_sql_order  = $wpdb->prepare("ORDER BY $req->order_by $req->order ");
                 }
 
                 $available_count    = $wpdb->get_var    ( "SELECT COUNT(*) $prepared_sql_filter $prepared_sql_like" );
-                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title
+                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title, $wpdb->posts.post_type
 $prepared_sql_filter
 $prepared_sql_like
 $prepared_sql_order
@@ -479,8 +505,6 @@ $prepared_sql_limit" );
         $src            = $rel_direction == "from_to" ? $this->post_type_to     : $this->post_type_from;
         $dst            = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
 
-
-
         $item_data_box  = $rel_direction == "from_to" ? $this->post_type_from->echo_relation_item_metabox_str() : $this->post_type_to->echo_relation_item_metabox_str();
     ?>
         <div      class ="relation_edit_box <?php echo $this->id ?>"
@@ -502,18 +526,27 @@ data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
             <div class="relation_connected_box" style="display: block;">
-                <ul class="relation_connected_list"></ul>
-
                 <div class="relation_buttons_box">
                     <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a>
                     <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a>
                     <a class="relation_open_all_connected button" href='#'>open all <?php echo $dst->label ?></a>
                 </div>
+
+                <table class="relation_connected_list_header wp-list-table widefat fixed posts">
+                    <thead>
+                        <tr><th><?php echo $this->label; ?></th></tr>
+                    </thead>
+                </table>
+                <div class="relation_table_container">
+                    <table class="relation_connected_list wp-list-table widefat fixed posts">
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="relation_add_search_box hidden" style="display: none;">
-                <ul class="relation_src_list"></ul>
-
                 <div class="relation_add_buttons_box relation_buttons_box">
                     <label for="relation_src_search">search</label>
                     <input type="text" class="wpc_input_text relation_src_search"/>
@@ -521,6 +554,19 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                     <div class="relation_buttons_box_bottom">
                         <a class="button relation_add_search_cancel" href='#'>cancel</a>
                     </div>
+                </div>
+
+                <table class="relation_src_list_header wp-list-table widefat fixed posts">
+                    <thead>
+                        <tr><th>Search results</th></tr>
+                    </thead>
+                </table>
+                <div class="relation_table_container">
+                    <table class="relation_src_list wp-list-table widefat fixed posts">
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -551,9 +597,6 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 <div class="relation_connect_new_metadata_box"></div>
 
                 <div class="relation_connect_new_buttons_box relation_buttons_box">
-                    <label for="new_item_title">title for the new <?php echo $dst->singular_label ?></label>
-                    <input type="text" class="wpc_input wpc_input_text new_item_title" id="wpc_<?php echo $this->id ?>_field_new_item_title" />
-
                     <div class="relation_buttons_box_bottom">
                         <a class="relation_connect_new_cancel button" href='#'>cancel</a>
                         <a class="relation_connect_new_add button-primary" href='#'>add</a>
@@ -561,9 +604,8 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 </div>
             </div>
 
-            <div class="status-update" style="display:none">
 
-            </div>
+            <div class="status-update" style="display:none"></div>
         </div>
 
         <script type="text/javascript" charset="utf-8">

@@ -2,22 +2,7 @@
 	http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
 	http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
 
-div.relation_edit_connected_metadata_box,
-div.relation_connect_existing_metadata_box,
-div.relation_connect_new_metadata_box,
-ul.relation_src_list,
-ul.relation_connected_list {
-	margin: 0;
-    margin-bottom: 6px;
-    padding: 4px 8px;
-    
-	
-	height: 200px;
-	
-    overflow: scroll;
 
-    border: 1px solid rgba(0,0,0,0.15);
-}
 ul.relation_src_list,
 ul.relation_connected_list {
    padding: 0px;
@@ -30,28 +15,77 @@ div.relation_connected_box {
     margin: 0px;
     padding: 0px;
  
- 	position: relative;   
+ 	position: relative;
+}
+div.relation_connect_new_box {
+	height: 471px;
+	border: 1px solid #dfdfdf;
+	background: #f9f9f9;
 }
 
-ul.relation_connected_list li span.connected_item_info {
-	width: 150px;
-	display: inline-block;
-	text-align: right;
+div.relation_table_container {
+	overflow-y: scroll;
+	height: 400px;
+}
+
+table.relation_connected_list tr div.connected_item_info {
+	text-align: riglht;
+	top: 25px;
+	font-style: italic;
 }
 
 div.relation_edit_box {
 	padding-bottom: 25px;
+	position: relative;
+}
+
+div.padding_box {
+	padding: 10px;
 }
 
 div.relation_edit_box div.status-update {
-	
-	background-color: rgba(32, 192, 96, 1);
+	position: absolute;
 	padding: 4px 8px;
 	border-radius: 6px;
-	color: white;
-	font-weight: bold;
-	float: right;
 	margin-right: 10px;
+	right: 0;
+	top: 2px;
+	font-style: italic;
+	
+	color: darkgreen;
+}
+table.relation_connected_list_header,
+table.relation_src_list_header {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom: none;
+}
+table.relation_connected_list,
+table.relation_connected_list > tbody > tr,
+table.relation_connected_list > tbody > tr > td,
+table.relation_src_list,
+table.relation_src_list > tbody > tr,
+table.relation_src_list > tbody > tr > td {
+	border: none;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+table.relation_src_list > tbody > tr > td,
+table.relation_connected_list > tbody > tr > td {
+	border-bottom: 1px solid #DFDFDF;
+}
+table.relation_src_list > tbody > tr,
+table.relation_src_list > tbody > tr > td,
+table.relation_connected_list > tbody > tr,
+table.relation_connected_list > tbody > tr > td  {
+    height: 41px;
+    overflow: hidden;
+}
+
+div.relation_table_container {
+	border: 1px solid #DFDFDF;
+	border-top: none;
+	background: #f9f9f9;
 }
 
 label.wpc_label_left {
@@ -61,16 +95,15 @@ label.wpc_label_left {
     display: inline-block;
 }
 
-ul.relation_connected_list li {
-    background-color: rgba(0,0,0,0.01);
-    padding: 4px;
-    margin: 0px;
+table.relation_connected_list > tbody > tr a.relation_connected_item {
+	font-weight: bold;
+	text-decoration: none;
 }
 
-ul.relation_connected_list li:nth-child(even) {
-    background-color: rgba(0,0,0,0.05);
+table.relation_src_list tbody tr:nth-child(odd),
+table.relation_connected_list tbody tr:nth-child(odd) {
+    background-color: #fff;
 }
-
 
 div.relation_add_existing_metadata_box {
     margin: 10px 0px;   
@@ -141,7 +174,6 @@ div.relation_nav_bar div:last-child {
 div.relation_nav_bar div:before {
 	
 }
-
 div.relation_edit_boxes {
     height: 255px;
 
@@ -229,24 +261,32 @@ input.relation_src_search {
 
 div.relation_buttons_box {
     margin: 10px 0;
-    width: 100%;    
+    width: 100%;  
 }
 
 div.relation_buttons_box_bottom {	
-	float: right;
+	clear: both;
+	text-align: right;
+	width: 98%;
 }
 
 table.relation_metadata {
-	position: absolute;
-	
-	top: 0;
-	right: 20px;
+	float: right;
+	margin-bottom: 10px;
 }
 
-table.relation_metadata td.table_label {
+table.relation_metadata > tbody > tr, 
+table.relation_metadata > tbody > tr > td {
+	padding: 0;
+	margin: 0;
+	height: 10px;
+	border: none;
+}
+table.relation_metadata > tbody > tr > td.table_label {
 	font-weight: bold;
 	text-align: right;
 }
+
 
 div.relation_buttons_box > a {
     margin-right: 6px;
