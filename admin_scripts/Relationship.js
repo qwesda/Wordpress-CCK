@@ -56,7 +56,7 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             }
             break;
         case "relation_edit_connected_box" :
-            var selected_item           = jQuery(base_id + '.relation_conected_list li.selected');
+            var selected_item           = jQuery(base_id + '.relation_connected_list li.selected');
             var selected_item_data      = jQuery(selected_item).data();
             var object_id               = (selected_item_data.data.post_from_id != relation_data.postId ? selected_item_data.data.post_from_id : selected_item_data.data.post_to_id);
 
@@ -150,9 +150,9 @@ function relation_edit_connected_cancel (relation_data) {
 function relation_edit_connected_update (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
 
-    var selected_item       = jQuery(base_id + '.relation_conected_list li.selected');
-    var selected_item_data  = jQuery(base_id + '.relation_conected_list li.selected').data();
-    var selected_item_label = jQuery(base_id + '.relation_conected_list li.selected').text();
+    var selected_item       = jQuery(base_id + '.relation_connected_list li.selected');
+    var selected_item_data  = jQuery(base_id + '.relation_connected_list li.selected').data();
+    var selected_item_label = jQuery(base_id + '.relation_connected_list li.selected').text();
 
     var relation_metadata_fields = jQuery(base_id + '.relation_edit_connected_metadata_box .relation_metadata_edit_box .wpc_input');
     var item_metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .relation_item_metadata_edit_box .wpc_input');
@@ -204,9 +204,9 @@ function relation_edit_connected_update (relation_data) {
 
 function relation_edit_connected_delete (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
-    var selected_item       = jQuery(base_id + '.relation_conected_list li.selected');
-    var selected_item_data  = jQuery(base_id + '.relation_conected_list li.selected').data();
-    var selected_item_label = jQuery(base_id + '.relation_conected_list li.selected').text();
+    var selected_item       = jQuery(base_id + '.relation_connected_list li.selected');
+    var selected_item_data  = jQuery(base_id + '.relation_connected_list li.selected').data();
+    var selected_item_label = jQuery(base_id + '.relation_connected_list li.selected').text();
 
     var metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .wpc_input');
 
@@ -305,7 +305,7 @@ function set_connected_items (relation_data) {
     }
 
     var html_to_append = "<div class='relations_info'><img src='" + admin_url_wpspin_light + "'> loading connected "+relation_data.dstLabel+"<br></div>";
-    jQuery(base_id + '.relation_conected_list').empty().append(html_to_append);
+    jQuery(base_id + '.relation_connected_list').empty().append(html_to_append);
 
     jQuery.ajax({
         url: ajaxurl,
@@ -337,7 +337,7 @@ function set_connected_items (relation_data) {
 
             relation_tab.text(text);
 
-            jQuery(base_id + '.relation_conected_list').empty().append(html_to_append);
+            jQuery(base_id + '.relation_connected_list').empty().append(html_to_append);
         }
     });
 }
@@ -593,7 +593,7 @@ function relation_setup_delegates (relation_metabox_id) {
         event.stopPropagation();
         event.preventDefault();
 
-        var connected = jQuery(base_id + '.relation_conected_list li');
+        var connected = jQuery(base_id + '.relation_connected_list li');
         connected.each(function(i, item) {
             var item_data = jQuery(item).data();
             var url = admin_url_post_php + "?post=" + item_data.data.post_to_id + "&action=edit";
