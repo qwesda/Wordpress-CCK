@@ -6,7 +6,7 @@ div.relation_edit_connected_metadata_box,
 div.relation_connect_existing_metadata_box,
 div.relation_connect_new_metadata_box,
 ul.relation_src_list,
-ul.relation_conected_list {
+ul.relation_connected_list {
 	margin: 0;
     margin-bottom: 6px;
     padding: 4px 8px;
@@ -19,7 +19,7 @@ ul.relation_conected_list {
     border: 1px solid rgba(0,0,0,0.15);
 }
 ul.relation_src_list,
-ul.relation_conected_list {
+ul.relation_connected_list {
    padding: 0px;
 }
 div.relation_connect_new_box,
@@ -33,7 +33,7 @@ div.relation_connected_box {
  	position: relative;   
 }
 
-ul.relation_conected_list li span.connected_item_info {
+ul.relation_connected_list li span.connected_item_info {
 	width: 150px;
 	display: inline-block;
 	text-align: right;
@@ -61,13 +61,13 @@ label.wpc_label_left {
     display: inline-block;
 }
 
-ul.relation_conected_list li {
+ul.relation_connected_list li {
     background-color: rgba(0,0,0,0.01);
     padding: 4px;
     margin: 0px;
 }
 
-ul.relation_conected_list li:nth-child(even) {
+ul.relation_connected_list li:nth-child(even) {
     background-color: rgba(0,0,0,0.05);
 }
 
@@ -81,7 +81,7 @@ div.relation_add_existing_metadata_box {
     border: 1px solid rgba(0,0,0,0.15);	
 }
 
-ul.relation_conected_list li.odd {
+ul.relation_connected_list li.odd {
     background-color: rgba(0,0,0,0.05);
 }
 
@@ -159,11 +159,11 @@ div.relation_edit_boxes > div {
 }
 
 
-.relation_conected_list li a.relation_edit_link {
+.relation_connected_list li a.relation_edit_link {
     visibility: hidden;
 }
 
-.relation_conected_list li:hover a.relation_edit_link {
+.relation_connected_list li:hover a.relation_edit_link {
     visibility: visible;
 }
 
@@ -259,7 +259,7 @@ div.relation_buttons_box > div {
 	height: 22px;
 }
 
-.relation_conected_list div.relations_info img {
+.relation_connected_list div.relations_info img {
     margin-bottom: -4px;
 }
 

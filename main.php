@@ -125,6 +125,7 @@ class WPCustom {
     }
 
     function save_post ($post_id, $post) {
+        global $_POST;
         global $wpc_content_types;
 
         if (! isset($wpc_content_types[$post->post_type]))
@@ -132,12 +133,17 @@ class WPCustom {
 
         $type = $wpc_content_types[$post->post_type];
 
+        $postmeta = array();
+        foreach ($_POST as $key => $value)
+            if (strpos($key, 'wpc_') === 0)
+                $postmeta[substr($key, 4)] = $value;
+
         if ($this->post_is_updated) {
             $this->post_is_updated = false;
-            return $type->update_post($post_id, $post);
+            return $type->update_post($post_id, $post, $postmeta);
         }
         else
-            return $type->new_post($post_id, $post);
+            return $type->new_post($post_id, $post, $postmeta);
     }
 
     function pre_post_update($post_id) {

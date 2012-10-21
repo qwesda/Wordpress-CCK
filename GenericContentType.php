@@ -197,10 +197,10 @@ abstract class GenericContentType {
     function delete_post ($post_id, $post) {
     }
 
-    function new_post ($post_id, $post) {
+    function new_post ($post_id, $post, $postmeta) {
         global $wpdb;
 
-        //ButterLog::debug("new post with post_id $post_id", $post);
+        ButterLog::debug("new post with post_id $post_id");
 
         $data = array($this->wpid_col => $post_id);
 
@@ -211,47 +211,41 @@ abstract class GenericContentType {
         // this might be unneccessary.
         // custom fields might always be unset at this point
         // look for 'new post' not followed by 'nothing to save' log messages
-        $this->update_post($post_id, $post);
+        $this->update_post($post_id, $post, $postmeta);
     }
 
-    function update_post ($post_id, $post) {
+    function update_post ($post_id, $post, $postmeta) {
         global $wpdb;
 
         ButterLog::debug("saving post with post_id $post_id");
-        $fields_to_update = array();
 
         $candidate_fields = array_filter($this->fields,
             function($field) use ($post_id) {
                 return $field->may_write($post_id);
-            }
-        );
+        });
+        $field_defaults = array_map(function ($field) {
+            return $field->default;
+        }, $candidate_fields);
+        $field_formats = array_map(function ($field) {
+            return $field->printf_specifier;
+        }, $candidate_fields);
 
-        foreach ($candidate_fields as $field_key => $field) {
-            if (! isset($_POST["wpc_$field_key"]))
-                continue;
+        // weed out invalid fields, add defaults
+        // XXX: handle unsetting fields
+        // see https://core.trac.wordpress.org/ticket/15158
+        $to_update = array_filter(wp_parse_args(array_filter($postmeta), $field_defaults));
 
-            if ( !empty($_POST["wpc_$field_key"]) ) {
-                $fields_to_update[$field_key] = $_POST["wpc_$field_key"];
-            } elseif ( !empty($this->fields[$field_key]->default) ) {
-                $fields_to_update[$field_key] = $this->fields[$field_key]->default;
-            } else {
-                // this won't work as long as bug #15158 is not fixed.
-                // https://core.trac.wordpress.org/ticket/15158
-                $fields_to_update[$field_key] = NULL;
-            }
-        }
-
-        if (empty($fields_to_update)) {
+        if (empty($to_update)) {
             ButterLog::debug("Nothing to save for post $post_id.");
             return;
         }
 
+        $formats = array_intersect_key($field_formats, $to_update);
+
         if ($wpdb->update($this->table,
-            $fields_to_update,                  // col = val
+            $to_update,                         // col = val
             array($this->wpid_col => $post_id), // where
-            array_map(function($col) {          // printf formats for set
-                return $col->printf_specifier;
-            }, $candidate_fields),
+            $formats,                           // printf formats for set
             '%d'                                // printf format for where
             ) === false) {
                 ButterLog::error("Could not update data for post_id $post_id.");
