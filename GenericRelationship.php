@@ -177,8 +177,6 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
-        ButterLog::debug("update_relation", $req);
-
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
         } else if ($rel->to_id <= 0) {
@@ -187,19 +185,15 @@ abstract class GenericRelationship {
             $ret->errors[] = "rel_id has invalid value '$rel->rel_id'";
         } else if (empty($rel->id)) {
             $ret->errors[] = "id has invalid value";
-        } else if (! isset($req->metadata)) {
+        } else if (!isset($req->relation_metadata)) {
             $ret->errors[] = "cannot update without anything to update.";
         } else {
             $rel = $wpc_relationships[$req->rel_id];
 
-            if (! $wpdb->update($rel->table,
-                $req->relation_metadata, // data
-                array("id" => $req->id), // where
-                "%s",                    //formats
-                array("%d"))
+            if (
+                $wpdb->update($rel->table,  /*data*/$req->relation_metadata, /*where*/array("id" => $req->id), /*formats*/"%s", array("%d")) === FALSE
             ) {
-                ButterLog::error("Could not update relation: ".
-                    "$req->rel_id with data", $row);
+                ButterLog::error("Could not update relation: $req->rel_id with data", $req->relation_metadata);
                 $ret["errors"][] = 'Could not update relation';
             }
 
@@ -318,21 +312,14 @@ abstract class GenericRelationship {
             "results" => array (),
             );
 
-        ButterLog::debug("get_post_metadata",       $req);
         if ( !isset($req->post_id) ) {
             $ret->errors[] = "post_id was not specified.";
-        ButterLog::debug("post_id was not specified",       $req);
         } else {
             $post_id        = $req->post_id;
             $post_type      = get_post_type($post_id);
             $content_type   = $wpc_content_types[$post_type];
 
-            ButterLog::debug("post_id",         $post_id);
-            ButterLog::debug("post_type",       $post_type);
-
             $sql = "SELECT * FROM $content_type->table WHERE post_id = %d";
-
-            ButterLog::debug("sql",             $sql);
 
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $post_id));
 
@@ -515,7 +502,7 @@ data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
             <div class="relation_connected_box" style="display: block;">
-                <ul class="relation_conected_list"></ul>
+                <ul class="relation_connected_list"></ul>
 
                 <div class="relation_buttons_box">
                     <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a>
