@@ -11,7 +11,7 @@ class TextField extends GenericField {
 
     function echo_field_core () {
         $record = the_record();
-        $value  = $record->__get($this->id);
+        $value  = $this->parent->id == $record->post_type ? $record->__get($this->id) : "";
      ?>
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"

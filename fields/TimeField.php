@@ -11,7 +11,7 @@ class TimeField extends GenericField {
 
     function echo_field_core () {
         $record = the_record();
-        $value  = $record->__get($this->id);
+        $value  = $this->parent->id == $record->post_type ? $record->__get($this->id) : "‚";
 
         if ( count(explode(":", $value)) == 3 )
             $value  = join(":", explode(":", $value, -1) );

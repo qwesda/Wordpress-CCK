@@ -13,7 +13,7 @@ class TaxonomyField extends GenericField {
 
     function echo_field_core () {
         $record = the_record();
-        $value  = $record->__get($this->id);
+        $value  = $this->parent->id == $record->post_type ? $record->__get($this->id) : "";
 
         $terms = get_terms( $this->taxonomy, array(
             'orderby'        => 'name',

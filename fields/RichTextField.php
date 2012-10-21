@@ -13,7 +13,7 @@ class RichTextField extends GenericField {
 
     function echo_field_core () {
         $record = the_record();
-        $value  = $record->__get($this->id);
+        $value  = $this->parent->id == $record->post_type ? $record->__get($this->id) : "";
 
         if (isset($value))
             $content = $value;

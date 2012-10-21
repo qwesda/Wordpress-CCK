@@ -19,7 +19,7 @@ class FormattedString extends GenericField {
 
     function echo_field_core () {
         $record = the_record();
-        $value  = $record->__get($this->id);
+        $value  = $this->parent->id == $record->post_type ? $record->__get($this->id) : "";
     ?>
         <label class="wpc_input_label"><?php if ( !empty($value) ) echo $value; ?></label>
     <?php }

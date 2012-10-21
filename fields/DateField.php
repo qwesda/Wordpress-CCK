@@ -15,7 +15,7 @@ class DateField extends GenericField {
      */
     function echo_field_core () {
         $record = the_record();
-        $value = $record->get($this->id);
+        $value = $this->parent->id == $record->post_type ? $record->get($this->id) : "";
 
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
             placeholder="<?php echo $this->hint;?>"
