@@ -195,12 +195,18 @@ abstract class GenericRelationship {
             if (! $wpdb->update($rel->table,
                 $req->relation_metadata, // data
                 array("id" => $req->id), // where
-                "%s", //formats
+                "%s",                    //formats
                 array("%d"))
             ) {
                 ButterLog::error("Could not update relation: ".
                     "$req->rel_id with data", $row);
                 $ret["errors"][] = 'Could not update relation';
+            }
+
+            if (! empty($req->item_metadata)) {
+                $type = $wpc_content_types[$req->item_type];
+
+                $type->update_post($req->item_id, array(), $req->item_metadata);
             }
         }
 
