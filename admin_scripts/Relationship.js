@@ -153,6 +153,8 @@ function relation_edit_connected_update (relation_data) {
     var selected_item       = jQuery(base_id + '.relation_conected_list li.selected');
     var selected_item_data  = jQuery(base_id + '.relation_conected_list li.selected').data();
     var selected_item_label = jQuery(base_id + '.relation_conected_list li.selected').text();
+    var object_id           = (selected_item_data.data.post_from_id != relation_data.postId ? selected_item_data.data.post_from_id : selected_item_data.data.post_to_id);
+    var object_type         = (selected_item_data.data.post_from_id != relation_data.postId ? relation_data.dstId : relation_data.srcId);
 
     var relation_metadata_fields = jQuery(base_id + '.relation_edit_connected_metadata_box .relation_metadata_edit_box .wpc_input');
     var item_metadata_fields     = jQuery(base_id + '.relation_edit_connected_metadata_box .relation_item_metadata_edit_box .wpc_input');
@@ -164,6 +166,8 @@ function relation_edit_connected_update (relation_data) {
             id                  : selected_item_data.data.id,
             from_id             : selected_item_data.data.post_from_id,
             to_id               : selected_item_data.data.post_to_id,
+            item_id             : object_id,
+            item_type           : object_type,
             relation_metadata   : {},
             item_metadata       : {}
         };
