@@ -148,8 +148,7 @@ abstract class GenericRelationship {
 
             $rel = $wpc_relationships[$req->rel_id];
             if (! $wpdb->insert($rel->table, $row, $formats)) {
-                    ButterLog::error("Could not insert relation: ".
-                        "$req->rel_id with data", $row);
+                    ButterLog::error("Could not insert relation: $req->rel_id with data", $row);
                     $ret["errors"][] = 'Could not insert relation';
                 }
 
@@ -290,7 +289,7 @@ abstract class GenericRelationship {
                 $row_ret->post_to_id    = $relation_row->post_to_id;
 
 
-                $sql = "SELECT post_title FROM wp_posts WHERE ID = %d";
+                $sql = "SELECT post_title, post_status FROM wp_posts WHERE ID = %d";
 
                 $sql_result = $wpdb->get_results($wpdb->prepare($sql, $row_ret->$othercol));
 
@@ -420,7 +419,6 @@ abstract class GenericRelationship {
                 $prepared_sql_filter    = $wpdb->prepare(
                     "  FROM $wpdb->posts \n".
                     " WHERE $wpdb->posts.post_type  = %s \n".
-                    "   AND $wpdb->posts.post_status    = 'publish'".
                     "", $req->post_type
                 );
 
@@ -464,7 +462,7 @@ abstract class GenericRelationship {
                 }
 
                 $available_count    = $wpdb->get_var    ( "SELECT COUNT(*) $prepared_sql_filter $prepared_sql_like" );
-                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID,  $wpdb->posts.post_title, $wpdb->posts.post_type
+                $results            = $wpdb->get_results( "SELECT $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_status, $wpdb->posts.post_type
 $prepared_sql_filter
 $prepared_sql_like
 $prepared_sql_order

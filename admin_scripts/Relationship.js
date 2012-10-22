@@ -339,8 +339,12 @@ function relation_connect_existing_add (relation_data) {
             "data"                  : data
         },
         success: function (data) {
-            goto_box(relation_data, 'relation_add_search_box', 'relation_connect_existing_box', 'back');
             show_status_message(relation_data, this.selected_item_label + " added");
+
+            jQuery(base_id + '.relation_src_list > tbody > tr.selected > td .relation_metadata').remove();
+            jQuery(base_id + '.relation_src_list > tbody > tr.selected > td .relation_connect_existing_box').remove();
+
+            jQuery(base_id + '.relation_src_search').focus();
         }
     });
 }
@@ -350,7 +354,7 @@ function relation_connect_existing_cancel (relation_data) {
     jQuery(base_id + '.relation_src_list > tbody > tr.selected > td .relation_metadata').remove();
     jQuery(base_id + '.relation_src_list > tbody > tr.selected > td .relation_connect_existing_box').remove();
 
-//    jQuery(base_id + '.relation_src_search').focus();
+    jQuery(base_id + '.relation_src_search').focus();
 }
 function update_search_results (relation_data) {
     var base_id     = ".relation_edit_box." + relation_data.relId + " ";
@@ -393,7 +397,9 @@ function update_search_results (relation_data) {
                         result.post_title  = "<i>untitled</i>";
                     }
 
-                    html_to_append = "<tr data-post-id='"+result.ID+"' data-post-type='"+result.post_type+"'><td><a href='#' class='relation_source_item'>"+result.post_title+"</a></td></tr>\n" + html_to_append;
+                    html_to_append = "<tr data-post-id='"+result.ID+"' data-post-type='"+result.post_type+"'><td><a href='#' class='relation_source_item'>"+result.post_title+"</a>"
+                    + (result.post_status != "publish" ? " (<i>" + result.post_status + ")</i>" : "")
+                    + "</td></tr>\n" + html_to_append;
                 }
 
                 if (data.results.length == 0) {
@@ -450,6 +456,7 @@ function set_connected_items (relation_data) {
                 html_to_append =
                 "<tr data-id='"+result.id+"' data-data='"+json_encode(result)+"'><td>"
                 +    "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> "
+                +    (result.item_metadata.post_status != "publish" ? " (<i>" + result.item_metadata.post_status + ")</i>" : "")
                 +    (relation_data.fieldToShowInList != "" && result.relation_metadata[relation_data.fieldToShowInList] != undefined ? "<div class='connected_item_info'>"+result.relation_metadata[relation_data.fieldToShowInList]+"</div> " : "")
                 + "</td></tr>\n" + html_to_append;
             }

@@ -5,9 +5,6 @@
  */
 
 class GeneratedValue extends FormattedString {
-    /*  das muss jetzt nur noch >entwerder< in die meta-db geschrieben werden
-        oder in die wp_post tabelle falls es post_title überschriebt ... bei den restlichen feldern macht das glaube ich weniger sinn */
-
     function __construct ($parent, $params, $callback) {
         parent::__construct ($parent, $params, $callback);
 
@@ -15,12 +12,19 @@ class GeneratedValue extends FormattedString {
     }
 
     function may_write () {
-        return false;
+        return true;
     }
 
     function value($post_id) {
         $record = the_record($post_id);
+
         return $record->__get($this->id);
+    }
+
+    function value_uncached($post_id) {
+        $record = the_record($post_id);
+
+        return $record->formatted_string($this->id, true);
     }
 }
 

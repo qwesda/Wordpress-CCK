@@ -6,7 +6,7 @@ $wpc_content_types = array();
 abstract class GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
-    public $generated_fields    = array();
+    public $generated_values    = array();
     public $relationships       = array();
 
     public $label               = "";
@@ -222,9 +222,11 @@ abstract class GenericContentType {
             function($field) use ($post_id) {
                 return $field->may_write($post_id);
         });
+
         $field_defaults = array_map(function ($field) {
             return $field->default;
         }, $candidate_fields);
+
         $field_formats = array_map(function ($field) {
             return $field->printf_specifier;
         }, $candidate_fields);
@@ -243,17 +245,20 @@ abstract class GenericContentType {
 
         // regenerate GeneratedValues
         $to_update = array_map(function ($field) use ($post_id) {
-            return $field->value($post_id);
-        }, $this->generated_fields);
+            return $field->value_uncached($post_id);
+        }, $this->generated_values);
+
         $field_formats = array_map(function ($field) {
             return $field->printf_specifier;
-        }, $this->generated_fields);
+        }, $this->generated_values);
 
         $this->update_dbs($post_id, $to_update, $field_formats);
     }
 
     protected function update_dbs ($post_id, $to_update, $field_formats) {
         global $wpdb;
+
+        ButterLog::debug("update_dbs $post_id.", $to_update);
 
         $wp_fields = array_flip(array('post_author', 'post_date',
             'post_date_gmt', 'post_content', 'post_content_filtered',
@@ -280,7 +285,7 @@ abstract class GenericContentType {
 
         if ($wpdb->update($table,
             $to_update,                         // col = val
-            array($this->wpid_col => $post_id), // where
+            array( ($table == $wpdb->posts ? "ID" : $this->wpid_col) => $post_id), // where
             $formats,                           // printf formats for set
             '%d'                                // printf format for where
             ) === false) {

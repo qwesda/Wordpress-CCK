@@ -160,9 +160,9 @@ abstract class WPCData {
         return null;
     }
 
-    protected function formatted_string ($key) {
+    function formatted_string ($key, $uncached = false) {
         // shortcut if it is already cached
-        if (isset($this->formatted_string_cache[$key]))
+        if ( !$uncached && isset($this->formatted_string_cache[$key]))
             return $this->formatted_string_cache[$key];
 
         // default to empty string
