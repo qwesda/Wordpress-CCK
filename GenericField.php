@@ -44,6 +44,10 @@ abstract class GenericField {
         if ( !empty($params->required) ) {
             $this->required = true;
         }
+
+        if ( !empty($params->printf_specifier)) {
+            $this->printf_specifier = $params->printf_specifier;
+        }
     }
 
     abstract function echo_field_core ();
