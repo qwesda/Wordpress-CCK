@@ -10,10 +10,17 @@ class GeneratedValue extends FormattedString {
 
     function __construct ($parent, $params, $callback) {
         parent::__construct ($parent, $params, $callback);
+
+        $parent->generated_values[$this->id] = $this;
     }
 
     function may_write () {
         return false;
+    }
+
+    function value($post_id) {
+        $record = the_record($post_id);
+        return $record->__get($this->id);
     }
 }
 

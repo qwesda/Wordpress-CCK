@@ -6,6 +6,7 @@ $wpc_content_types = array();
 abstract class GenericContentType {
     public $id                  = NULL;
     public $fields              = array();
+    public $generated_fields    = array();
     public $relationships       = array();
 
     public $label               = "";
@@ -215,8 +216,6 @@ abstract class GenericContentType {
     }
 
     function update_post ($post_id, $post, $postmeta) {
-        global $wpdb;
-
         ButterLog::debug("saving post with post_id $post_id");
 
         $candidate_fields = array_filter($this->fields,
@@ -240,15 +239,52 @@ abstract class GenericContentType {
             return;
         }
 
+        $this->update_dbs($post_id, $to_update, $field_formats);
+
+        // regenerate GeneratedValues
+        $to_update = array_map(function ($field) use ($post_id) {
+            return $field->value($post_id);
+        }, $this->generated_fields);
+        $field_formats = array_map(function ($field) {
+            return $field->printf_specifier;
+        }, $this->generated_fields);
+
+        $this->update_dbs($post_id, $to_update, $field_formats);
+    }
+
+    protected function update_dbs ($post_id, $to_update, $field_formats) {
+        global $wpdb;
+
+        $wp_fields = array_flip(array('post_author', 'post_date',
+            'post_date_gmt', 'post_content', 'post_content_filtered',
+            'post_title', 'post_excerpt', 'post_status', 'post_type',
+            'comment_count', 'comment_status', 'ping_status', 'post_password',
+            'post_name', 'to_ping', 'pinged', 'post_modified',
+            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
+            'guid'));
+
+        $this->update_db($this->table, $post_id,
+            array_diff_key($to_update, $wp_fields), $field_formats);
+
+        $this->update_db($wpdb->posts, $post_id,
+            array_intersect_key($to_update, $wp_fields), $field_formats);
+    }
+
+    protected function update_db($table, $post_id, $to_update, $field_formats) {
+        global $wpdb;
+
+        if (empty($to_update))
+            return true;
+
         $formats = array_intersect_key($field_formats, $to_update);
 
-        if ($wpdb->update($this->table,
+        if ($wpdb->update($table,
             $to_update,                         // col = val
             array($this->wpid_col => $post_id), // where
             $formats,                           // printf formats for set
             '%d'                                // printf format for where
             ) === false) {
-                ButterLog::error("Could not update data for post_id $post_id.");
+                ButterLog::error("Could not update $table for post_id $post_id.");
                 return false;
         }
         return true;
