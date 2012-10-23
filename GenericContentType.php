@@ -85,14 +85,30 @@ abstract class GenericContentType {
 
     }
 
-    function echo_relation_item_metabox () {
+    public function echo_update_relation_item_metabox () {
+        return $this->echo_new_relation_item_metabox();
+    }
+
+    public function echo_new_relation_item_metabox () {
         return "";
     }
 
-    public function echo_relation_item_metabox_str () {
+    public function echo_update_relation_item_metabox_str () {
         ob_start();
 
-        $this->echo_relation_item_metabox();
+        $this->echo_update_relation_item_metabox();
+
+        $html_str = ob_get_clean();
+        $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);
+        $html_str = htmlspecialchars($html_str);
+
+        return htmlspecialchars($html_str);
+    }
+
+    public function echo_new_relation_item_metabox_str () {
+        ob_start();
+
+        $this->echo_new_relation_item_metabox();
 
         $html_str = ob_get_clean();
         $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);

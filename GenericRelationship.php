@@ -142,6 +142,10 @@ abstract class GenericRelationship {
             $formats = array("%d", "%d");
 
             if (isset($req->relation_metadata)) {
+                $req->relation_metadata = array_map(function ($value) {
+                    return htmlspecialchars_decode($value, ENT_QUOTES);
+                }, $req->relation_metadata);
+
                 $formats += array_fill(2, count($req->relation_metadata), "%s");
                 $row += $req->relation_metadata;
             }
@@ -153,6 +157,10 @@ abstract class GenericRelationship {
                 }
 
             if ( !empty($req->item_metadata)) {
+                $req->item_metadata = array_map(function ($value) {
+                    return htmlspecialchars_decode($value, ENT_QUOTES);
+                }, $req->item_metadata);
+
                 $type = $wpc_content_types[$req->item_type];
 
                 $type->update_post($req->item_id, array(), $req->item_metadata);
@@ -190,6 +198,8 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
+        ButterLog::debug("update_relation ", $req);
+
         if ($rel->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$rel->from_id'";
         } else if ($rel->to_id <= 0) {
@@ -198,24 +208,33 @@ abstract class GenericRelationship {
             $ret->errors[] = "rel_id has invalid value '$rel->rel_id'";
         } else if (empty($rel->id)) {
             $ret->errors[] = "id has invalid value";
-        } else if (!isset($req->relation_metadata)) {
+        } else if ( !empty($req->relation_metadata) && !empty($req->item_metadata) ) {
             $ret->errors[] = "cannot update without anything to update.";
         } else {
             $rel = $wpc_relationships[$req->rel_id];
 
-            if (
-                $wpdb->update($rel->table, /*data*/$req->relation_metadata, /*where*/array("id" => $req->id), /*formats*/"%s", array("%d")) === FALSE
-            ) {
-                ButterLog::error("Could not update relation: $req->rel_id with data", $req->relation_metadata);
-                $ret["errors"][] = 'Could not update relation';
+            if ( !empty($req->relation_metadata) ) {
+                $req->relation_metadata = array_map(function ($value) {
+                    return htmlspecialchars_decode($value, ENT_QUOTES);
+                }, $req->relation_metadata);
+
+                if ( $wpdb->update($rel->table, /*data*/$req->relation_metadata, /*where*/array("id" => $req->id), /*formats*/"%s", array("%d")) === FALSE ) {
+                    ButterLog::error("Could not update relation: $req->rel_id with data", $req->relation_metadata);
+                    $ret["errors"][] = 'Could not update relation';
+                }
             }
 
             if (! empty($req->item_metadata)) {
+                $req->item_metadata = array_map(function ($value) {
+                    return htmlspecialchars_decode($value, ENT_QUOTES);
+                }, $req->item_metadata);
+
                 $type = $wpc_content_types[$req->item_type];
 
                 $type->update_post($req->item_id, array(), $req->item_metadata);
             }
         }
+
 
         return $ret;
     }
@@ -503,7 +522,8 @@ $prepared_sql_limit" );
         $src            = $rel_direction == "from_to" ? $this->post_type_to     : $this->post_type_from;
         $dst            = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
 
-        $item_data_box  = $rel_direction == "from_to" ? $this->post_type_from->echo_relation_item_metabox_str() : $this->post_type_to->echo_relation_item_metabox_str();
+        $item_update_data_box   = $rel_direction == "from_to" ? $this->post_type_from->echo_update_relation_item_metabox_str()  : $this->post_type_to->echo_update_relation_item_metabox_str();
+        $item_new_data_box      = $rel_direction == "from_to" ? $this->post_type_from->echo_new_relation_item_metabox_str()     : $this->post_type_to->echo_new_relation_item_metabox_str();
     ?>
         <div      class ="relation_edit_box <?php echo $this->id ?>"
 
@@ -518,7 +538,8 @@ data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
          data-src-label = "<?php echo $src->label ?>"
          data-dst-label = "<?php echo $dst->label ?>"
           data-edit-box = "<?php echo $this->echo_item_metabox_str() ?>"
-          data-item-edit-box = "<?php echo $item_data_box ?>"
+          data-item-update-edit-box = "<?php echo $item_update_data_box ?>"
+          data-item-new-edit-box = "<?php echo $item_new_data_box ?>"
 
 data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
