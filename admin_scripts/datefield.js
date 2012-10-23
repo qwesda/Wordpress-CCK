@@ -1,33 +1,33 @@
 (function($) {
     jQuery(document).ready(function (){
-        jQuery('a.wpc_input_date_edit_link').click(function(event) {
+        jQuery('a.wpc_input_date_edit_link').live("click", function(event) {
             var id = jQuery(this).parent().parent().attr('id').replace("wpc_form_field_id_", "");
-            
+
             event.preventDefault();
-            
+
             jQuery(this).parent().hide();
             jQuery(this).parent().next().show();
-            
+
             jQuery("#wpc_input_date_d-"+id).focus();
         });
-        jQuery('a.wpc_input_date_edit_ok').click(function(event) {
+        jQuery('a.wpc_input_date_edit_ok').live("click", function(event) {
             event.preventDefault();
             ok(this);
         });
-        jQuery('.wpc_input_date_edit_container > input, .wpc_input_date_edit_container > select').keypress(function(event) {
+        jQuery('.wpc_input_date_edit_container > input, .wpc_input_date_edit_container > select').live("keypress", function(event) {
             if(event.which == 13){
                 event.preventDefault();
             }
         });
-        jQuery('.wpc_input_date_edit_container > input, .wpc_input_date_edit_container > select').keyup(function(event) {
+        jQuery('.wpc_input_date_edit_container > input, .wpc_input_date_edit_container > select').live("keyup", function(event) {
             if(event.which == 13){
                 event.preventDefault();
                 ok(this);
             }
         });
-        jQuery('a.wpc_input_date_edit_cancel').click(function(event) {
+        jQuery('a.wpc_input_date_edit_cancel').live("click", function(event) {
             event.preventDefault();
-            
+
             jQuery(this).parent().prev().show();
             jQuery(this).parent().hide();
         });
@@ -44,27 +44,27 @@ function mysqldate(date1) {
 
 function ok (context) {
     var id = jQuery(context).attr('id').replace(/[^\-]+\-/, "");
-            
+
     // the following selectors do not seem to work...
-    
-    var d = parseInt(jQuery("#wpc_input_date_d-"+id).val());
-    var m = parseInt(jQuery("#wpc_input_date_m-"+id).val());
-    var Y = parseInt(jQuery("#wpc_input_date_y-"+id).val());
-            
+
+    var d = parseInt(jQuery(context).parent().find("#wpc_input_date_d-"+id).val());
+    var m = parseInt(jQuery(context).parent().find("#wpc_input_date_m-"+id).val());
+    var Y = parseInt(jQuery(context).parent().find("#wpc_input_date_y-"+id).val());
+
     m = (m < 10 ? '0' : '') + m;
     d = (d < 10 ? '0' : '') + d;
-    
+
     proposedDate = Y+'-'+m+'-'+d;
-    
+
     if ( !isNaN( Date.parse(proposedDate) ) && !isNaN(d) && !isNaN(m) && !isNaN(Y) ) {
-        jQuery("input[name='wpc_"+id+"']").val(proposedDate);
-        jQuery("#wpc_input_date_timestamp-"+id).html(proposedDate);
+        jQuery(context).parent().parent().find(".wpc_input_date").val(proposedDate);
+        jQuery(context).parent().parent().find("span").last().html(proposedDate);
 
         jQuery(context).parent().prev().show();
         jQuery(context).parent().hide();
-        
-        jQuery("#wpc_form_field_id_" + id + " input").removeClass('validationError');
+
+        jQuery(context).parent().parent().find("input").removeClass('validationError');
     } else {
-        jQuery("#wpc_form_field_id_" + id + " input").addClass('validationError');
+        jQuery(context).parent().parent().find("input").addClass('validationError');
     }
 }
