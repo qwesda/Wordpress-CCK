@@ -54,9 +54,9 @@ abstract class GenericRegexValidatingField extends GenericField {
      * the one span, initially hidden, contains a textbox, the other one
      * contains the user visible string and edit button.
      */
-    function echo_field_core () {
+    function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value = $record->get($this->id);
+        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->get($this->id) : "";
         echo "<script type='text/javascript'>\n";
         // insert wpc_regexval = [[/regex/, "replace_for_db", "replace_for_ui"]
         echo "if (typeof wpc_regexval === 'undefined') wpc_regexval = [];\n";
@@ -77,9 +77,9 @@ abstract class GenericRegexValidatingField extends GenericField {
         //echo "<span class='wpc_regexval_display_val'>";
         if ($value !== '')
             echo $this->display_value($value);
-		else {
-			echo "set value";
-		}
+    else {
+      echo "set value";
+    }
         ButterLog::debug($this->display_value($value));
         //echo "</span>";
         echo "</span>\n";

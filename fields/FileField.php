@@ -106,19 +106,19 @@ class FileField extends GenericField {
 
         return $ret;
     }
-    function get_field_core () {
+    function get_field_core ($with_default_value) {
         $ret    = "";
         $record = the_record();
 
-        if (!empty($record))
+        if (!empty($record) && !$with_default_value)
             $value  = $record->get($this->id);
 
         $file_id = !empty($value) ? intval($value) : '';
 
         return $this->get_field_core_for_file_id($file_id);
     }
-    function echo_field_core () {
-        echo $this->get_field_core ();
+    function echo_field_core ($with_default_value = false) {
+        echo $this->get_field_core($with_default_value);
     }
 }
 

@@ -13,9 +13,9 @@ class DateField extends GenericField {
      * the non-js-version is not localized at all. it would need a save-hook to convert the localized date back.
      * the js-version is partly localized. it needs a date_format in js.
      */
-    function echo_field_core () {
+    function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value = $this->parent->id == $record->post_type ? $record->get($this->id) : "";
+        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->get($this->id) : "";
 
         ?><input type="text" name="<?php echo "wpc_$this->id" ?>" class="wpc_input wpc_input_date hide-if-js"
             placeholder="<?php echo $this->hint;?>"
