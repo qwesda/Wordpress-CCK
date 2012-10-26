@@ -48,6 +48,19 @@ function _ping ($amount = 1){
     }
 }
 
+function _log (&$var){
+    if (WP_DEBUG === true){
+        if (is_array($var) || is_object($var)){
+            error_log(print_r($var, true));
+        } else {
+            error_log($var);
+        }
+
+        if( function_exists( 'dbgx_trace_var' ) ) {
+            dbgx_trace_var($var);
+        }
+    }
+}
 function _var_dump (&$var) {
     echo "<pre>";
     var_dump($var);
