@@ -118,6 +118,26 @@ class WPCustom {
             $$instance_name = new $instance_name();
         }
 
+//  LOAD PLUGIN BACKEND PAGES
+        foreach (glob(__DIR__ . "/backend_pages/*.php") as $filename) {
+            $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+
+            require_once $filename;
+
+            $instance_name  = lcfirst($class_name);
+            $$instance_name = new $instance_name( );
+        }
+
+//  LOAD THEME BACKEND PAGES
+        foreach (glob($theme_dir . "/backend_pages/*.php") as $filename) {
+            $class_name = preg_replace("/\/?[^\/]+\/|\.php/", "", $filename);
+
+            require_once $filename;
+
+            $instance_name  = lcfirst($class_name);
+            $$instance_name = new $instance_name( );
+        }
+
 //  CREATE AJAX-CALLBACKS
         if ( !empty($wpc_relationships) ) {
             GenericRelationship::hookup_ajax_functions();
