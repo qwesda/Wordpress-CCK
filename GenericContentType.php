@@ -31,13 +31,13 @@ abstract class GenericContentType {
 
 //  SET DEFAULTS
         if ( empty($this->id) )             $this->id               = strtolower ( get_class_name($this) );
+        if ( empty($this->table) )          $this->table            = "wp_wpc_$this->id";
+        if ( empty($this->id_col) )         $this->id_col           = 'meta_id';
+        if ( empty($this->wpid_col) )       $this->wpid_col         = 'post_id';
 
         if ( empty($this->label) )          $this->label            = $this->id . "s";
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
         if ( empty($this->slug) )           $this->slug             = $this->id;
-        if ( empty($this->table) )          $this->table            = ucfirst($this->id . "s");
-        if ( empty($this->id_col) )         $this->id_col           = 'meta_id';
-        if ( empty($this->wpid_col) )       $this->wpid_col         = 'post_id';
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
 //  REGISTER POST TYPE
@@ -212,6 +212,13 @@ abstract class GenericContentType {
     }
 
     function delete_post ($post_id, $post) {
+        global $wpdb;
+
+        ButterLog::debug("deletion post with post_id $post_id");
+
+        if ( $wpdb->query( $wpdb->prepare("DELETE FROM $this->table WHERE post_id = %d", $post_id) ) === FALSE) {
+            ButterLog::error("Could not delete postmeta for $post_id in table $this->table.");
+        }
     }
 
     function new_post ($post_id, $post, $postmeta) {
