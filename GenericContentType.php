@@ -213,18 +213,45 @@ abstract class GenericContentType {
 
     function delete_post ($post_id, $post) {
         global $wpdb;
+        global $wpc_relationships;
 
-        ButterLog::debug("deletion post with post_id $post_id");
+        #ButterLog::debug("deletion post with post_id $post_id");
+
+        $post_type = get_post_type($post_id);
 
         if ( $wpdb->query( $wpdb->prepare("DELETE FROM $this->table WHERE post_id = %d", $post_id) ) === FALSE) {
             ButterLog::error("Could not delete postmeta for $post_id in table $this->table.");
         }
+
+        if( !empty($post_type) ) foreach ($wpc_relationships as $wpc_relationship) {
+            if ( $post_type == $wpc_relationship->post_type_from_id ) {
+                $wpdb->query( $wpdb->prepare("DELETE FROM $wpc_relationship->table WHERE post_from_id = %d", $post_id) );
+            }
+
+            if ( $post_type == $wpc_relationship->post_type_to_id ) {
+                $wpdb->query( $wpdb->prepare("DELETE FROM $wpc_relationship->table WHERE post_to_id = %d", $post_id) );
+            }
+        }
+    }
+
+    function create_post ($post = array(), $postmeta = array()) {
+        #ButterLog::debug("creating new $this->id");
+
+        $post['post_type'] = $this->id;
+
+        $post_id = intval( wp_insert_post($post) );
+
+        if ( !empty($post_id) ) {
+            $this->update_post($post_id, $post, $postmeta);
+        }
+
+        return $post_id;
     }
 
     function new_post ($post_id, $post, $postmeta) {
         global $wpdb;
 
-        ButterLog::debug("new post with post_id $post_id");
+        #ButterLog::debug("new post with post_id $post_id");
 
         $data = array($this->wpid_col => $post_id);
 
@@ -239,7 +266,7 @@ abstract class GenericContentType {
     }
 
     function update_post ($post_id, $post, $postmeta) {
-        ButterLog::debug("saving post with post_id $post_id");
+        #ButterLog::debug("saving post with post_id $post_id");
 
         $candidate_fields = array_filter($this->fields,
             function($field) use ($post_id) {
@@ -260,7 +287,7 @@ abstract class GenericContentType {
         $to_update = array_filter(wp_parse_args(array_filter($postmeta), $field_defaults));
 
         if (empty($to_update)) {
-            ButterLog::debug("Nothing to save for post $post_id.");
+            #ButterLog::debug("Nothing to save for post $post_id.");
             return;
         }
 
@@ -281,7 +308,7 @@ abstract class GenericContentType {
     protected function update_dbs ($post_id, $to_update, $field_formats) {
         global $wpdb;
 
-        ButterLog::debug("update_dbs $post_id.", $to_update);
+        #ButterLog::debug("update_dbs $post_id.", $to_update);
 
         $wp_fields = array_flip(array('post_author', 'post_date',
             'post_date_gmt', 'post_content', 'post_content_filtered',
