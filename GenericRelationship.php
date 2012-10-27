@@ -93,7 +93,9 @@ abstract class GenericRelationship {
         global $wpc_relationships;
         global $wpc_content_types;
 
-        $req = (object)$_REQUEST;
+        if( empty($req) )
+             $req = (object)$_REQUEST;
+
         $ret = (object)array(
              "errors" => array (),
              "status" => array (),
