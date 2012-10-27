@@ -102,7 +102,7 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
-        ButterLog::debug("add_relation", $req);
+        #ButterLog::debug("add_relation", $req);
 
         if ( (!isset($req->from_id) xor !isset($req->to_id)) && !empty($wpc_relationships[$req->rel_id]) ) {
             $relation = $wpc_relationships[$req->rel_id];
@@ -125,10 +125,10 @@ abstract class GenericRelationship {
                 $req->item_type = $relation->post_type_from_id;
             }
 
-            ButterLog::debug("created post $new_post_id");
+           # ButterLog::debug("created post $new_post_id");
         }
 
-        ButterLog::debug("add_relation", $req);
+        #ButterLog::debug("add_relation", $req);
 
         if ($req->from_id <= 0)
             $ret->errors[] = "from_id has invalid value '$req->from_id'";
