@@ -234,7 +234,7 @@ abstract class GenericContentType {
         }
     }
 
-    function create_post ($post = array(), $postmeta = array()) {
+    function create_post ($post = array(), $postmeta = array(), $write_read_only_fields = false) {
         #ButterLog::debug("creating new $this->id");
 
         $post['post_type'] = $this->id;
@@ -242,7 +242,7 @@ abstract class GenericContentType {
         $post_id = intval( wp_insert_post($post) );
 
         if ( !empty($post_id) ) {
-            $this->update_post($post_id, $post, $postmeta);
+            $this->update_post($post_id, $post, $postmeta, $write_read_only_fields);
         }
 
         return $post_id;
@@ -265,13 +265,17 @@ abstract class GenericContentType {
         $this->update_post($post_id, $post, $postmeta);
     }
 
-    function update_post ($post_id, $post, $postmeta) {
+    function update_post ($post_id, $post, $postmeta, $write_read_only_fields = false) {
         #ButterLog::debug("saving post with post_id $post_id");
 
-        $candidate_fields = array_filter($this->fields,
-            function($field) use ($post_id) {
-                return $field->may_write($post_id);
-        });
+        if ( !$write_read_only_fields ) {
+            $candidate_fields = array_filter($this->fields,
+                function($field) use ($post_id) {
+                    return $field->may_write($post_id);
+            });
+        } else {
+            $candidate_fields = $this->fields;
+        }
 
         $field_defaults = array_map(function ($field) {
             return $field->default;
@@ -309,6 +313,7 @@ abstract class GenericContentType {
         global $wpdb;
 
         #ButterLog::debug("update_dbs $post_id.", $to_update);
+        #ButterLog::debug("update_dbs $post_id.", $field_formats);
 
         $wp_fields = array_flip(array('post_author', 'post_date',
             'post_date_gmt', 'post_content', 'post_content_filtered',
