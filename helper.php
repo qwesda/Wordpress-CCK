@@ -55,10 +55,6 @@ function _log (&$var){
         } else {
             error_log($var);
         }
-
-        if( function_exists( 'dbgx_trace_var' ) ) {
-            dbgx_trace_var($var);
-        }
     }
 }
 function _var_dump (&$var) {
