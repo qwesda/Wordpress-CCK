@@ -221,6 +221,7 @@ abstract class GenericContentType {
 
         if ( $wpdb->query( $wpdb->prepare("DELETE FROM $this->table WHERE post_id = %d", $post_id) ) === FALSE) {
             ButterLog::error("Could not delete wpc data for $post_id in table $this->table.");
+            return false;
         }
 
         if( !empty($post_type) ) foreach ($wpc_relationships as $wpc_relationship) {
@@ -232,6 +233,7 @@ abstract class GenericContentType {
                 $wpdb->query( $wpdb->prepare("DELETE FROM $wpc_relationship->table WHERE post_to_id = %d", $post_id) );
             }
         }
+        return true;
     }
 
     function create_post ($post = array(), $wpcpost = array(), $write_read_only_fields = false) {
