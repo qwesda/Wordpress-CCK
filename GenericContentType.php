@@ -220,7 +220,7 @@ abstract class GenericContentType {
         $post_type = get_post_type($post_id);
 
         if ( $wpdb->query( $wpdb->prepare("DELETE FROM $this->table WHERE post_id = %d", $post_id) ) === FALSE) {
-            ButterLog::error("Could not delete postmeta for $post_id in table $this->table.");
+            ButterLog::error("Could not delete wpc data for $post_id in table $this->table.");
         }
 
         if( !empty($post_type) ) foreach ($wpc_relationships as $wpc_relationship) {
@@ -234,7 +234,7 @@ abstract class GenericContentType {
         }
     }
 
-    function create_post ($post = array(), $postmeta = array(), $write_read_only_fields = false) {
+    function create_post ($post = array(), $wpcpost = array(), $write_read_only_fields = false) {
         #ButterLog::debug("creating new $this->id");
 
         $post['post_type'] = $this->id;
@@ -242,13 +242,13 @@ abstract class GenericContentType {
         $post_id = intval( wp_insert_post($post) );
 
         if ( !empty($post_id) ) {
-            $this->update_post($post_id, $post, $postmeta, $write_read_only_fields);
+            $this->update_post($post_id, $post, $wpcpost, $write_read_only_fields);
         }
 
         return $post_id;
     }
 
-    function new_post ($post_id, $post, $postmeta) {
+    function new_post ($post_id, $post, $wpcpost) {
         global $wpdb;
 
         #ButterLog::debug("new post with post_id $post_id");
@@ -262,10 +262,10 @@ abstract class GenericContentType {
         // this might be unneccessary.
         // custom fields might always be unset at this point
         // look for 'new post' not followed by 'nothing to save' log messages
-        $this->update_post($post_id, $post, $postmeta);
+        $this->update_post($post_id, $post, $wpcpost);
     }
 
-    function update_post ($post_id, $post, $postmeta, $write_read_only_fields = false) {
+    function update_post ($post_id, $post, $wpcpost, $write_read_only_fields = false) {
         #ButterLog::debug("saving post with post_id $post_id");
 
         if (! $write_read_only_fields) {
@@ -288,7 +288,7 @@ abstract class GenericContentType {
         // weed out invalid fields, add defaults
         // XXX: handle unsetting fields
         // see https://core.trac.wordpress.org/ticket/15158
-        $to_update = array_filter(wp_parse_args(array_filter($postmeta), $field_defaults));
+        $to_update = array_filter(wp_parse_args(array_filter($wpcpost), $field_defaults));
 
         if (empty($to_update)) {
             #ButterLog::debug("Nothing to save for post $post_id.");
