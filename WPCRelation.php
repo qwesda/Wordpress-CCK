@@ -46,10 +46,6 @@ abstract class WPCRelation extends WPCData {
         parent::__construct($data, $meta);
     }
 
-    function arrify ($val) {
-        return array($val);
-    }
-
     /**
      * returns a new object of the right type.
      */
