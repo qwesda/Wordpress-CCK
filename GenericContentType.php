@@ -268,7 +268,7 @@ abstract class GenericContentType {
     function update_post ($post_id, $post, $postmeta, $write_read_only_fields = false) {
         #ButterLog::debug("saving post with post_id $post_id");
 
-        if ( !$write_read_only_fields ) {
+        if (! $write_read_only_fields) {
             $candidate_fields = array_filter($this->fields,
                 function($field) use ($post_id) {
                     return $field->may_write($post_id);
