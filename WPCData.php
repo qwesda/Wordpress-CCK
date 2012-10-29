@@ -128,6 +128,10 @@ abstract class WPCData {
     }
 
     function __set($key, $val) {
+        $this->set($key, $val);
+    }
+
+    function set($key, $val) {
         if (in_array($key, $this->data_keys)) {
             $this->data_to_set[$key] = $val;
 
@@ -140,6 +144,8 @@ abstract class WPCData {
             $this->meta[$key] = $val;
         } else
             ButterLog::warn("Cannot update \"$key\": Not a registered key.");
+
+        return $this;
     }
 
     abstract function delete();
