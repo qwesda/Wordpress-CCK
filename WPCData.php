@@ -21,10 +21,18 @@ abstract class WPCData {
      */
     protected $data;
 
+    protected $data_keys;
+
+    protected $data_to_update = array();
+
     /*
      * the meta data as associative array
      */
     protected $meta;
+
+    protected $meta_keys;
+
+    protected $meta_to_update = array();
 
     /*
      * an associative array. keys are the connected types.
@@ -119,8 +127,25 @@ abstract class WPCData {
         return false;
     }
 
-    protected function load_data() {}
-    protected function load_meta() {}
+    function __set($key, $val) {
+        if (in_array($key, $this->data_keys)) {
+            $this->data_to_set[$key] = $val;
+
+            // update internal state before commit
+            $this->data[$key] = $val;
+        } else if (in_array($key, $this->meta_keys)) {
+            $this->meta_to_set[$key] = $val;
+
+            // update internal state before commit
+            $this->meta[$key] = $val;
+        } else
+            ButterLog::warn("Cannot update \"$key\": Not a registered key.");
+    }
+
+    abstract function delete();
+    abstract function commit();
+    abstract protected function load_data();
+    abstract protected function load_meta();
 
     protected function get_connected($other_type, $reverse) {
         $cahce_id = ($reverse ? "reverse_" : "") . "$other_type";
