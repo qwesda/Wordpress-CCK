@@ -290,7 +290,8 @@ abstract class GenericContentType {
         // weed out invalid fields, add defaults
         // XXX: handle unsetting fields
         // see https://core.trac.wordpress.org/ticket/15158
-        $to_update = array_filter(wp_parse_args(array_filter($wpcpost), $field_defaults));
+        $to_update = array_filter(array_intersect_key(wp_parse_args(
+            array_filter($wpcpost), $field_defaults), $candidate_fields));
 
         if (empty($to_update)) {
             #ButterLog::debug("Nothing to save for post $post_id.");
