@@ -39,11 +39,13 @@ class WPCRelationCollection extends WPCCollection {
             return null;
         }
 
+        $db_reverse = $reverse ? "true" : "false";
+
         $classname = ($reverse ? "Reverse" : "").str_replace(" ", "", ucwords(str_replace("_", " ", $db_relationslug)))."RelationRecords";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
               protected \$db_relationslug = '$db_relationslug';
-              protected \$db_is_reverse = $reverse;
+              protected \$db_is_reverse = $db_reverse;
             }";
             eval ($classdef);
         }
