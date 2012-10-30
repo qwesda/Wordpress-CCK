@@ -16,6 +16,7 @@ abstract class GenericContentType {
     public $has_archive         = false;
     public $hierarchical        = false;
     public $menu_position       = 5;
+    public $show_in_menu        = true;
 
     protected $is_first_metabox   = true;
 
@@ -50,6 +51,7 @@ abstract class GenericContentType {
                 'capability_type'       => 'post',
                 'hierarchical'          => $this->hierarchical,
                 'menu_position'         => $this->menu_position,
+                'show_in_menu'          => $this->show_in_menu,
                 '_builtin'              => false,
                 'rewrite'               => array("slug" => $this->slug),
                 'query_var'             => $this->slug,
@@ -308,6 +310,24 @@ abstract class GenericContentType {
         $field_formats = array_map(function ($field) {
             return $field->printf_specifier;
         }, $this->generated_values);
+
+        $post_status    = 'publish';
+        $post_type      = $this->id;
+        $post_parent    = 0;
+
+        if ( empty($to_update["post_slug"]) && !empty($this->generated_values["post_title"]) ) {
+            $to_update["post_name"]     = wp_unique_post_slug(
+                                            sanitize_title(str_replace("/", "-", $to_update["post_title"])),
+                                            $post_id,
+                                            $post_status,
+                                            $post_type,
+                                            $post_parent
+                                        );
+            $field_formats["post_name"] = "%s";
+        }
+
+        _log($to_update);
+        _log($field_formats);
 
         $this->update_dbs($post_id, $to_update, $field_formats);
     }
