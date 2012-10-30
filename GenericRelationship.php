@@ -90,11 +90,12 @@ abstract class GenericRelationship {
 
     static function add_relation ($req) {
         global $wpdb;
-        global $wpc_relationships;
-        global $wpc_content_types;
+        global $wpc_content_types, $wpc_relationships;
 
         if( empty($req) )
-             $req = (object)$_REQUEST;
+             $req = $_REQUEST;
+
+        $req = (object)$req;
 
         $ret = (object)array(
              "errors" => array (),
@@ -188,12 +189,15 @@ abstract class GenericRelationship {
         die();
     }
 
-    static function update_relation ($rel) {
+    static function update_relation ($req) {
         global $wpdb;
         global $wpc_relationships;
         global $wpc_content_types;
 
-        $req = (object)$_REQUEST;
+        if ( empty($req) )
+            $req = $_REQUEST;
+
+        $req = (object)$req;
         $ret = (object)array(
              "errors" => array (),
              "status" => array (),
@@ -202,13 +206,13 @@ abstract class GenericRelationship {
 
         ButterLog::debug("update_relation ", $req);
 
-        if ($rel->from_id <= 0) {
-            $ret->errors[] = "from_id has invalid value '$rel->from_id'";
-        } else if ($rel->to_id <= 0) {
-            $ret->errors[] = "to_id has invalid value '$rel->to_id'";
-        } else if (empty($wpc_relationships[$rel->rel_id])) {
-            $ret->errors[] = "rel_id has invalid value '$rel->rel_id'";
-        } else if (empty($rel->id)) {
+        if ($req->from_id <= 0) {
+            $ret->errors[] = "from_id has invalid value '$req->from_id'";
+        } else if ($req->to_id <= 0) {
+            $ret->errors[] = "to_id has invalid value '$req->to_id'";
+        } else if (empty($wpc_relationships[$req->rel_id])) {
+            $ret->errors[] = "rel_id has invalid value '$req->rel_id'";
+        } else if (empty($req->id)) {
             $ret->errors[] = "id has invalid value";
         } else if ( !empty($req->relation_metadata) && !empty($req->item_metadata) ) {
             $ret->errors[] = "cannot update without anything to update.";
@@ -236,7 +240,6 @@ abstract class GenericRelationship {
                 $type->update_post($req->item_id, array(), $req->item_metadata);
             }
         }
-
 
         return $ret;
     }

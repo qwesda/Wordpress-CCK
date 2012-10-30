@@ -10,22 +10,34 @@ abstract class WPCRecord extends WPCData {
      */
     protected $id = null;
 
+    protected $type;
+
     /**
      * constructor for a Record.
+     *
+     * If id is null, create a new record in the database.
      *
      * If $post and $meta are set, use them (for when they are already fetched one way or another).
      * Both must be an associative array.
      */
     protected function __construct($id=null, $post=null, $meta=null) {
         global $wpc_content_types;
+        $this->type = $wpc_content_types[$this->typeslug];
 
-        if ($id === null && $post === null) {
-            ButterLog::warn(get_class($this).": Neither id nor post given!");
-            throw new Exception("Cannot construct ".get_class($this).". Id and post are not set.");
-        }
+        // set meta corresponds to wpc keys,
+        // data to wp keys that are not managed by wpc
+        $this->meta_keys = array_keys($this->type->fields);
+        $this->data_keys = array_diff(array('post_author', 'post_date',
+            'post_date_gmt', 'post_content', 'post_content_filtered',
+            'post_title', 'post_excerpt', 'post_status', 'post_type',
+            'comment_count', 'comment_status', 'ping_status', 'post_password',
+            'post_name', 'to_ping', 'pinged', 'post_modified',
+            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
+            'guid'), $this->meta_keys);
 
-        if ($id === null)
+        if ($id === null && ! empty($post))
             $id = $post["ID"];
+
         $this->id = $id;
 
         parent::__construct($post, $meta);
@@ -35,21 +47,22 @@ abstract class WPCRecord extends WPCData {
      * returns a new object of the right type.
      */
     static function new_record($id=null, $p=null, $m=null, $type=null) {
-        if (! ($id || $p)) {
-            ButterLog::error("Cannot get new record with neither post nor id set.");
-            return;
-        }
-
         // post might be an object. cast to associative array.
         $p = (array) $p;
 
-        // deduct $id and $type
-        if (! $id)
+        // deduct $id and $type if possible
+        if ($id === null && ! empty($p))
             $id = $p["ID"];
+
+        if (! $p && $id !== null)
+            $p = get_post($id, 'ARRAY_A');
+
         if (! $type) {
-            if (! $p)
-                $p = get_post($id, 'ARRAY_A');
-            $type = $p["post_type"];
+            if (! isset($p['post_type'])) {
+                ButterLog::error('Cannot create new record without type.');
+                return;
+            }
+            $type = $p['post_type'];
         }
 
         $classname = ucfirst($type)."Record";
@@ -72,17 +85,60 @@ abstract class WPCRecord extends WPCData {
         return true;
     }
 
+    function delete() {
+        global $wpc_content_type;
+
+        $this->data = array();
+        $this->meta = array();
+
+        if ($this->id === null)
+            return;
+
+        // do not return self, but whether it worked or not.
+        return $this->type->delete_post($this->id);
+    }
+
+    function commit () {
+        global $wpc_content_types;
+
+        if ($this->id === null) {
+            $this->id = $this->type->create_post($this->to_set_data);
+            $this->to_set_data = array();
+
+            // load new data (assume meta will not be set)
+            $this->load_data();
+        }
+
+        if (! empty($this->data_to_set) || ! empty($this->meta_to_set)) {
+            $post_data = array('ID' => $this->id) + $this->data_to_set;
+            wp_update_post($post_data);
+
+            $this->data_to_set = array();
+        }
+
+        if (! empty($this->meta_to_set)) {
+            $this->type->update_post($this->id, array(), $this->meta_to_set);
+
+            $this->meta_to_set = array();
+        }
+        return $this;
+    }
+
     protected function load_meta() {
         global $wpdb, $wpc_content_types;
 
-        $type = $wpc_content_types[$this->typeslug];
-        $table = $type->table;
-        $wpid_col = $type->wpid_col;
+        if ($this->id === null)
+            return;
+
+        $table = $this->type->table;
+        $wpid_col = $this->type->wpid_col;
         $stmt = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;",
             $this->id);
         $this->meta = $wpdb->get_row($stmt, 'ARRAY_A');
     }
     protected function load_data() {
+        if ($this->id === null)
+            return;
         $this->data = get_post($this->id, 'ARRAY_A');
     }
 }
