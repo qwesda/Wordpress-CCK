@@ -4,12 +4,6 @@
  * The base class for records of a content type.
  */
 abstract class WPCRecord extends WPCData {
-
-    /*
-     * the post's id
-     */
-    protected $id = null;
-
     protected $type;
 
     /**

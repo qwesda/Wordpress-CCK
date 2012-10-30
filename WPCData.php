@@ -10,6 +10,7 @@
  * "qtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage".
  */
 abstract class WPCData {
+    protected $id;
 
     /**
      * a short name for the type of the data
@@ -64,6 +65,9 @@ abstract class WPCData {
     }
 
     function get($attribute) {
+        if ($attribute === "id")
+            return $this->id;
+
         if (empty($this->data)) {
             $this->load_data();
         }
@@ -96,7 +100,6 @@ abstract class WPCData {
 
         // ButterLog::debug(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
-
         return "";
     }
 
