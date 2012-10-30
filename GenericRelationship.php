@@ -521,8 +521,8 @@ $prepared_sql_limit" );
         $src_id         = $rel_direction == "to_from" ? $this->post_type_to_id   : $this->post_type_from_id;
         $dst_id         = $rel_direction == "to_from" ? $this->post_type_from_id : $this->post_type_to_id;
 
-        $src            = $rel_direction == "from_to" ? $this->post_type_to     : $this->post_type_from;
-        $dst            = $rel_direction == "from_to" ? $this->post_type_from   : $this->post_type_to;
+        $src            = $rel_direction == "from_to" ? $this->post_type_to      : $this->post_type_from;
+        $dst            = $rel_direction == "from_to" ? $this->post_type_from    : $this->post_type_to;
 
         $item_update_data_box   = $rel_direction == "from_to" ? $this->post_type_from->echo_update_relation_item_metabox_str()  : $this->post_type_to->echo_update_relation_item_metabox_str();
         $item_new_data_box      = $rel_direction == "from_to" ? $this->post_type_from->echo_new_relation_item_metabox_str()     : $this->post_type_to->echo_new_relation_item_metabox_str();
@@ -547,15 +547,17 @@ data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
             <div class="relation_connected_box" style="display: block;">
-                <div class="relation_buttons_box">
-                    <a class="button relation_connected_add" href='#'>add existing <?php echo $dst->singular_label ?></a>
-                    <a class="relation_connected_add_new button" href='#'>add new <?php echo $dst->singular_label ?></a>
-                    <a class="relation_open_all_connected button" href='#'>open all <?php echo $dst->label ?></a>
-                </div>
-
                 <table class="relation_connected_list_header wp-list-table widefat fixed posts">
                     <thead>
-                        <tr><th><?php echo $this->label; ?></th></tr>
+                        <tr><th>
+                            <?php echo $this->label; ?>
+
+                            <div class="relation_buttons_box">
+                                <a class="button relation_connected_add" href='#'>add existing</a>
+                                <a class="relation_connected_add_new button" href='#'>add new</a>
+                                <a class="relation_open_all_connected button" href='#'>open all</a>
+                            </div>
+                        </th></tr>
                     </thead>
                 </table>
                 <div class="relation_table_container">
@@ -568,18 +570,17 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
             </div>
 
             <div class="relation_add_search_box hidden" style="display: none;">
-                <div class="relation_add_buttons_box relation_buttons_box">
-                    <label for="relation_src_search">search</label>
-                    <input type="text" class="wpc_input_text relation_src_search"/>
-
-                    <div class="relation_buttons_box_bottom">
-                        <a class="button relation_add_search_cancel" href='#'>cancel</a>
-                    </div>
-                </div>
-
                 <table class="relation_src_list_header wp-list-table widefat fixed posts">
                     <thead>
-                        <tr><th>Search results</th></tr>
+                        <tr><th>
+                            Search results
+                            <div class="relation_buttons_box">
+                                <label for="relation_src_search">search</label>
+                                <input type="text" class="wpc_input_text relation_src_search"/>
+
+                                <a class="button relation_add_search_cancel" href='#'>cancel</a>
+                            </div>
+                        </th></tr>
                     </thead>
                 </table>
                 <div class="relation_table_container">

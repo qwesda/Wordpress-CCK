@@ -261,14 +261,21 @@ input.relation_src_search {
 
 div.relation_buttons_box {
     margin: 10px 0;
-    width: 100%;  
+    
+    right: 0;
+    left: ;
+    top: 0;
+    
+    position: absolute;
+    
+    font-family: sans-serif;
 }
 
-div.relation_buttons_box_bottom {	
-	clear: both;
-	text-align: right;
-	width: 98%;
+div.relation_buttons_box label,
+div.relation_buttons_box input {
+	font-size: 12px;
 }
+
 
 table.relation_metadata {
 	float: right;
