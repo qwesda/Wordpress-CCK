@@ -49,9 +49,10 @@ abstract class WPCRelation extends WPCData {
         global $wpc_relationships;
         $relation = $wpc_relationships[$this->typeslug];
 
+        $this->data = $this->data_to_update + $this->data;
         $arg = array(
-            'from_id'           => $this->data_to_update['record_from'],
-            'to_id'             => $this->data_to_update['record_to'],
+            'from_id'           => $this->data['record_from'],
+            'to_id'             => $this->data['record_to'],
             'rel_id'            => $this->typeslug,
             'relation_metadata' => $this->meta_to_update
         );
@@ -61,8 +62,7 @@ abstract class WPCRelation extends WPCData {
         else
             $res = $relation->update_relation($arg);
 
-        // invalidate record
-        $this->data = null;
+        // invalidate metadata
         $this->meta = null;
 
         return $this;
