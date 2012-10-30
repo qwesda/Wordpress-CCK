@@ -27,13 +27,8 @@ abstract class WPCRecord extends WPCData {
         // set meta corresponds to wpc keys,
         // data to wp keys that are not managed by wpc
         $this->meta_keys = array_keys($this->type->fields);
-        $this->data_keys = array_diff(array('post_author', 'post_date',
-            'post_date_gmt', 'post_content', 'post_content_filtered',
-            'post_title', 'post_excerpt', 'post_status', 'post_type',
-            'comment_count', 'comment_status', 'ping_status', 'post_password',
-            'post_name', 'to_ping', 'pinged', 'post_modified',
-            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
-            'guid'), $this->meta_keys);
+        $this->data_keys = array_diff(GenericContentType::$wp_keys,
+            $this->meta_keys);
 
         if ($id === null && ! empty($post))
             $id = $post["ID"];

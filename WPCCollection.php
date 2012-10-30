@@ -60,12 +60,6 @@ abstract class WPCCollection {
      */
     protected $join = array();
 
-    /**
-     * the lenght of the returned items from last result call
-     */
-    protected $count = -1;
-
-
 
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
@@ -84,7 +78,7 @@ abstract class WPCCollection {
      * returns the count
      */
     function count () {
-        return $this->count;
+        return count($this->iterate_results);
     }
 
     /**
@@ -324,8 +318,6 @@ abstract class WPCCollection {
         // it will hit quicksorts worst case performance O(n²).
         if (!empty($this->sort_with_cb))
             $res = usort($res, $this->sort_with_cb);
-
-        $this->count = count($res);
 
         return $res;
     }
