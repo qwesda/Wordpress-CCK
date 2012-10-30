@@ -152,18 +152,20 @@ input.validationError.validationError {
 }
 
 ul.wpc_form_tabs_header {
-	margin-top: 20px;
+	margin-top: 0px;
 	list-style: none;
+	margin-bottom: 4px;
 }
 
 ul.wpc_form_tabs_header li {
 	float: left;
-	padding: 8px;
+	padding: 4px;
 	
 	background-color: rgba(255, 255, 255, .95);
 	
 	border: 1px solid rgba(0,0,0,0.25);
 	margin-right: -1px;
+	margin-bottom: 0;
 }
 
 ul.wpc_form_tabs_header li.ui-state-active { 
@@ -172,16 +174,16 @@ ul.wpc_form_tabs_header li.ui-state-active {
 
 
 ul.wpc_form_tabs_header li:first-child { 
-	border-bottom-left-radius: 14px;
-	border-top-left-radius: 14px;
+	border-bottom-left-radius: 10px;
+	border-top-left-radius: 10px;
 	
-	padding-left: 20px;
+	padding-left: 10px;
 }
 ul.wpc_form_tabs_header li:last-child { 
-	border-bottom-right-radius: 14px;
-	border-top-right-radius: 14px;
+	border-bottom-right-radius: 10px;
+	border-top-right-radius: 10px;
 	
-	padding-right: 20px;
+	padding-right: 10px;
 }
 
 ul.wpc_form_tabs_header li a {

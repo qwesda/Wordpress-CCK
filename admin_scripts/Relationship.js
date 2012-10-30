@@ -63,7 +63,12 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var itemEditBox             = htmlspecialchars_decode(relation_data.itemUpdateEditBox);
 
             var item_metabox            = jQuery(base_id + ".relation_connect_existing_box").clone(true);
-            item_metabox.show().appendTo(base_id + '.relation_src_list tr.selected > td:first-child');
+//            item_metabox.show().appendTo(base_id + '.relation_src_list tr.selected > td:first-child');
+
+            jQuery(base_id + ".relation_add_search_box th .relation_buttons_box").hide()
+            item_metabox.appendTo(base_id + '.relation_src_list tr.selected > td:first-child');
+            item_metabox.find(".relation_buttons_box").appendTo(base_id + ".relation_add_search_box th");
+            item_metabox.show();
 
             var info_text               = "<div class='padding_box'>"
             + "<div class='relation_metadata_edit_box'>" + editBox + "</div>"
@@ -127,7 +132,11 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var itemEditBox             =  htmlspecialchars_decode(relation_data.itemUpdateEditBox);
 
             var item_metabox            = jQuery(base_id + ".relation_edit_connected_box").clone(true);
-            item_metabox.show().appendTo(base_id + '.relation_connected_list tr.selected > td:first-child');
+
+            jQuery(base_id + ".relation_connected_box th .relation_buttons_box").hide()
+            item_metabox.appendTo(base_id + '.relation_connected_list tr.selected > td:first-child');
+            item_metabox.find(".relation_buttons_box").appendTo(base_id + ".relation_connected_box th");
+            item_metabox.show();
 
             var info_text               = "<div class='padding_box'>"
             + "<div class='relation_metadata_edit_box'>" + editBox + "</div>"
@@ -208,6 +217,9 @@ function relation_edit_connected_cancel (relation_data) {
     jQuery(base_id + '.relation_connected_list > tbody > tr > td > .relation_edit_connected_box').remove();
 
     jQuery(base_id + '.relation_connected_list > tbody > tr.selected').removeClass('selected');
+
+    jQuery(base_id + ".relation_connected_box th .relation_edit_connected_buttons_box").remove();
+    jQuery(base_id + ".relation_connected_box th .relation_buttons_box").show();
 }
 function relation_edit_connected_update (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
@@ -263,11 +275,10 @@ function relation_edit_connected_update (relation_data) {
         },
         success: function (data) {
             show_status_message(relation_data, this.selected_item_label + " updated");
+            goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
 
-            jQuery(base_id + '.relation_connected_list > tbody > tr > td > .relation_metadata').remove();
-            jQuery(base_id + '.relation_connected_list > tbody > tr > td > .relation_edit_connected_box').remove();
-
-            jQuery(base_id + '.relation_connected_list > tbody > tr.selected').removeClass('selected');
+            jQuery(base_id + ".relation_connected_box th .relation_edit_connected_buttons_box").remove();
+            jQuery(base_id + ".relation_connected_box th .relation_buttons_box").show();
         }
     });
 }
@@ -299,12 +310,17 @@ function relation_edit_connected_delete (relation_data) {
         },
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
+
             show_status_message(relation_data, this.selected_item_label + " removed");
+
+
+            jQuery(base_id + ".relation_connected_box th .relation_edit_connected_buttons_box").remove();
+            jQuery(base_id + ".relation_connected_box th .relation_buttons_box").show();
         }
     });
 }
 function show_status_message(relation_data, message) {
-    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text(message).show().delay(2000).fadeOut();
+    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text(message).show().delay(200000).fadeOut();
 }
 function relation_connect_existing_add (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
@@ -366,6 +382,11 @@ function relation_connect_existing_add (relation_data) {
             jQuery(base_id + '.relation_src_list > tbody > tr.selected').removeClass('selected');
 
             jQuery(base_id + '.relation_src_search').focus();
+
+            jQuery(base_id + ".relation_add_search_box th .relation_connect_existing_buttons_box").remove();
+            jQuery(base_id + ".relation_add_search_box th .relation_buttons_box").show();
+
+            goto_box(relation_data, 'relation_connected_box', 'relation_edit_connected', 'back');
         }
     });
 }
@@ -377,6 +398,9 @@ function relation_connect_existing_cancel (relation_data) {
     jQuery(base_id + '.relation_src_list > tbody > tr.selected').removeClass('selected');
 
     jQuery(base_id + '.relation_src_search').focus();
+
+    jQuery(base_id + ".relation_add_search_box th .relation_connect_existing_buttons_box").remove();
+    jQuery(base_id + ".relation_add_search_box th .relation_buttons_box").show();
 }
 function update_search_results (relation_data) {
     var base_id     = ".relation_edit_box." + relation_data.relId + " ";
@@ -545,7 +569,7 @@ function relation_connect_new_add (relation_data) {
             "data"                  : data
         },
         success: function (data) {
-            goto_box(relation_data, 'relation_add_search_box', 'relation_connect_existing_box', 'back');
+            goto_box(relation_data, 'relation_connected_box', 'relation_connect_existing_box', 'back');
             show_status_message(relation_data, "new " + relation_data.srcLabel + " added");
         }
     });
@@ -606,7 +630,10 @@ function relation_setup_delegates (relation_metabox_id) {
         event.stopPropagation();
         event.preventDefault();
 
-        jQuery(base_id + '.relation_src_list tr.selected').removeClass('selected');
+        jQuery(base_id + '.relation_src_list > tbody > tr.selected').removeClass('selected');
+
+        jQuery(base_id + '.relation_src_list > tbody > tr > td > .relation_metadata').remove();
+        jQuery(base_id + '.relation_src_list > tbody > tr > td > .relation_connect_existing_box').remove();
 
         jQuery(this).closest("tr").addClass("selected");
 

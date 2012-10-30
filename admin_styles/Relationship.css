@@ -18,9 +18,23 @@ div.relation_connected_box {
  	position: relative;
 }
 div.relation_connect_new_box {
-	height: 471px;
 	border: 1px solid #dfdfdf;
 	background: #f9f9f9;
+}
+
+div.padding_box {
+	margin: -7px;
+	margin-top: 10px;
+	
+	border-top: 1px solid #ccc;
+	padding: 0px;
+	
+	background-color: rgba(0,160,256,0.1);
+}
+
+div.relation_connect_new_metadata_box div.padding_box {
+	margin: 0;
+	background-color: #fff;
 }
 
 div.relation_table_container {
@@ -49,7 +63,7 @@ div.relation_edit_box div.status-update {
 	border-radius: 6px;
 	margin-right: 10px;
 	right: 0;
-	top: 2px;
+	top: -20px;
 	font-style: italic;
 	
 	color: darkgreen;
@@ -100,8 +114,8 @@ table.relation_connected_list > tbody > tr a.relation_connected_item {
 	text-decoration: none;
 }
 
-table.relation_src_list tbody tr:nth-child(odd),
-table.relation_connected_list tbody tr:nth-child(odd) {
+table.relation_src_list > tbody > tr:nth-child(odd),
+table.relation_connected_list > tbody > tr:nth-child(odd) {
     background-color: #fff;
 }
 
@@ -263,19 +277,34 @@ div.relation_buttons_box {
     margin: 10px 0;
     
     right: 0;
-    left: ;
     top: 0;
+    
+    padding-right: ;
     
     position: absolute;
     
     font-family: sans-serif;
 }
 
+
 div.relation_buttons_box label,
 div.relation_buttons_box input {
 	font-size: 12px;
+	
+	height: 20px;
 }
 
+table.relation_connected_list_header thead tr th,
+table.relation_src_list_header thead tr th,
+div.relation_connect_new_metadata_box h3  {
+	height: 20px;
+}
+
+div.relation_buttons_box_bottom {
+	padding-right: 6px;
+	margin-top: 0;
+	height: 22px;
+}
 
 table.relation_metadata {
 	float: right;
@@ -288,6 +317,7 @@ table.relation_metadata > tbody > tr > td {
 	margin: 0;
 	height: 10px;
 	border: none;
+	background-color: none;
 }
 table.relation_metadata > tbody > tr > td.table_label {
 	font-weight: bold;
@@ -299,12 +329,6 @@ div.relation_buttons_box > a {
     margin-right: 6px;
 }
 
-div.relation_buttons_box > div {
-	margin: 0;
-	padding: 0;
-	
-	height: 22px;
-}
 
 .relation_connected_list div.relations_info img {
     margin-bottom: -4px;
