@@ -133,12 +133,12 @@ abstract class WPCData {
 
     function set($key, $val) {
         if (in_array($key, $this->data_keys)) {
-            $this->data_to_set[$key] = $val;
+            $this->data_to_update[$key] = $val;
 
             // update internal state before commit
             $this->data[$key] = $val;
         } else if (in_array($key, $this->meta_keys)) {
-            $this->meta_to_set[$key] = $val;
+            $this->meta_to_update[$key] = $val;
 
             // update internal state before commit
             $this->meta[$key] = $val;

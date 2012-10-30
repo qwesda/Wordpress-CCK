@@ -27,13 +27,8 @@ abstract class WPCRecord extends WPCData {
         // set meta corresponds to wpc keys,
         // data to wp keys that are not managed by wpc
         $this->meta_keys = array_keys($this->type->fields);
-        $this->data_keys = array_diff(array('post_author', 'post_date',
-            'post_date_gmt', 'post_content', 'post_content_filtered',
-            'post_title', 'post_excerpt', 'post_status', 'post_type',
-            'comment_count', 'comment_status', 'ping_status', 'post_password',
-            'post_name', 'to_ping', 'pinged', 'post_modified',
-            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
-            'guid'), $this->meta_keys);
+        $this->data_keys = array_diff(GenericContentType::$wp_keys,
+            $this->meta_keys);
 
         if ($id === null && ! empty($post))
             $id = $post["ID"];
@@ -98,28 +93,32 @@ abstract class WPCRecord extends WPCData {
         return $this->type->delete_post($this->id);
     }
 
-    function commit () {
+    function commit ($write_ro = false) {
         global $wpc_content_types;
 
         if ($this->id === null) {
-            $this->id = $this->type->create_post($this->to_set_data);
-            $this->to_set_data = array();
+            $this->id = $this->type->create_post($this->data_to_update,
+                $this->meta_to_update, $write_ro);
+            $this->data_to_update = array();
+            $this->meta_to_update = array();
 
             // load new data (assume meta will not be set)
             $this->load_data();
-        }
+            $this->load_meta();
+        } else {
+            if (! empty($this->data_to_update)) {
+                $post_data = array('ID' => $this->id) + $this->data_to_update;
+                wp_update_post($post_data);
 
-        if (! empty($this->data_to_set) || ! empty($this->meta_to_set)) {
-            $post_data = array('ID' => $this->id) + $this->data_to_set;
-            wp_update_post($post_data);
+                $this->data_to_update = array();
+            }
 
-            $this->data_to_set = array();
-        }
+            if (! empty($this->meta_to_update)) {
+                $this->type->update_post($this->id, array(),
+                    $this->meta_to_update, $write_ro);
 
-        if (! empty($this->meta_to_set)) {
-            $this->type->update_post($this->id, array(), $this->meta_to_set);
-
-            $this->meta_to_set = array();
+                $this->meta_to_update = array();
+            }
         }
         return $this;
     }

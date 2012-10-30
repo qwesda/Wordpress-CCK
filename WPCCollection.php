@@ -60,12 +60,6 @@ abstract class WPCCollection {
      */
     protected $join = array();
 
-    /**
-     * the lenght of the returned items from last result call
-     */
-    protected $count = -1;
-
-
 
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
@@ -84,7 +78,7 @@ abstract class WPCCollection {
      * returns the count
      */
     function count () {
-        return $this->count;
+        return count($this->iterate_results);
     }
 
     /**
@@ -143,10 +137,8 @@ abstract class WPCCollection {
                 $order_by_str = "t.$c $dir";
 
             // meta column
-            else {
-                $table_alias = $new->join_with_metakey_($c, false, false);
-                $order_by_str = "$table_alias.meta_value $dir";
-            }
+            else
+                $order_by_str = "m.$c $dir";
 
             if (in_array($order_by_str, $this->order_by))
                 // we already order by this col
@@ -198,46 +190,13 @@ abstract class WPCCollection {
         if (in_array($key, $this->table_cols))
             $this->where[] = $this->where_clause("t.$key", $val, $op);
         else {
-            $alias = $this->join_with_metakey_($key);
-            $this->where[] = $this->where_clause("$alias.meta_value", $val, $op);
+            $this->where[] = $this->where_clause("m.$key", $val, $op);
         }
-
 
         ButterLog::debug("add_filter_($key, $val, $op)");
 
         // invalidate iterate_results
         unset($this->iterate_results);
-    }
-
-    /**
-     * adds a join clause inplace.
-     * $metakey is a key in the meta table.
-     * $inner specifies, whether this should be an inner or outer (left) join
-     * (defaults to inner join).
-     * might overwrite an existing join, if $overwrite is true (default).
-     *
-     * returns the table alias.
-     */
-    function join_with_metakey_($metakey, $inner=true, $overwrite=true) {
-      global $wpdb;
-      $alias = "wpcj$metakey";
-      if (! $overwrite)
-          if (array_key_exists($alias, $this->join))
-              return $alias;
-
-      $joinstr = $inner? "INNER" : "LEFT";
-      $joinstr.= " JOIN $this->meta_table AS $alias
-          ON ($alias.$this->meta_fk = t.$this->table_pk
-              AND ".$wpdb->prepare("$alias.meta_key = %s", $metakey).")";
-
-
-      // simply overwrite possibly existing join.
-      $this->join[$alias] = $joinstr;
-
-      //invalidate iterate_results
-      unset($this->iterate_results);
-
-      return $alias;
     }
 
     /**
@@ -248,11 +207,10 @@ abstract class WPCCollection {
 
         global $wpdb;
 
-        $sql = "SELECT DISTINCT t.*, meta.meta_key, meta.meta_value FROM $this->table AS t
-            LEFT JOIN $this->meta_table AS meta ON meta.$this->meta_fk = t.$this->table_pk\n";
+        $sql = "SELECT t.*, m.* FROM $this->table AS t
+            LEFT JOIN $this->meta_table AS m ON m.$this->meta_fk = t.$this->table_pk\n";
 
         $sql.= join("\n", $this->join);
-
 
         if (count($this->where))
             $sql.= "\nWHERE ( ".join(" )\n  AND ( ", $this->where)." )\n";
@@ -281,42 +239,13 @@ abstract class WPCCollection {
             return array();
         }
 
-        $r = null; $meta = array();
-        $cur_id = -1;
-        // aggregate
-        while ($row = mysql_fetch_assoc($dbres)) {
-            if ($cur_id != $row[$this->table_pk]) {
-                // add the now complete record to the array to return later
-                // (do not do this the first time)
-                if ($cur_id != -1) {
-                    $res[] = array(
-                        "$this->table_pk"=> $cur_id,
-                        "$this->table"   => $r,
-                        "meta"           => $meta
-                    );
-                    $meta = array();
-                }
-
-                $cur_id = $row[$this->table_pk];
-
-                // copy the row and remove meta-fields
-                $r = $row;
-                unset($r["meta_key"]);
-                unset($r["meta_value"]);
-            }
-
-            if ($row["meta_value"] !== "") {
-                if ( empty( $meta[$row["meta_key"]] ) ) $meta[$row["meta_key"]] = $row["meta_value"];
-                elseif (is_array ($meta[$row["meta_key"]]) ) array_push($meta[$row["meta_key"]], $row["meta_value"]);
-                else $meta[$row["meta_key"]] = array($meta[$row["meta_key"]], $row["meta_value"]);
-            }
-        }
-        // add the last completed record
-        if ($cur_id != -1)
+        $res = array();
+        $wp_keys = array_flip(GenericContentType::$wp_keys);
+        while ($row = mysql_fetch_assoc($dbres))
             $res[] = array(
-                "$this->table_pk"=> $cur_id,
-                "$this->table"   => $r,
-                "meta"           => $meta
+                'id' => $row[$this->table_pk],
+                't'  => array_intersect_key($row, $wp_keys),
+                'm'  => array_diff_key($row, $wp_keys)
             );
 
         // sort with callback if given
@@ -324,8 +253,6 @@ abstract class WPCCollection {
         // it will hit quicksorts worst case performance O(n²).
         if (!empty($this->sort_with_cb))
             $res = usort($res, $this->sort_with_cb);
-
-        $this->count = count($res);
 
         return $res;
     }

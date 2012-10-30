@@ -23,7 +23,6 @@ class WPCRecordCollection extends WPCCollection {
     function __construct () {
         global $wpdb;
         $this->table = $wpdb->posts;
-        $this->meta_table = $wpdb->postmeta;
     }
 
     /**
@@ -38,9 +37,13 @@ class WPCRecordCollection extends WPCCollection {
             return null;
         }
 
+        $wpctype = $wpc_content_types[$type];
+        $table = $wpctype->table;
+
         $classname = ucfirst($type)."Records";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
+                protected \$meta_table = '$table';
             }";
             eval ($classdef);
         }
@@ -62,7 +65,7 @@ class WPCRecordCollection extends WPCCollection {
         return array_map(array($this, "row_to_record"), parent::results());
     }
     function row_to_record($record) {
-        return WPCRecord::new_record($record[$this->table_pk], $record[$this->table], $record["meta"]);
+        return WPCRecord::new_record($record['id'], $record['t'], $record['m']);
     }
 
     /**
