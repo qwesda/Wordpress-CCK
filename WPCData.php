@@ -190,7 +190,7 @@ abstract class WPCData {
         return null;
     }
 
-    protected function connected_by_id($db_relationslug, $reverse) {
+    protected function connected_by_id($db_typeslug, $reverse) {
         return null;
     }
 

@@ -19,7 +19,7 @@ class WPCRelationCollection extends WPCCollection {
     /**
      * the relationship's name in the db
      */
-    protected $db_relationslug = '';
+    protected $typeslug = '';
 
     /**
      * is set to false if the relationship is stored in the same order in the database.
@@ -30,21 +30,21 @@ class WPCRelationCollection extends WPCCollection {
      * returns an instance of (a subclass of) WPCRelationCollection for both types.
      * if $id is set to a valid id of type $type, prefilter to get only connected relations.
      */
-    static function relations_by_id($db_relationslug, $reverse, $id=null) {
+    static function relations_by_id($typeslug, $reverse, $id=null) {
         global $wpc_relationships;
 
-        if (! isset($wpc_relationships[$db_relationslug])) {
+        if (! isset($wpc_relationships[$typeslug])) {
             // XXX: there should be an _error here!
-            ButterLog::warn("The relationship with id $db_relationslug does not exist in the database.");
+            ButterLog::warn("The relationship with id $typeslug does not exist in the database.");
             return null;
         }
 
         $db_reverse = $reverse ? "true" : "false";
 
-        $classname = ($reverse ? "Reverse" : "").str_replace(" ", "", ucwords(str_replace("_", " ", $db_relationslug)))."RelationRecords";
+        $classname = ($reverse ? "Reverse" : "").str_replace(" ", "", ucwords(str_replace("_", " ", $typeslug)))."RelationRecords";
         if (! class_exists($classname)){
             $classdef = "class $classname extends ".__CLASS__." {
-              protected \$db_relationslug = '$db_relationslug';
+              protected \$typeslug = '$typeslug';
               protected \$db_is_reverse = $db_reverse;
             }";
             eval ($classdef);
@@ -52,7 +52,7 @@ class WPCRelationCollection extends WPCCollection {
 
         $relations = new $classname();
 
-        ButterLog::debug("relations_by_id($db_relationslug, $reverse, $id=null)");
+        ButterLog::debug("relations_by_id($typeslug, $reverse, $id=null)");
 
         if ( !empty($id) ) {
             $relations = $relations->id_is($id);
@@ -62,8 +62,8 @@ class WPCRelationCollection extends WPCCollection {
     }
 
     function __construct() {
-        if (isset($this->db_relationslug))
-            $this->add_filter_('relationship_id', $this->db_relationslug);
+        if (isset($this->typeslug))
+            $this->add_filter_('relationship_id', $this->typeslug);
     }
 
     /**
@@ -77,7 +77,7 @@ class WPCRelationCollection extends WPCCollection {
 
 
     function next () {
-        ButterLog::debug("WPCRelationCollection::next() - $this->db_relationslug - $this->db_is_reverse");
+        ButterLog::debug("WPCRelationCollection::next() - $this->typeslug - $this->db_is_reverse");
 
         $next_relation = parent::next();
         $ret = null;

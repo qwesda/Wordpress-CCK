@@ -68,8 +68,8 @@ abstract class WPCRecord extends WPCData {
     protected function connected_for_type($other_type, $reverse) {
         return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
-    protected function connected_by_id($db_relationslug, $reverse) {
-        return WPCRelationCollection::relations_by_id($db_relationslug, $reverse, $this->id);
+    protected function connected_by_id($db_typeslug, $reverse) {
+        return WPCRelationCollection::relations_by_id($db_typeslug, $reverse, $this->id);
     }
 
     protected function exists_connected($other_type) {

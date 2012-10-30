@@ -9,8 +9,6 @@ abstract class WPCRelation extends WPCData {
 
     /**
      * constructor for a Relation
-     *
-     *
      */
     protected function __construct($id, $record_from, $record_to, $meta=null) {
         global $wpc_relationships;
