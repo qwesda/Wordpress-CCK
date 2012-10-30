@@ -16,6 +16,7 @@ abstract class GenericContentType {
     public $has_archive         = false;
     public $hierarchical        = false;
     public $menu_position       = 5;
+    public $show_in_menu        = true;
 
     protected $is_first_metabox   = true;
 
@@ -50,6 +51,7 @@ abstract class GenericContentType {
                 'capability_type'       => 'post',
                 'hierarchical'          => $this->hierarchical,
                 'menu_position'         => $this->menu_position,
+                'show_in_menu'          => $this->show_in_menu,
                 '_builtin'              => false,
                 'rewrite'               => array("slug" => $this->slug),
                 'query_var'             => $this->slug,
