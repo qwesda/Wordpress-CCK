@@ -248,8 +248,8 @@ abstract class WPCData {
   }
 
     public function dump() {
-        if (empty($this->meta))
-            $this->load_meta();
+        if (empty($this->data))
+            $this->load_data();
 
         if (empty($this->meta))
             $this->load_meta();
