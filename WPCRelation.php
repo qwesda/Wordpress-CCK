@@ -53,10 +53,10 @@ abstract class WPCRelation extends WPCData {
         $relation = $wpc_relationships[$this->typeslug];
 
         $arg = array(
-            'from_id'           => $this->data_to_set['record_from'],
-            'to_id'             => $this->data_to_set['record_to'],
+            'from_id'           => $this->data_to_update['record_from'],
+            'to_id'             => $this->data_to_update['record_to'],
             'rel_id'            => $this->typeslug,
-            'relation_metadata' => $this->meta_to_set
+            'relation_metadata' => $this->meta_to_update
         );
 
         if ($this->id === null)

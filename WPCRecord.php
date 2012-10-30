@@ -97,24 +97,24 @@ abstract class WPCRecord extends WPCData {
         global $wpc_content_types;
 
         if ($this->id === null) {
-            $this->id = $this->type->create_post($this->to_set_data);
-            $this->to_set_data = array();
+            $this->id = $this->type->create_post($this->data_to_update);
+            $this->data_to_update = array();
 
             // load new data (assume meta will not be set)
             $this->load_data();
         }
 
-        if (! empty($this->data_to_set) || ! empty($this->meta_to_set)) {
-            $post_data = array('ID' => $this->id) + $this->data_to_set;
+        if (! empty($this->data_to_update) || ! empty($this->meta_to_update)) {
+            $post_data = array('ID' => $this->id) + $this->data_to_update;
             wp_update_post($post_data);
 
-            $this->data_to_set = array();
+            $this->data_to_update = array();
         }
 
-        if (! empty($this->meta_to_set)) {
-            $this->type->update_post($this->id, array(), $this->meta_to_set);
+        if (! empty($this->meta_to_update)) {
+            $this->type->update_post($this->id, array(), $this->meta_to_update);
 
-            $this->meta_to_set = array();
+            $this->meta_to_update = array();
         }
         return $this;
     }
