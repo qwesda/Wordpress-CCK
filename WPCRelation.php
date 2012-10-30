@@ -15,14 +15,14 @@ abstract class WPCRelation extends WPCData {
     protected function __construct($id, $record_from, $record_to, $meta=null) {
         global $wpc_relationships;
 
-        if ($id === null || $record_from === null || $record_to === null) {
-            ButterLog::warn(get_class($this).": Id, record or other_record not given!");
+        if ($id === null && ($record_from === null || $record_to === null)) {
+            ButterLog::warn(get_class($this).": ID and record or other_record not given!");
             throw new Exception("Cannot construct ".get_class($this).". Missing Parameter.");
         }
 
         $this->id = $id;
 
-        // if only the record's or other record's id is given, construct a new record object
+        // if only the numerical id is given, construct a new record object
         if (! is_object($record_from)) {
             $from_type = $wpc_relationships[$this->typeslug]->post_type_from_id;
             $record_from = WPCRecord::new_record($record_from, null, null, $from_type);
