@@ -325,10 +325,6 @@ abstract class GenericContentType {
                                         );
             $field_formats["post_name"] = "%s";
         }
-
-        _log($to_update);
-        _log($field_formats);
-
         $this->update_dbs($post_id, $to_update, $field_formats);
     }
 
