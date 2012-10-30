@@ -31,15 +31,12 @@ class MonthField extends GenericField {
         $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
     ?>
         <select id="<?php echo "wpc_field_$this->id" ?>" class="wpc_input wpc_input_select"   name="<?php echo "wpc_$this->id" ?>" width="100%">
-            <option value=""></option>
-            <?php foreach ($this->options as $option => $label): ?>
+            <option value='' <?php if ( empty($value) ) echo 'selected'; ?>></option>
+            <?php foreach ($this->options as $option): ?>
                 <option value="<?php echo $option; ?>" <?php
-                    if ( !empty($value) ) {
-                        echo $value == $option ? 'selected' : '';
-                    } else {
-                        echo $this->default == $value ? 'selected' : '';
-                    } ?>><?php echo $label ?></option>
+                    if ( $value == $option ) echo 'selected'; ?>><?php echo $option ?></option>
             <?php endforeach ?>
+
         </select>
     <?php }
 }
