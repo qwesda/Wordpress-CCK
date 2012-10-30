@@ -22,7 +22,7 @@ abstract class WPCData {
      */
     protected $data;
 
-    protected $data_keys;
+    protected $data_keys = array();
 
     protected $data_to_update = array();
 
@@ -31,7 +31,7 @@ abstract class WPCData {
      */
     protected $meta;
 
-    protected $meta_keys;
+    protected $meta_keys = array();
 
     protected $meta_to_update = array();
 
