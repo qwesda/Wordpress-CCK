@@ -35,9 +35,6 @@ abstract class WPCRelation extends WPCData {
         $data = array(
             "record_from"     => $record_from,
             "record_to"       => $record_to,
-            "record_type"     => $from_type,
-            "record_to_type"  => $to_type,
-            "relationship_id" => $this->typeslug
         );
 
         $this->data_keys = array_keys($data);
