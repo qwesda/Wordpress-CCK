@@ -344,7 +344,7 @@ abstract class GenericContentType {
         #ButterLog::debug("update_dbs $post_id.", $to_update);
         #ButterLog::debug("update_dbs $post_id.", $field_formats);
 
-        $wp_keys = array_flip($this->wp_keys);
+        $wp_keys = array_flip(self::$wp_keys);
 
         $this->update_db($this->table, $post_id,
             array_diff_key($to_update, $wp_keys), $field_formats);
