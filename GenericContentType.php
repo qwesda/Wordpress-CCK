@@ -27,6 +27,16 @@ abstract class GenericContentType {
     public $id_col;
     public $wpid_col;
 
+
+    public static $wp_keys = array('post_author', 'post_date',
+        'post_date_gmt', 'post_content', 'post_content_filtered',
+        'post_title', 'post_excerpt', 'post_status', 'post_type',
+        'comment_count', 'comment_status', 'ping_status', 'post_password',
+        'post_name', 'to_ping', 'pinged', 'post_modified',
+        'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
+        'guid');
+
+
     function __construct () {
         global $wpc_content_types;
 
@@ -334,19 +344,13 @@ abstract class GenericContentType {
         #ButterLog::debug("update_dbs $post_id.", $to_update);
         #ButterLog::debug("update_dbs $post_id.", $field_formats);
 
-        $wp_fields = array_flip(array('post_author', 'post_date',
-            'post_date_gmt', 'post_content', 'post_content_filtered',
-            'post_title', 'post_excerpt', 'post_status', 'post_type',
-            'comment_count', 'comment_status', 'ping_status', 'post_password',
-            'post_name', 'to_ping', 'pinged', 'post_modified',
-            'post_modified_gmt', 'post_parent', 'menu_order', 'post_mime_type',
-            'guid'));
+        $wp_keys = array_flip($this->wp_keys);
 
         $this->update_db($this->table, $post_id,
-            array_diff_key($to_update, $wp_fields), $field_formats);
+            array_diff_key($to_update, $wp_keys), $field_formats);
 
         $this->update_db($wpdb->posts, $post_id,
-            array_intersect_key($to_update, $wp_fields), $field_formats);
+            array_intersect_key($to_update, $wp_keys), $field_formats);
     }
 
     protected function update_db($table, $post_id, $to_update, $field_formats) {
