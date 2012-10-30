@@ -54,6 +54,9 @@ abstract class WPCRecord extends WPCData {
             $type = $p['post_type'];
         }
 
+        if (is_object($type))
+            $type = $type->slug;
+
         $classname = ucfirst($type)."Record";
         self::make_specific_class($classname, $type);
 
