@@ -63,6 +63,12 @@ abstract class WPCRelation extends WPCData {
             $res = $relation->add_relation($arg);
         else
             $res = $relation->update_relation($arg);
+
+        // invalidate record
+        $this->data = null;
+        $this->meta = null;
+
+        return $this;
     }
 
     /**

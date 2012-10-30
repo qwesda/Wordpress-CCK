@@ -101,10 +101,6 @@ abstract class WPCRecord extends WPCData {
                 $this->meta_to_update, $write_ro);
             $this->data_to_update = array();
             $this->meta_to_update = array();
-
-            // load new data (assume meta will not be set)
-            $this->load_data();
-            $this->load_meta();
         } else {
             if (! empty($this->data_to_update)) {
                 $post_data = array('ID' => $this->id) + $this->data_to_update;
@@ -120,6 +116,11 @@ abstract class WPCRecord extends WPCData {
                 $this->meta_to_update = array();
             }
         }
+
+        // invalidate record
+        $this->data = null;
+        $this->meta = null;
+
         return $this;
     }
 
