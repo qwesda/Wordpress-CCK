@@ -6,7 +6,7 @@ $wpc_relationships = array();
 
 abstract class GenericRelationship {
     public $id                    = "";
-    public $fields                = NULL;
+    public $fields                = array();
 
     public $label                 = "";
 
@@ -145,7 +145,7 @@ abstract class GenericRelationship {
             );
             $formats = array("%d", "%d");
 
-            if (isset($req->relation_metadata)) {
+            if (! empty($req->relation_metadata)) {
                 $req->relation_metadata = array_map(function ($value) {
                     return htmlspecialchars_decode($value, ENT_QUOTES);
                 }, $req->relation_metadata);

@@ -4,12 +4,6 @@
  * The base class for records of a content type.
  */
 abstract class WPCRecord extends WPCData {
-
-    /*
-     * the post's id
-     */
-    protected $id = null;
-
     protected $type;
 
     /**
@@ -60,6 +54,9 @@ abstract class WPCRecord extends WPCData {
             $type = $p['post_type'];
         }
 
+        if (is_object($type))
+            $type = $type->slug;
+
         $classname = ucfirst($type)."Record";
         self::make_specific_class($classname, $type);
 
@@ -71,8 +68,8 @@ abstract class WPCRecord extends WPCData {
     protected function connected_for_type($other_type, $reverse) {
         return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
-    protected function connected_by_id($db_relationslug, $reverse) {
-        return WPCRelationCollection::relations_by_id($db_relationslug, $reverse, $this->id);
+    protected function connected_by_id($db_typeslug, $reverse) {
+        return WPCRelationCollection::relations_by_id($db_typeslug, $reverse, $this->id);
     }
 
     protected function exists_connected($other_type) {
@@ -101,10 +98,6 @@ abstract class WPCRecord extends WPCData {
                 $this->meta_to_update, $write_ro);
             $this->data_to_update = array();
             $this->meta_to_update = array();
-
-            // load new data (assume meta will not be set)
-            $this->load_data();
-            $this->load_meta();
         } else {
             if (! empty($this->data_to_update)) {
                 $post_data = array('ID' => $this->id) + $this->data_to_update;
@@ -120,6 +113,11 @@ abstract class WPCRecord extends WPCData {
                 $this->meta_to_update = array();
             }
         }
+
+        // invalidate record
+        $this->data = null;
+        $this->meta = null;
+
         return $this;
     }
 

@@ -4,13 +4,10 @@
  * records
  */
 class WPCRecordCollection extends WPCCollection {
-
-    protected $table_alias = "posts";
-
     /**
      * these are the post's main cols (wp)
      */
-    protected $table_cols = array('id', 'post_author', 'post_date',
+    protected $table_cols = array('ID', 'post_author', 'post_date',
         'post_date_gmt', 'post_content', 'post_content_filtered',
         'post_title', 'post_excerpt', 'post_status', 'post_type',
         'comment_count', 'comment_status', 'ping_status', 'post_password',

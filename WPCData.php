@@ -10,6 +10,7 @@
  * "qtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage".
  */
 abstract class WPCData {
+    protected $id;
 
     /**
      * a short name for the type of the data
@@ -21,7 +22,7 @@ abstract class WPCData {
      */
     protected $data;
 
-    protected $data_keys;
+    protected $data_keys = array();
 
     protected $data_to_update = array();
 
@@ -30,7 +31,7 @@ abstract class WPCData {
      */
     protected $meta;
 
-    protected $meta_keys;
+    protected $meta_keys = array();
 
     protected $meta_to_update = array();
 
@@ -64,6 +65,9 @@ abstract class WPCData {
     }
 
     function get($attribute) {
+        if ($attribute === "id")
+            return $this->id;
+
         if (empty($this->data)) {
             $this->load_data();
         }
@@ -96,7 +100,6 @@ abstract class WPCData {
 
         // ButterLog::debug(get_class($this)." does not have attribute '$attribute'.");
         // return empty string for non-existing attributes.
-
         return "";
     }
 
@@ -187,7 +190,7 @@ abstract class WPCData {
         return null;
     }
 
-    protected function connected_by_id($db_relationslug, $reverse) {
+    protected function connected_by_id($db_typeslug, $reverse) {
         return null;
     }
 
@@ -248,8 +251,8 @@ abstract class WPCData {
   }
 
     public function dump() {
-        if (empty($this->meta))
-            $this->load_meta();
+        if (empty($this->data))
+            $this->load_data();
 
         if (empty($this->meta))
             $this->load_meta();

@@ -22,6 +22,7 @@ abstract class WPCCollection {
      */
     protected $meta_table;
 
+
     /**
      * the meta table's foreign key to the main table
      */
@@ -207,8 +208,11 @@ abstract class WPCCollection {
 
         global $wpdb;
 
-        $sql = "SELECT t.*, m.* FROM $this->table AS t
-            LEFT JOIN $this->meta_table AS m ON m.$this->meta_fk = t.$this->table_pk\n";
+        $sql = "SELECT * FROM $this->table AS t\n";
+
+        if (! empty($this->meta_table))
+            $sql .= "LEFT JOIN $this->meta_table AS m
+                ON m.$this->meta_fk = t.$this->table_pk\n";
 
         $sql.= join("\n", $this->join);
 
@@ -240,12 +244,12 @@ abstract class WPCCollection {
         }
 
         $res = array();
-        $wp_keys = array_flip(GenericContentType::$wp_keys);
+        $table_cols = array_flip($this->table_cols);
         while ($row = mysql_fetch_assoc($dbres))
             $res[] = array(
                 'id' => $row[$this->table_pk],
-                't'  => array_intersect_key($row, $wp_keys),
-                'm'  => array_diff_key($row, $wp_keys)
+                't'  => array_intersect_key($row, $table_cols),
+                'm'  => array_diff_key($row, $table_cols)
             );
 
         // sort with callback if given
