@@ -118,7 +118,9 @@ div.wpc_form_row {
     
 }
 
-
+div.relation_connect_new_metadata_box div.padding_box {
+	box-shadow: none;
+}
 
 .wp-editor-container {
 	background-color: #fff;
@@ -192,6 +194,9 @@ ul.wpc_form_tabs_header li {
 	margin-bottom: -1px;
 }
 
+ul.wpc_form_tabs_header li.ui-state-disabled {
+	opacity: 0.3;
+}
 ul.wpc_form_tabs_header li.ui-state-active { 
 	background-color: #f7f7f7;
 	border-bottom: 1px solid #f7f7f7;
