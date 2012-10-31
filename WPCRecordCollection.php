@@ -4,9 +4,6 @@
  * records
  */
 class WPCRecordCollection extends WPCCollection {
-
-    protected $table_alias = "posts";
-
     /**
      * these are the post's main cols (wp)
      */
