@@ -32,6 +32,22 @@ abstract class WPCRecord extends WPCData {
         parent::__construct($post, $meta);
     }
 
+    function showlink() {
+        if (! $this->id)
+            return "";
+        return post_permalink($this->id);
+    }
+    function editlink() {
+        if (! $this->id)
+            return "";
+
+        // that does not work, because it will not be displayed
+        // if the person is not authenticated :/
+        //return get_edit_post_link($this->id);
+
+        return admin_url("post.php?action=edit&post=$this->id");
+    }
+
     /**
      * returns a new object of the right type.
      */
