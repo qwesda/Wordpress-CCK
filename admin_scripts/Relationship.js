@@ -43,8 +43,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
             var info_text               =
               "<h3>Add new " + relation_data.srcSingularLabel + "</h3>" + (editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + "<div class='relation_metadata_edit_box'>" + editBox + "</div>"
-            + "<div class='relation_item_metadata_edit_box'>" + itemEditBox + "</div>"
+            + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
+            + ( itemEditBox != ""   ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
             + "</div>" : "");
 
             jQuery(base_id + '.relation_connect_new_metadata_box').empty().append(info_text);
@@ -71,8 +71,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.show();
 
             var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + "<div class='relation_metadata_edit_box'>" + editBox + "</div>"
-            + "<div class='relation_item_metadata_edit_box'>" + itemEditBox + "</div>"
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
+            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
             + "</div>" : "";
 
             var data = {
@@ -139,8 +139,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.show();
 
             var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + "<div class='relation_metadata_edit_box'>" + editBox + "</div>"
-            + "<div class='relation_item_metadata_edit_box'>" + itemEditBox + "</div>"
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
+            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
             + "</div>" : "";
 
             var data = {
@@ -257,7 +257,7 @@ function relation_edit_connected_update (relation_data) {
     for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
         var item_metadata_field = jQuery(item_metadata_fields[i]);
 
-        metadata_key = item_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
+        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
 
         data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
     };
@@ -320,7 +320,7 @@ function relation_edit_connected_delete (relation_data) {
     });
 }
 function show_status_message(relation_data, message) {
-//    jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text(message).show().delay(200000).fadeOut();
+    //jQuery(".relation_edit_box." + relation_data.relId + " .status-update").text(message).show().delay(200000).fadeOut();
 }
 function relation_connect_existing_add (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
@@ -357,7 +357,7 @@ function relation_connect_existing_add (relation_data) {
     for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
         var item_metadata_field = jQuery(item_metadata_fields[i]);
 
-        metadata_key = item_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
+        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
 
         data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
     };
@@ -485,11 +485,11 @@ function set_connected_items (relation_data) {
     jQuery(base_id + '.relation_connected_list tbody').empty().append(html_to_append);
 
     jQuery.ajax({
-        url: ajaxurl,
-        dataType: "json",
-        data : data,
-        cache : false,
-        success: function (ret) {
+        url      : ajaxurl,
+        dataType : "json",
+        data     : data,
+        cache    : false,
+        success  : function (ret) {
             var html_to_append = "";
 
             for (var i = ret.results.length - 1; i >= 0; i--) {
@@ -499,11 +499,28 @@ function set_connected_items (relation_data) {
                     result.item_metadata.post_title  = "<i>untitled</i>";
                 }
 
+                var fieldsToShowInListString    = "";
+                var fieldsToShowInListValues    = [];
+
+                if (relation_data.fieldToShowInList != "" && relation_data.fieldToShowInList != undefined) {
+                    var fieldsToShowInList          = relation_data.fieldToShowInList.split(",");
+
+                     for (var j=0; j < fieldsToShowInList.length; j++) {
+                        var field = fieldsToShowInList[j];
+
+                        if (result.relation_metadata[field] != undefined) {
+                            fieldsToShowInListValues.push( result.relation_metadata[field] );
+                        }
+                    }
+
+                    fieldsToShowInListString = fieldsToShowInListValues.join(", ");
+                }
+
                 html_to_append =
                 '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'"><td>'
                 +    "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> "
                 +    (result.item_metadata.post_status != "publish" ? " (<i>" + result.item_metadata.post_status + ")</i>" : "")
-                +    (relation_data.fieldToShowInList != "" && result.relation_metadata[relation_data.fieldToShowInList] != undefined ? "<div class='connected_item_info'>"+result.relation_metadata[relation_data.fieldToShowInList]+"</div> " : "")
+                +    (fieldsToShowInListString != "" ? "<div class='connected_item_info'>"+fieldsToShowInListString+"</div>" : "")
                 + "</td></tr>\n" + html_to_append;
             }
 
@@ -546,7 +563,7 @@ function relation_connect_new_add (relation_data) {
     for (var i = relation_metadata_fields.length - 1; i >= 0; i--) {
         var relation_metadata_field = jQuery(relation_metadata_fields[i]);
 
-        metadata_key = relation_metadata_field.attr('id').replace("wpc_"+relation_data.relId+"_field_", "")
+        metadata_key = relation_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
 
         data.relation_metadata[metadata_key] = htmlspecialchars( relation_metadata_field.val(), 3);
     };
@@ -554,7 +571,7 @@ function relation_connect_new_add (relation_data) {
     for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
         var item_metadata_field = jQuery(item_metadata_fields[i]);
 
-        metadata_key = item_metadata_field.attr('id').replace("wpc_"+relation_data.srcId+"_field_", "")
+        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
 
         data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
     };

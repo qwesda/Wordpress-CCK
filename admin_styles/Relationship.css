@@ -30,9 +30,14 @@ div.padding_box {
 	border-top: 1px solid #ccc;
 	padding: 0px;
 	
-	background-color: #f4f4f4;
-	
-	box-shadow: 0px 1px 4px rgba(128,128,128,0.8) inset;
+	background-color: rgba(256, 256, 256, 0.3);
+}
+
+label.relation_edit_label {
+	margin-left: 4px;
+	margin-top: 10px;
+	display: block;
+	font-style: italic;
 }
 
 tr.selected.selected.selected {
