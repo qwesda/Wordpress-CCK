@@ -223,7 +223,7 @@ abstract class GenericContentType {
     function admin_init() {
     }
 
-    function delete_post ($post_id, $post) {
+    function delete_post ($post_id, $post=null) {
         global $wpdb;
         global $wpc_relationships;
 
