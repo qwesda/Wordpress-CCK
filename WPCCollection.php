@@ -62,6 +62,8 @@ abstract class WPCCollection {
     protected $join = array();
 
 
+    protected $write_ro = null;
+
     /**
      * Prepares the object to iterate over the results. Resets the iteration pointer.
      */
@@ -311,6 +313,11 @@ abstract class WPCCollection {
         return $filter;
     }
 
+
+    function write_ro($write_ro) {
+        $this->write_ro = $write_ro;
+        return $this;
+    }
 }
 
 ?>

@@ -62,7 +62,8 @@ class WPCRecordCollection extends WPCCollection {
         return array_map(array($this, "row_to_record"), parent::results());
     }
     function row_to_record($record) {
-        return WPCRecord::new_record($record['id'], $record['t'], $record['m']);
+        return WPCRecord::new_record($record['id'], $record['t'], $record['m'])
+            ->write_ro($this->write_ro);
     }
 
     /**

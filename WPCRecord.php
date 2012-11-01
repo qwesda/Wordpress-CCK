@@ -106,8 +106,10 @@ abstract class WPCRecord extends WPCData {
         return $this->type->delete_post($this->id);
     }
 
-    function commit ($write_ro = false) {
+    function commit ($write_ro = null) {
         global $wpc_content_types;
+
+        $write_ro = $write_ro === null? $this->write_ro : $write_ro;
 
         if ($this->id === null) {
             $this->id = $this->type->create_post($this->data_to_update,

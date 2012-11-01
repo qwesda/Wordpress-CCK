@@ -42,6 +42,8 @@ abstract class WPCData {
 
     protected $formatted_string_cache = array();
 
+    protected $write_ro = null;
+
     /**
      * constructor for a Record.
      *
@@ -277,5 +279,10 @@ abstract class WPCData {
        <div><?php
     }
 
+
+    function write_ro($write_ro) {
+        $this->write_ro = $write_ro;
+        return $this;
+    }
 }
 ?>

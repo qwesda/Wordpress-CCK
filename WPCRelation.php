@@ -61,8 +61,11 @@ abstract class WPCRelation extends WPCData {
         return $this;
     }
 
-    function commit() {
+    function commit($write_ro = null) {
         global $wpc_relationships;
+
+        $write_ro = $write_ro === null ? $this->write_ro : $write_ro;
+
         $relation = $wpc_relationships[$this->typeslug];
 
         $this->data = $this->data_to_update + $this->data;
