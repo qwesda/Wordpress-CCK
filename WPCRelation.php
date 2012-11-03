@@ -104,12 +104,12 @@ abstract class WPCRelation extends WPCData {
 
         // this should inner join on the two tables and get the record's data
         $table = $wpc_relationships[$this->typeslug]->table;
-        $stmt = $wpdb->prepare("SELECT r.*, a.*, b.* FROM $table AS r
+        $stmt = $wpdb->prepare("SELECT r.* FROM $table AS r
             WHERE r.id = %d", $this->id);
         $row = $wpdb->get_row($stmt, ARRAY_A);
 
-        $this->data['record_from'] = WPCRecord::new_record($row[$this->post_from_id], null, null, $this->from_type);
-        $this->data['record_to'] = WPCRecord::new_record($row[$this->post_to_id], null, null, $this->to_type);
+        $this->data['record_from'] = WPCRecord::new_record($row['post_from_id'], null, null, $this->from_type);
+        $this->data['record_to'] = WPCRecord::new_record($row['post_to_id'], null, null, $this->to_type);
     }
     protected function load_meta() {
         if ($this->data === null || ! empty($this->meta_keys))
