@@ -302,6 +302,10 @@ abstract class WPCCollection {
         case "NOT LIKE":
             $filter.= "'%".like_escape($val)."%'";
             break;
+        case "IS NULL":
+        case 'IS NOT NULL':
+            // $key $op is already enought. no need to specify the value
+            break;
         default:
             if (! in_array($op, array("=", "!=", "<=>","<","<=",">","=>"))) {
                 ButterLog::warn("operator is not valid: $op");
