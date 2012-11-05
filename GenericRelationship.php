@@ -15,6 +15,7 @@ abstract class GenericRelationship {
     public $post_type_to_id       = "";
     public $post_type_to          = NULL;
     public $table                 = NULL;
+    public $helptext                = "";
 
     public $field_to_show_in_list = "";
 
@@ -23,10 +24,12 @@ abstract class GenericRelationship {
         global $wpc_content_types;
 
 //  SET DEFAULTS
-        if (empty($this->id))       $this->id       = strtolower( get_class_name($this) );
+        if ( empty($this->id) )             $this->id       = strtolower( get_class_name($this) );
 
-        if (empty($this->label))    $this->label    = $this->id;
-        if (empty($this->table))    $this->table    = "wp_wpc__$this->id";
+        if ( empty($this->label) )          $this->label    = $this->id;
+        if ( empty($this->table) )          $this->table    = "wp_wpc__$this->id";
+
+        if ( !empty($params->helptext) )    $this->helptext = $params->helptext;
 
 
         if ( !in_array( $this->post_type_from_id, get_post_types() ) ) {
@@ -550,6 +553,12 @@ data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
 data-src-singular-label = "<?php echo $src->singular_label ?>"
 data-dst-singular-label = "<?php echo $dst->singular_label ?>"
            data-post-id = "<?php echo $post->ID ?>">
+           <?php if ( !empty($this->helptext) ): ?>
+           <div class="wpc_relation_helptext">
+               <?php echo $this->helptext ?>
+           </div>
+           <?php endif ?>
+
             <div class="relation_connected_box" style="display: block;">
                 <table class="relation_connected_list_header wp-list-table widefat fixed posts">
                     <thead>

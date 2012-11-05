@@ -75,6 +75,12 @@ div.padding_box {
 	padding: 10px;
 }
 
+div.wpc_relation_helptext {
+	padding: 6px;
+	font-style: italic;
+	color: #777;
+}
+
 div.relation_edit_box div.status-update {
 	position: absolute;
 	padding: 4px 8px;

@@ -19,6 +19,7 @@ class IntField extends GenericField {
                name="<?php echo "wpc_$this->id"; ?>"
                value="<?php if ( !empty($value) ) echo htmlspecialchars($value, ENT_QUOTES); ?>"
                placeholder="<?php echo $this->hint; ?>" />
+           <label class="wpc_helptext" for="wpc_field_<?php echo $this->id; ?>" style="display:none"><?php echo $this->helptext; ?></label>
     <?php }
 }
 

@@ -52,6 +52,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             jQuery(base_id + '.relation_connect_new_metadata_box').each(check_text_input_value);
             jQuery(base_id + '.relation_connect_new_metadata_box input').first().focus();
 
+            move_wpc_labels_to_rows();
+
             break;
         case "relation_connect_existing_box" :
             var selected_item           = jQuery(base_id + '.relation_src_list tbody tr.selected');
@@ -114,6 +116,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
                         jQuery(input_id).val(input_val);
                     }
+
+                    move_wpc_labels_to_rows();
 
                     try {
                         on_relation_metabox_ready();
@@ -191,6 +195,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
                         jQuery(input_id).val(input_val);
                     }
+
+                    move_wpc_labels_to_rows();
 
                     try {
                         on_relation_metabox_ready();

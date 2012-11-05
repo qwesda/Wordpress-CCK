@@ -58,6 +58,29 @@ div.wpc_form_field {
     float: left;
     
     position: relative;
+	z-index: 1;
+}
+
+div.wpc_form_row div.wpc_form_field:last-of-type {
+	float: none;
+	z-index: 0;
+}
+
+label.wpc_helptext {
+	display: block;
+	color: rgba(0, 0, 0, 0.5);
+	color: #777;
+	font-style: italic;
+	
+	margin-left: 420px;
+	
+	
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	
+	margin-top: -26px;
+	
 }
 
 .disabled  {
@@ -116,6 +139,9 @@ div.wpc_subform {
 div.wpc_form_row {
     clear: both;
     
+    position: relative;
+    
+    clear: both;
 }
 
 div.relation_connect_new_metadata_box div.padding_box {
@@ -193,6 +219,8 @@ ul.wpc_form_tabs_header li {
 	margin-right: -4px;
 	margin-bottom: -1px;
 }
+
+
 
 ul.wpc_form_tabs_header li.ui-state-disabled {
 	opacity: 0.3;

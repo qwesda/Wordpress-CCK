@@ -17,6 +17,7 @@ class TextAreaField extends GenericField {
             class="wpc_input wpc_input_textarea <?php if ($this->localized) echo "wpc_localized_input"; ?>"
             placeholder="<?php echo str_replace("\\n", "\r", $this->hint); ?>"
             name="<?php echo "wpc_$this->id" ?>"><?php if ( !empty($value) ) echo esc_textarea($value); ?></textarea>
+           <label class="wpc_helptext" for="wpc_field_<?php echo $this->id; ?>" style="display:none"><?php echo $this->helptext; ?></label>
     <?php }
 }
 

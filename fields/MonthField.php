@@ -38,6 +38,7 @@ class MonthField extends GenericField {
             <?php endforeach ?>
 
         </select>
+           <label class="wpc_helptext" for="wpc_field_<?php echo $this->id; ?>" style="display:none"><?php echo $this->helptext; ?></label>
     <?php }
 }
 

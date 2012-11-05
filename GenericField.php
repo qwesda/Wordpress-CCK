@@ -8,6 +8,7 @@ abstract class GenericField {
     public $label           = "";
     public $default         = "";
     public $hint            = "";
+    public $helptext        = "";
 
     public $edit_column     = false;
     public $sortable_column = false;
@@ -34,6 +35,7 @@ abstract class GenericField {
         if ( !empty($params->label) )       $this->label        = $params->label;       else $this->label = ucwords( str_replace("_", " ", $this->id) );
         if ( !empty($params->default) )     $this->default      = $params->default;
         if ( !empty($params->hint) )        $this->hint         = $params->hint;
+        if ( !empty($params->helptext) )    $this->helptext     = $params->helptext;
         if ( !empty($params->localized) && $params->localized === true ) $this->localized  = true;
 
         if ( !empty($this->id) && empty ($parent->fields[$this->id]) ) {

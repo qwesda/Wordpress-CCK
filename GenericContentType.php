@@ -112,6 +112,7 @@ abstract class GenericContentType {
 
         $html_str = ob_get_clean();
         $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);
+        $html_str = str_replace("for=\"wpc", "for=\"wpc_$this->id", $html_str);
         $html_str = htmlspecialchars($html_str);
 
         return htmlspecialchars($html_str);
@@ -124,6 +125,7 @@ abstract class GenericContentType {
 
         $html_str = ob_get_clean();
         $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);
+        $html_str = str_replace("for=\"wpc", "for=\"wpc_$this->id", $html_str);
         $html_str = htmlspecialchars($html_str);
 
         return htmlspecialchars($html_str);
