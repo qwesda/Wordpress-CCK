@@ -430,7 +430,7 @@ function update_search_results (relation_data) {
                 action          : "get_post_type_items",
                 nonce           : nonce_relations_ajax,
                 post_type       : relation_data.srcId,
-                relation_data   : relation_data,
+                relation_data   : relation_data.dstId,
                 filter          : filter_value,
                 offset          : 0,
                 cache           : false,
