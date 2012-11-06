@@ -119,6 +119,7 @@ abstract class WPCRelation extends WPCData {
 
     function delete() {
         global $wpdb;
+        global $wpc_relationships;
 
         $table = $wpc_relationships[$this->typeslug]->table;
         $stmt = $wpdb->prepare("DELETE FROM $table WHERE id = %d", $this->id);
