@@ -514,7 +514,7 @@ function set_connected_items (relation_data) {
                      for (var j=0; j < fieldsToShowInList.length; j++) {
                         var field = fieldsToShowInList[j];
 
-                        if (result.relation_metadata[field] != undefined) {
+                        if (result.relation_metadata[field] != undefined && result.relation_metadata[field] != "") {
                             fieldsToShowInListValues.push( result.relation_metadata[field] );
                         }
                     }
