@@ -43,14 +43,16 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
             var info_text               =
               "<h3>Add new " + relation_data.srcSingularLabel + "</h3>" + (editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + ( itemEditBox != ""   ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
+            + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + "</div>" : "");
 
             jQuery(base_id + '.relation_connect_new_metadata_box').empty().append(info_text);
 
             jQuery(base_id + '.relation_connect_new_metadata_box').each(check_text_input_value);
             jQuery(base_id + '.relation_connect_new_metadata_box input').first().focus();
+
+            move_wpc_labels_to_rows();
 
             break;
         case "relation_connect_existing_box" :
@@ -71,8 +73,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.show();
 
             var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + "</div>" : "";
 
             var data = {
@@ -115,6 +117,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                         jQuery(input_id).val(input_val);
                     }
 
+                    move_wpc_labels_to_rows();
+
                     try {
                         on_relation_metabox_ready();
                     } catch (err) {
@@ -139,8 +143,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.show();
 
             var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + "</div>" : "";
 
             var data = {
@@ -191,6 +195,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
                         jQuery(input_id).val(input_val);
                     }
+
+                    move_wpc_labels_to_rows();
 
                     try {
                         on_relation_metabox_ready();

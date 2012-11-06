@@ -48,6 +48,13 @@ div.relation_connect_new_metadata_box div.padding_box {
 	margin: 0;
 	background-color: #fff;
 }
+
+div.relation_item_metadata_edit_box + div.relation_metadata_edit_box {
+	border-top: 1px solid rgba(0, 0, 0, 0.2);
+	margin-top: 18px;
+	padding-top: 12px;
+}
+
 div.relation_table_container {
 	overflow-y: scroll;
 	height: 400px;
@@ -66,6 +73,12 @@ div.relation_edit_box {
 
 div.padding_box {
 	padding: 10px;
+}
+
+div.wpc_relation_helptext {
+	padding: 6px;
+	font-style: italic;
+	color: #777;
 }
 
 div.relation_edit_box div.status-update {

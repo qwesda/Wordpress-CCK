@@ -28,6 +28,7 @@ class SelectField extends GenericField {
                     if ( $value == $option ) echo 'selected'; ?>><?php echo $option ?></option>
             <?php endforeach ?>
         </select>
+        <label class="wpc_helptext" for="wpc_field_<?php echo $this->id; ?>" style="display:none"><?php echo $this->helptext; ?></label>
     <?php }
 }
 
