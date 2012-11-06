@@ -430,7 +430,7 @@ function update_search_results (relation_data) {
                 action          : "get_post_type_items",
                 nonce           : nonce_relations_ajax,
                 post_type       : relation_data.srcId,
-                relation_data   : relation_data,
+                relation_data   : relation_data.dstId,
                 filter          : filter_value,
                 offset          : 0,
                 cache           : false,
@@ -514,7 +514,7 @@ function set_connected_items (relation_data) {
                      for (var j=0; j < fieldsToShowInList.length; j++) {
                         var field = fieldsToShowInList[j];
 
-                        if (result.relation_metadata[field] != undefined) {
+                        if (result.relation_metadata[field] != undefined && result.relation_metadata[field] != "") {
                             fieldsToShowInListValues.push( result.relation_metadata[field] );
                         }
                     }
