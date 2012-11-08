@@ -163,6 +163,8 @@ abstract class GenericRelationship {
                     $ret["errors"][] = 'Could not insert relation';
                 }
 
+            $ret->id = $wpdb->insert_id;
+
             if ( !empty($req->item_metadata)) {
                 $req->item_metadata = array_map(function ($value) {
                     return htmlspecialchars_decode($value, ENT_QUOTES);

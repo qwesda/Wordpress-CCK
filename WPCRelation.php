@@ -86,8 +86,10 @@ abstract class WPCRelation extends WPCData {
 
         if ($this->id === null)
             $res = $relation->add_relation($arg);
-        else
+        else {
             $res = $relation->update_relation($arg);
+            $this->id = $res->id;
+        }
 
         // invalidate metadata
         $this->meta = null;
