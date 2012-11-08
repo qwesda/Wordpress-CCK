@@ -71,8 +71,6 @@ class WPCRelationCollection extends WPCCollection {
 
 
     function next () {
-        ButterLog::debug("WPCRelationCollection::next() - $this->typeslug - $this->db_is_reverse");
-
         $next_relation = parent::next();
         $ret = null;
 

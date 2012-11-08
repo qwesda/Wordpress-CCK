@@ -132,8 +132,6 @@ abstract class WPCRelation extends WPCData {
      * returns a new object of the right type.
      */
     static function new_relation($id, $record_from, $record_to, $typeslug, $meta=null) {
-        ButterLog::debug("WPCRelation::new_relation($id, $record_from, $record_to, $typeslug, $meta)");
-
         $classname = $typeslug."Relation";
         self::make_specific_class($classname, $typeslug);
 
