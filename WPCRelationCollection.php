@@ -99,7 +99,7 @@ class WPCRelationCollection extends WPCCollection {
             $row['post_from_id'],
             $row['post_to_id'],
             $this->typeslug,
-            $record['m']
+            $record['t']
         )->write_ro($this->write_ro);
     }
 
