@@ -522,8 +522,25 @@ function set_connected_items (relation_data) {
                     fieldsToShowInListString = fieldsToShowInListValues.join(", ");
                 }
 
+                var fieldsToPutAsClassString    = "";
+                var fieldsToPutAsClassValues    = [];
+
+                if (relation_data.fieldsToPutAsClass != "" && relation_data.fieldsToPutAsClass != undefined) {
+                    var fieldsToPutAsClass          = relation_data.fieldsToPutAsClass.split(",");
+
+                     for (var j=0; j < fieldsToPutAsClass.length; j++) {
+                        var field = fieldsToPutAsClass[j];
+
+                        if (result.relation_metadata[field] != undefined && result.relation_metadata[field] != "") {
+                            fieldsToPutAsClassValues.push( field + "_" + result.relation_metadata[field] );
+                        }
+                    }
+
+                    fieldsToPutAsClassString = fieldsToPutAsClassValues.join(", ");
+                }
+
                 html_to_append =
-                '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'"><td>'
+                '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'" class="' + fieldsToPutAsClassString + '"><td>'
                 +    "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> "
                 +    (result.item_metadata.post_status != "publish" ? " (<i>" + result.item_metadata.post_status + ")</i>" : "")
                 +    (fieldsToShowInListString != "" ? "<div class='connected_item_info'>"+fieldsToShowInListString+"</div>" : "")

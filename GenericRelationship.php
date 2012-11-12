@@ -15,9 +15,10 @@ abstract class GenericRelationship {
     public $post_type_to_id       = "";
     public $post_type_to          = NULL;
     public $table                 = NULL;
-    public $helptext                = "";
+    public $helptext              = "";
 
     public $field_to_show_in_list = "";
+    public $field_to_put_as_class = "";
 
     function __construct () {
         global $wpc_relationships;
@@ -546,6 +547,7 @@ $prepared_sql_limit" );
             data-dst-id = "<?php echo $dst_id ?>"
 
 data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
+data-field-to_put-as-class = "<?php echo $this->field_to_put_as_class ?>"
 
          data-src-label = "<?php echo $src->label ?>"
          data-dst-label = "<?php echo $dst->label ?>"
