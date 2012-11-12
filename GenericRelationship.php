@@ -75,9 +75,10 @@ abstract class GenericRelationship {
         $this->echo_item_metabox();
 
         $html_str = ob_get_clean();
-        $html_str = str_replace("id=\"wpc", "id=\"wpc_$this->id", $html_str);
-        $html_str = str_replace("id='wpc", "id='wpc_$this->id", $html_str);
+        $html_str = preg_replace("/(id|for|name)\=('|\")wpc_/", "$1=$2wpc_".$this->id."_", $html_str);
+
         $html_str = htmlspecialchars($html_str);
+
 
         return htmlspecialchars($html_str);
     }
