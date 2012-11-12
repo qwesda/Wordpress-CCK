@@ -71,8 +71,6 @@ class WPCRelationCollection extends WPCCollection {
 
 
     function next () {
-        ButterLog::debug("WPCRelationCollection::next() - $this->typeslug - $this->db_is_reverse");
-
         $next_relation = parent::next();
         $ret = null;
 
@@ -101,7 +99,7 @@ class WPCRelationCollection extends WPCCollection {
             $row['post_from_id'],
             $row['post_to_id'],
             $this->typeslug,
-            $record['m']
+            $record['t']
         )->write_ro($this->write_ro);
     }
 

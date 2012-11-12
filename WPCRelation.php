@@ -86,8 +86,10 @@ abstract class WPCRelation extends WPCData {
 
         if ($this->id === null)
             $res = $relation->add_relation($arg);
-        else
+        else {
             $res = $relation->update_relation($arg);
+            $this->id = $res->id;
+        }
 
         // invalidate metadata
         $this->meta = null;
@@ -110,6 +112,7 @@ abstract class WPCRelation extends WPCData {
 
         $this->data['record_from'] = WPCRecord::new_record($row['post_from_id'], null, null, $this->from_type);
         $this->data['record_to'] = WPCRecord::new_record($row['post_to_id'], null, null, $this->to_type);
+        $this->meta = $row;
     }
     protected function load_meta() {
         if ($this->data === null || ! empty($this->meta_keys))
@@ -119,6 +122,7 @@ abstract class WPCRelation extends WPCData {
 
     function delete() {
         global $wpdb;
+        global $wpc_relationships;
 
         $table = $wpc_relationships[$this->typeslug]->table;
         $stmt = $wpdb->prepare("DELETE FROM $table WHERE id = %d", $this->id);
@@ -129,8 +133,6 @@ abstract class WPCRelation extends WPCData {
      * returns a new object of the right type.
      */
     static function new_relation($id, $record_from, $record_to, $typeslug, $meta=null) {
-        ButterLog::debug("WPCRelation::new_relation($id, $record_from, $record_to, $typeslug, $meta)");
-
         $classname = $typeslug."Relation";
         self::make_specific_class($classname, $typeslug);
 

@@ -196,8 +196,6 @@ abstract class WPCCollection {
             $this->where[] = $this->where_clause("m.$key", $val, $op);
         }
 
-        ButterLog::debug("add_filter_($key, $val, $op)");
-
         // invalidate iterate_results
         unset($this->iterate_results);
     }
@@ -206,8 +204,6 @@ abstract class WPCCollection {
      * returns all filtered records as array.
      */
     function results() {
-        ButterLog::debug("results() - $this->table_pk");
-
         global $wpdb;
 
         $sql = "SELECT * FROM $this->table AS t\n";
@@ -233,8 +229,6 @@ abstract class WPCCollection {
                 $sql.= "OFFSET $this->offset";
         }
         $sql.= ";";
-
-        ButterLog::debug("SQL query about to execute:\n$sql");
 
         $res = array();
 
@@ -313,7 +307,6 @@ abstract class WPCCollection {
             }
             $filter = $wpdb->prepare($filter."%s", $val);
         }
-        ButterLog::debug($filter);
         return $filter;
     }
 
