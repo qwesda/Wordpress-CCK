@@ -301,7 +301,7 @@ class WPCustom {
         global $wpdb;
         global $wpc_db_version;
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
+        /*
         $sql = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wpc_relations` (
             `relation_id` bigint(20) unsigned NOT NULL auto_increment,
             `post_from_id` bigint(20) unsigned NOT NULL,
@@ -327,12 +327,13 @@ class WPCustom {
         );";
 
         dbDelta($sql);
+        */
     }
 
     function plugins_loaded() {
         global $wpdb;
         global $wpc_db_version;
-
+        /*
         $old_db_version = get_option("wpc_db_version");
         if ($old_db_version != $wpc_db_version) {
             $this->db_install();
@@ -347,6 +348,7 @@ class WPCustom {
             }
             update_option("wpc_db_version", $wpc_db_version);
         }
+        */
     }
 
     function widgets_init () {
