@@ -78,10 +78,8 @@ abstract class GenericContentType {
 
         add_filter("manage_edit-{$this->slug}_columns",
             array($this, "wp_manage_edit_columns"));
-        add_filter("manage_edit-{$this->slug}_display",
-            array($this, "wp_manage_edit_columns_display"));
-        add_filter("manage_edit-{$this->slug}_columns",
-            array($this, "wp_manage_edit_columns"));
+        add_filter("manage_{$this->slug}_posts_custom_column",
+            array($this, "wp_manage_posts_custom_column"), 10, 2);
         add_filter("manage_edit-{$this->slug}_sortable_columns",
             array($this, "wp_manage_edit_sortable_columns"));
 
@@ -147,22 +145,33 @@ abstract class GenericContentType {
         if (! empty($manage_cols))
             $manage_cols = array_combine($manage_cols, $manage_cols);
 
-        return $cols + $manage_cols;
+        $ret = $cols + $manage_cols;
+
+        // move date to end of array
+        if ( !empty($ret['date']) ) {
+            $date_val = $ret['date'];
+            unset($ret['date']);
+            $ret['date'] = $date_val;
+        }
+
+        return $ret;
     }
 
     /**
      * wp callback to display columns in overview for this post type
      */
-    public function wp_manage_edit_columns_display($column, $id) {
+    public function wp_manage_posts_custom_column($column, $id) {
         // all columns with key edit_column
         $manage_cols = array_filter($this->fields, function($col) {
-            return $col->sortable_column;
+            return $col->edit_column;
         });
         if (! isset($manage_cols[$column]))
             return;
 
-        $element = $this->element_by_wp_id($id);
-        echo $element->formatted_string($col);
+        $element = the_record($id);
+
+
+        echo $element->get($column);
     }
 
     /**
@@ -171,7 +180,7 @@ abstract class GenericContentType {
     public function wp_manage_edit_sortable_columns($cols) {
         // all columns with key edit_column
         $manage_cols = array_keys(array_filter($this->fields, function($col) {
-            return $col->edit_column;
+            return $col->sortable_column;
         }));
 
         // [$col => $col]

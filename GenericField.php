@@ -38,6 +38,8 @@ abstract class GenericField {
         if ( !empty($params->helptext) )    $this->helptext     = $params->helptext;
         if ( !empty($params->localized) && $params->localized === true ) $this->localized  = true;
 
+        if ( !empty($params->edit_column) ) $this->edit_column = $params->edit_column;
+
         if ( !empty($this->id) && empty ($parent->fields[$this->id]) ) {
             $parent->fields[$this->id] = $this;
             $this->parent   = $parent;
