@@ -17,8 +17,9 @@ abstract class GenericRelationship {
     public $table                 = NULL;
     public $helptext              = "";
 
-    public $field_to_show_in_list = "";
-    public $field_to_put_as_class = "";
+    public $field_to_show_in_list   = "";
+    public $field_to_put_as_class   = "";
+    public $field_to_lock_relation  = "";
 
     function __construct () {
         global $wpc_relationships;
@@ -546,8 +547,9 @@ $prepared_sql_limit" );
             data-src-id = "<?php echo $src_id ?>"
             data-dst-id = "<?php echo $dst_id ?>"
 
-data-field-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
-data-field-to_put-as-class = "<?php echo $this->field_to_put_as_class ?>"
+data-fields-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
+data-fields-to-put-as-class = "<?php echo $this->field_to_put_as_class ?>"
+data-field-to-lock-relation = "<?php echo $this->field_to_lock_relation ?>"
 
          data-src-label = "<?php echo $src->label ?>"
          data-dst-label = "<?php echo $dst->label ?>"

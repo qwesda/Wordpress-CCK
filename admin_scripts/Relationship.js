@@ -505,11 +505,13 @@ function set_connected_items (relation_data) {
                     result.item_metadata.post_title  = "<i>untitled</i>";
                 }
 
+
+
                 var fieldsToShowInListString    = "";
                 var fieldsToShowInListValues    = [];
 
-                if (relation_data.fieldToShowInList != "" && relation_data.fieldToShowInList != undefined) {
-                    var fieldsToShowInList          = relation_data.fieldToShowInList.split(",");
+                if (relation_data.fieldsToShowInList != "" && relation_data.fieldsToShowInList != undefined) {
+                    var fieldsToShowInList          = relation_data.fieldsToShowInList.split(",");
 
                      for (var j=0; j < fieldsToShowInList.length; j++) {
                         var field = fieldsToShowInList[j];
@@ -521,6 +523,28 @@ function set_connected_items (relation_data) {
 
                     fieldsToShowInListString = fieldsToShowInListValues.join(", ");
                 }
+
+
+                var lockRelation    = false;
+
+                if (relation_data.fieldToLockRelation != "" && relation_data.fieldToLockRelation != undefined) {
+                    var fieldToLockRelation          = relation_data.fieldToLockRelation;
+
+                    if (result.relation_metadata[fieldToLockRelation] != undefined && result.relation_metadata[fieldToLockRelation] != "") {
+                        var val = result.relation_metadata[fieldToLockRelation];
+
+                        if ( val != undefined && (
+                               val != ""
+                            && val != "0"
+                            && val != "false"
+                            && val != 0
+                            && val != false
+                        ) ) {
+                            lockRelation = true;
+                        }
+                    }
+                }
+
 
                 var fieldsToPutAsClassString    = "";
                 var fieldsToPutAsClassValues    = [];
@@ -541,7 +565,10 @@ function set_connected_items (relation_data) {
 
                 html_to_append =
                 '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'" class="' + fieldsToPutAsClassString + '"><td>'
-                +    "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> "
+                + ( !lockRelation ?
+                    "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> " :
+                    "<span class='relation_connected_item'>"+result.item_metadata.post_title+"</span> "
+                )
                 +    (result.item_metadata.post_status != "publish" ? " (<i>" + result.item_metadata.post_status + ")</i>" : "")
                 +    (fieldsToShowInListString != "" ? "<div class='connected_item_info'>"+fieldsToShowInListString+"</div>" : "")
                 + "</td></tr>\n" + html_to_append;

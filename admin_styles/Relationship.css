@@ -133,7 +133,8 @@ label.wpc_label_left {
     display: inline-block;
 }
 
-table.relation_connected_list > tbody > tr a.relation_connected_item {
+table.relation_connected_list > tbody > tr a.relation_connected_item,
+table.relation_connected_list > tbody > tr span.relation_connected_item {
 	font-weight: bold;
 	text-decoration: none;
 }
