@@ -49,9 +49,7 @@ abstract class GenericBackendPage {
         }
     }
 
-    function echo_backend_page () {
-
-    }
+    abstract function echo_backend_page ();
 }
 
 ?>
