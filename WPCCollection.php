@@ -117,6 +117,15 @@ abstract class WPCCollection {
         return ( !empty($ret) ? $ret : NULL );
     }
 
+    function last_record() {
+        $this->iterate();
+
+        if (empty($this->iterate_results))
+            return NULL;
+
+        return $this->iterate_results[count($this->iterate_results)-1];
+    }
+
     function each($fun) {
         $this->iterate();
 
