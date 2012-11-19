@@ -81,7 +81,13 @@ abstract class WPCCollection {
      * returns the count
      */
     function count () {
-        return count($this->iterate_results);
+        // shortcut, if there are already fetched results
+        if (isset($this->iterate_results))
+            return count($this->iterate_results);
+
+        $dbres = $this->sql_results('count(*)');
+        $row = mysql_fetch_array($dbres);
+        return intval($row[0]);
     }
 
     /**
@@ -100,6 +106,7 @@ abstract class WPCCollection {
 
         return $ret;
     }
+
     /**
      * gets the first result trough iterate() and next().
      */
@@ -203,10 +210,8 @@ abstract class WPCCollection {
     /**
      * returns all filtered records as array.
      */
-    function results() {
-        global $wpdb;
-
-        $sql = "SELECT * FROM $this->table AS t\n";
+    function sql_results($selectstr="*") {
+        $sql = "SELECT $selectstr FROM $this->table AS t\n";
 
         if (! empty($this->meta_table))
             $sql .= "LEFT JOIN $this->meta_table AS m
@@ -238,7 +243,11 @@ abstract class WPCCollection {
             ButterLog::error("Could not execute the following SQL.\n$sql\nmysql_error:\n".mysql_error());
             return array();
         }
+        return $dbres;
+    }
 
+    function results() {
+        $dbres = $this->sql_results();
         $res = array();
         $table_cols = array_flip($this->table_cols);
         while ($row = mysql_fetch_assoc($dbres))
