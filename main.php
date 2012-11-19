@@ -50,19 +50,19 @@ class WPCustom {
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
 
-   //     add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
-   //     add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
+        //add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
+        //add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
 
-    if ( !is_admin() ) {
-          $this->wp_enqueue_scripts();
-          $this->wp_enqueue_styles();
-    } else {
-  //    $this->admin_enqueue_scripts();
-      $this->admin_enqueue_styles();
+        if ( !is_admin() ) {
+            $this->wp_enqueue_scripts();
+            $this->wp_enqueue_styles();
+        } else {
+            //$this->admin_enqueue_scripts();
+            $this->admin_enqueue_styles();
 
-      add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
-  //    add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
-    }
+            add_action('admin_enqueue_scripts',  array($this, "admin_enqueue_scripts") );
+            //add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
+        }
 
 
 
