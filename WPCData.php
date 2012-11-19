@@ -154,7 +154,7 @@ abstract class WPCData {
     }
 
     abstract function delete();
-    abstract function commit();
+    abstract function commit($write_ro=false);
     abstract protected function load_data();
     abstract protected function load_meta();
 

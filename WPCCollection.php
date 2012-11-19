@@ -204,8 +204,6 @@ abstract class WPCCollection {
      * Note: for negative queries on the meta table, it will not list records w/o the key set.
      */
     function add_filter_($key, $val, $op="=") {
-        global $wpdb;
-
         if (in_array($key, $this->table_cols))
             $this->where[] = $this->where_clause("t.$key", $val, $op);
         else {
