@@ -7,6 +7,7 @@ $wpc_relationships = array();
 abstract class GenericRelationship {
     public $id                    = "";
     public $fields                = array();
+    public $generated_fields      = array();
 
     public $label                 = "";
 
