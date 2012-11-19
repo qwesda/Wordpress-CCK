@@ -268,6 +268,10 @@ abstract class WPCCollection {
         switch ($op) {
         case "IN":
         case "NOT IN":
+            if (!is_array($val) && !empty($val) ) {
+                $val = explode(",", $val);
+            }
+
             if (!is_array($val)) {
                 ButterLog::warn("$op needs an array. '".print_r($val)."' given");
                 return;
