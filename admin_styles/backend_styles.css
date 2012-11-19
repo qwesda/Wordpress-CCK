@@ -66,6 +66,10 @@ div.wpc_form_row div.wpc_form_field:last-of-type {
 	z-index: 0;
 }
 
+th#id_frt.manage-column.column-id_frt {
+	width: 40px;
+}
+
 label.wpc_helptext {
 	display: block;
 	color: rgba(0, 0, 0, 0.5);
