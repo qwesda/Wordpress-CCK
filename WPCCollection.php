@@ -117,6 +117,15 @@ abstract class WPCCollection {
         return ( !empty($ret) ? $ret : NULL );
     }
 
+    function each($fun) {
+        $this->iterate();
+
+        while($rec = $this->next())
+            call_user_func($fun, $rec);
+
+        return $this;
+    }
+
     /**
      * order by column or callback $c.
      * direction is either "ASC" or "DESC" for ascending or descending order. defaults to ASC.
