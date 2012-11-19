@@ -18,7 +18,7 @@ class TimeField extends GenericField {
      ?>
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"
-               class="wpc_input wpc_input_text <?php if ($this->localized) echo "wpc_localized_input";?>"
+               class="wpc_input wpc_input_time <?php if ($this->localized) echo "wpc_localized_input";?>"
                name="<?php echo "wpc_$this->id"; ?>"
                value="<?php if ( !empty($value) ) echo htmlspecialchars($value, ENT_QUOTES); ?>"
                placeholder="<?php echo $this->hint; ?>" />

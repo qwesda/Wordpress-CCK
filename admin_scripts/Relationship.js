@@ -26,7 +26,7 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
 
     } else {
         jQuery(base_id + ' > div:visible').hide();
-        jQuery(base_id + '.'+to_box_id).show();
+        jQuery(base_id + '.' + to_box_id).show();
     }
 
     switch (to_box_id) {
@@ -53,6 +53,14 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             jQuery(base_id + '.relation_connect_new_metadata_box input').first().focus();
 
             move_wpc_labels_to_rows();
+
+            try {
+                on_relation_metabox_ready();
+            } catch (err) {
+
+            }
+
+            relation_data_connect_new = relation_data;
 
             break;
         case "relation_connect_existing_box" :
@@ -124,6 +132,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                     } catch (err) {
 
                     }
+
+                    relation_data_connect_existing = relation_data;
                 }
             });
             break;
@@ -133,7 +143,7 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var object_id               = (selected_item_data.data.post_from_id != relation_data.postId ? selected_item_data.data.post_from_id : selected_item_data.data.post_to_id);
 
             var editBox                 = htmlspecialchars_decode(relation_data.editBox);
-            var itemEditBox             =  htmlspecialchars_decode(relation_data.itemUpdateEditBox);
+            var itemEditBox             = htmlspecialchars_decode(relation_data.itemUpdateEditBox);
 
             var item_metabox            = jQuery(base_id + ".relation_edit_connected_box").clone(true);
 
@@ -203,6 +213,8 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                     } catch (err) {
 
                     }
+
+                    relation_data_edit_connected = relation_data;
 
                 }
             });
@@ -788,3 +800,32 @@ function relation_setup_delegates (relation_metabox_id) {
         return false;
     });
 }
+
+jQuery(document).mouseup(function (e) {
+    var src          = jQuery(e.srcElement);
+    var is_outside   = jQuery(src).closest("tr.selected, .relation_buttons_box, .relation_connect_new_metadata_box").length == 0;
+
+    console.log("is_outside: %s", is_outside);
+
+    if ( is_outside && relation_data_connect_existing != null ) {
+        relation_connect_existing_cancel(relation_data_connect_existing);
+
+        relation_data_connect_existing = null;
+    }
+
+    if ( is_outside && relation_data_edit_connected != null ) {
+        relation_edit_connected_cancel(relation_data_edit_connected);
+
+        relation_data_edit_connected = null;
+    }
+
+    if ( is_outside && relation_data_connect_new != null ) {
+        relation_connect_new_cancel(relation_data_connect_new);
+
+        relation_data_connect_new = null;
+    }
+});
+
+var relation_data_edit_connected    = null;
+var relation_data_connect_existing  = null;
+var relation_data_connect_new       = null;
