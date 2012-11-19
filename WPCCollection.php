@@ -187,9 +187,12 @@ abstract class WPCCollection {
     }
 
     function offset($offset) {
-        $new = clone($this);
-        $new->offset = $offset;
-        return $new;
+        if ($offset > 0) {
+            $new = clone($this);
+            $new->offset = $offset;
+            return $new;
+        }
+        return $this;
     }
 
     /**
