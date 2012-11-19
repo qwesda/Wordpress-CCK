@@ -85,7 +85,7 @@ abstract class WPCCollection {
         if (isset($this->iterate_results))
             return count($this->iterate_results);
 
-        $dbres = $this->sql_results('count(*)');
+        $dbres = $this->sql_results('COUNT(*)');
         $row = mysql_fetch_array($dbres);
         return intval($row[0]);
     }
