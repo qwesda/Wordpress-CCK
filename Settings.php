@@ -35,15 +35,16 @@ class Settings extends GenericBackendPage {
     }
 
     function admin_init() {
-        wp_enqueue_style('jquery.ui.css-theme',
+/*        wp_enqueue_style('jquery.ui.css-theme',
             plugins_url('vendor/jquery-ui/smoothness.css', __FILE__),
             array(),  '1.8.16');
         wp_enqueue_script('jquery.ui.minimal',
             plugins_url('/vendor/jquery-ui/jquery.ui.minimal.js', __FILE__),
-            array('jquery'), '1.8.16');
-        wp_enqueue_script('jquery.ui.progressbar',
-            plugins_url('vendor/jquery-ui/jquery.ui.progressbar.js', __FILE__),
+            array('jquery'), '1.8.16');*/
+ /*       wp_enqueue_script('jquery-ui-progressbar');
+/*            plugins_url('vendor/jquery-ui/jquery.ui.progressbar.js', __FILE__),
             array('jquery','jquery.ui.minimal'), '1.8.16');
+            */
     }
 
     function echo_backend_page() {
@@ -56,29 +57,32 @@ class Settings extends GenericBackendPage {
         $all_types_options = join("\n", array_map(function ($type) {
             return "<option value='$type->id'>$type->label</option>";
         }, array_filter($wpc_content_types + $wpc_relationships, $filter)));
-
-        echo "<div class='wrap'>
+    ?>
+        <div class='wrap'>
             <div id='icon-$icon' class='icon32'><br /></div>
             <h2>CCK Settings</h2>
 
             <h3>Regenerate generated fields</h3>
-            <select id='wpc_regen_content_type'>
-            $all_types_options
-            </select>
-            <a href='#' class='button' id='wpc_regen_start'>Regenerate</a>
-            <div style='width: 40ex;'>
-            <div style='display: none;' id='wpc_regen_progressbar'>
-            <a href='#' id='wpc_regen_stop' style='position: absolute;'>
-            Stop</a>
+            <hgroup>
+                <select id='wpc_regen_content_type'>
+                    <?php echo $all_types_options ?>
+                </select>
+                <a href='#' class='button' id='wpc_regen_start'>Regenerate</a>
+                <a href='#' class='button' id='wpc_regen_stop' style='display: none;'>Stop</a>
+            </hgroup>
+            <div id="wpc_regen_progressbar_div" style="height:40px">
+                <progress id='wpc_regen_progressbar' min='0' max='100' value='0' style="display: none; margin: 10px 0; width: 100%"></progress>
             </div>
-            </div>
-            <ul id='wpc_regen_log'></ul>
-            ";
 
-        // set nonce
-        echo '<script type="text/javascript">
-            var wpc_regen_nonce = "'.wp_create_nonce('wpc_regen').'";
-            </script>';
+            <div id="wpc_regen_log_div" style='display: none;'>
+                <h4>Log</h4>
+                <ul id='wpc_regen_log' style="font-family: menlo,monaco,consolas,monospace"></ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var wpc_regen_nonce = "<?php echo wp_create_nonce('wpc_regen') ?>";
+        </script>
+            <?php
     }
 
     function collection_for_slug($type) {

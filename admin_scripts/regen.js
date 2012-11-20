@@ -5,7 +5,7 @@ var wpc_regen = wpc_regen || new function() {
   this.post_count;
 
   var update_progress = function(iteration) {
-    jQuery('#wpc_regen_progressbar').progressbar('value', 1+99*iteration/needed_iterations);
+    jQuery('#wpc_regen_progressbar').val(1+99*iteration/needed_iterations);
   }
 
   var process_chunk = function(iteration, last_id, type) {
@@ -50,8 +50,10 @@ var wpc_regen = wpc_regen || new function() {
   }
   this.reset_processing = function() {
     abort = false;
-    jQuery('#wpc_regen_progressbar').hide();
+    jQuery('#wpc_regen_progressbar').fadeOut();
     jQuery('#wpc_regen').show();
+    jQuery('#wpc_regen_stop').hide();
+    jQuery('#wpc_regen_start').show();
   }
 
   this.start_to_regenerate = function(type) {
@@ -60,13 +62,14 @@ var wpc_regen = wpc_regen || new function() {
       'type': type,
       'nonce': wpc_regen_nonce
     }
+
     // get count of published ids
     jQuery.post(ajaxurl, ajaxargs, function(resp_str) {
       var resp = jQuery.parseJSON(resp_str);
 
       var i = resp.errors.length;
       if (i) {
-        while(i--) {
+        while (i--) {
           jQuery('#wpc_regen_log').append('<li>'+resp.errors[i]+'</li>');
         }
         return;
@@ -76,9 +79,14 @@ var wpc_regen = wpc_regen || new function() {
         post_count = resp.post_count;
         needed_iterations = Math.ceil(post_count/chunksize);
       }
+
       jQuery('#wpc_regen').hide();
-      jQuery('#wpc_regen_progressbar').progressbar({'value': 1});
+      jQuery('#wpc_regen_progressbar').removeAttr("value");
       jQuery('#wpc_regen_progressbar').show();
+      jQuery('#wpc_regen_stop').show();
+      jQuery('#wpc_regen_start').hide();
+      jQuery('#wpc_regen_log_div').show();
+
       process_chunk (1, -1, type);
     });
   };
