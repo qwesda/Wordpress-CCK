@@ -18,7 +18,7 @@ abstract class WPCRelation extends WPCData {
         global $wpc_content_types, $wpc_relationships;
 
         $this->id = $id;
-        $this->to_type = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_to_id];
+        $this->to_type  = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_to_id];
         $this->from_type = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_from_id];
         $this->meta_keys = array_keys($wpc_relationships[$this->typeslug]->fields);
 
@@ -97,6 +97,15 @@ abstract class WPCRelation extends WPCData {
         return $this;
     }
 
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($wpc_relationships[$this->typeslug]->fields[$field_key]) )
+            $ret = $wpc_relationships[$this->typeslug]->fields[$field_key]->type;
+
+        return $ret;
+    }
+
     protected function load_data() {
         global $wpdb;
         global $wpc_relationships;
@@ -113,10 +122,6 @@ abstract class WPCRelation extends WPCData {
         $this->data['record_from'] = WPCRecord::new_record($row['post_from_id'], null, null, $this->from_type);
         $this->data['record_to'] = WPCRecord::new_record($row['post_to_id'], null, null, $this->to_type);
         $this->meta = $row;
-
-        foreach ($this->meta as $meta_key => $value) {
-            $this->meta[$meta_key] = stripslashes($value);
-        }
     }
     protected function load_meta() {
         if ($this->data === null || ! empty($this->meta_keys))

@@ -103,6 +103,15 @@ abstract class GenericContentType {
         return "";
     }
 
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($this->fields[$field_key]) )
+            $ret = $this->fields[$field_key]->type;
+
+        return $ret;
+    }
+
     public function echo_update_relation_item_metabox_str () {
         ob_start();
 

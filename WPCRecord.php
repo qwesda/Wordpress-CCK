@@ -81,6 +81,15 @@ abstract class WPCRecord extends WPCData {
         return new $classname($id, $p, $m);
     }
 
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($this->type->fields[$field_key]) )
+            $ret = $this->type->fields[$field_key]->type;
+
+        return $ret;
+    }
+
     protected function connected_for_type($other_type, $reverse) {
         return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
