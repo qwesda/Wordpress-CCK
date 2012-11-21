@@ -247,7 +247,7 @@ abstract class WPCData {
 ?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php echo substr($val, 0, 100); if (strlen($val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
         break;
       default:
-?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$value; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
+?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$val; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
         break;
     }
   }
