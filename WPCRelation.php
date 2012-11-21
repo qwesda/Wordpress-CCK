@@ -113,6 +113,10 @@ abstract class WPCRelation extends WPCData {
         $this->data['record_from'] = WPCRecord::new_record($row['post_from_id'], null, null, $this->from_type);
         $this->data['record_to'] = WPCRecord::new_record($row['post_to_id'], null, null, $this->to_type);
         $this->meta = $row;
+
+        foreach ($this->meta as $meta_key => $value) {
+            $this->meta[$meta_key] = stripslashes($value);
+        }
     }
     protected function load_meta() {
         if ($this->data === null || ! empty($this->meta_keys))
