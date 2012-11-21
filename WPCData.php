@@ -157,6 +157,7 @@ abstract class WPCData {
     abstract function commit($write_ro=false);
     abstract protected function load_data();
     abstract protected function load_meta();
+    abstract protected function get_field_type($field_key);
 
     protected function get_connected($other_type, $reverse) {
         $cahce_id = ($reverse ? "reverse_" : "") . "$other_type";
