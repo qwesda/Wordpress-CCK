@@ -90,6 +90,28 @@ class WPCRelationCollection extends WPCCollection {
         return $ret;
     }
 
+    function next_relation () {
+        $next_relation = parent::next();
+        $item   = null;
+        $ret    = null;
+
+
+        if (!empty($next_relation)) {
+            if ($this->db_is_reverse)   $item = $next_relation->record_from;
+            else                        $item = $next_relation->record_to;
+
+            if(!empty($item)) {
+                if ($item->post_status != "publish") {
+                    return $this->next();
+                }
+            }
+
+            $ret = $next_relation;
+        }
+
+        return $ret;
+    }
+
     function row_to_relation ($record) {
         global $wpc_relationships;
 
