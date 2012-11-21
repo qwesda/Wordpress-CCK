@@ -76,7 +76,6 @@ class WPCRelationCollection extends WPCCollection {
 
 
         if (!empty($next_relation)) {
-
             if ($this->db_is_reverse)   $ret = $next_relation->record_from;
             else                        $ret = $next_relation->record_to;
 
@@ -102,7 +101,7 @@ class WPCRelationCollection extends WPCCollection {
 
             if(!empty($item)) {
                 if ($item->post_status != "publish") {
-                    return $this->next();
+                    return $this->next_relation();
                 }
             }
 
