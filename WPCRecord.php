@@ -145,11 +145,15 @@ abstract class WPCRecord extends WPCData {
         if ($this->id === null)
             return;
 
-        $table = $this->type->table;
-        $wpid_col = $this->type->wpid_col;
-        $stmt = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;",
-            $this->id);
+        $table      = $this->type->table;
+        $wpid_col   = $this->type->wpid_col;
+        $stmt       = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;", $this->id);
+
         $this->meta = $wpdb->get_row($stmt, 'ARRAY_A');
+
+        foreach ($this->meta as $meta_key => $value) {
+            $this->meta[$meta_key] = stripslashes($value);
+        }
     }
     protected function load_data() {
         if ($this->id === null)
