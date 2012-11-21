@@ -96,10 +96,15 @@ abstract class WPCData {
             return $this->meta[$attribute];
 
         if (isset($this->meta[$attribute])) {
-            if (is_array($this->meta[$attribute]) && ! empty($this->meta[$attribute]))
-                return $this->meta[$attribute][0];
+            $field_type = $this->get_field_type($attribute);
+            $content    = $this->meta[$attribute];
 
-            return $this->meta[$attribute];
+            if ($field_type == "RichTextField") {
+                $content = apply_filters('the_content', $content);
+                $content = str_replace(']]>', ']]&gt;', $content);
+            }
+
+            return $content;
         }
 
         if (isset($this->data[$attribute]))
