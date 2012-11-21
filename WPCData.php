@@ -65,14 +65,30 @@ abstract class WPCData {
     function __get($attribute) {
         return $this->get($attribute);
     }
+    function get_plain($attribute) {
+        if ($attribute === "id")
+            return $this->id;
+
+        if (empty($this->data))
+            $this->load_data();
+
+        if (empty($this->meta))
+            $this->load_meta();
+
+        if (isset($this->meta[$attribute]))
+            return $this->meta[$attribute];
+
+        if (isset($this->data[$attribute]))
+            return $this->data[$attribute];
+    }
 
     function get($attribute) {
         if ($attribute === "id")
             return $this->id;
 
-        if (empty($this->data)) {
+        if (empty($this->data))
             $this->load_data();
-        }
+
         if (empty($this->meta))
             $this->load_meta();
 
