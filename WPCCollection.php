@@ -335,7 +335,7 @@ abstract class WPCCollection {
             // $key $op is already enought. no need to specify the value
             break;
         default:
-            if (! in_array($op, array("=", "!=", "<=>","<","<=",">","=>"))) {
+            if (! in_array($op, array("=", "!=", "<=>","<","<=",">",">="))) {
                 ButterLog::warn("operator is not valid: $op");
                 return;
             }
