@@ -65,6 +65,15 @@ abstract class GenericRelationship {
         }
     }
 
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($this->fields[$field_key]) )
+            $ret = $this->fields[$field_key]->type;
+
+        return $ret;
+    }
+
     static function echo_relations_metabox ($post) {
         include("metaboxes/relations_metabox.php");
     }

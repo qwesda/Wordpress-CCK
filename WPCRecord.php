@@ -81,6 +81,15 @@ abstract class WPCRecord extends WPCData {
         return new $classname($id, $p, $m);
     }
 
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($this->type->fields[$field_key]) )
+            $ret = $this->type->fields[$field_key]->type;
+
+        return $ret;
+    }
+
     protected function connected_for_type($other_type, $reverse) {
         return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
@@ -145,11 +154,15 @@ abstract class WPCRecord extends WPCData {
         if ($this->id === null)
             return;
 
-        $table = $this->type->table;
-        $wpid_col = $this->type->wpid_col;
-        $stmt = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;",
-            $this->id);
+        $table      = $this->type->table;
+        $wpid_col   = $this->type->wpid_col;
+        $stmt       = $wpdb->prepare("SELECT * FROM $table WHERE $wpid_col = %d;", $this->id);
+
         $this->meta = $wpdb->get_row($stmt, 'ARRAY_A');
+
+        foreach ($this->meta as $meta_key => $value) {
+            $this->meta[$meta_key] = stripslashes($value);
+        }
     }
     protected function load_data() {
         if ($this->id === null)

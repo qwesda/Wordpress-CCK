@@ -65,14 +65,30 @@ abstract class WPCData {
     function __get($attribute) {
         return $this->get($attribute);
     }
+    function get_plain($attribute) {
+        if ($attribute === "id")
+            return $this->id;
+
+        if (empty($this->data))
+            $this->load_data();
+
+        if (empty($this->meta))
+            $this->load_meta();
+
+        if (isset($this->meta[$attribute]))
+            return $this->meta[$attribute];
+
+        if (isset($this->data[$attribute]))
+            return $this->data[$attribute];
+    }
 
     function get($attribute) {
         if ($attribute === "id")
             return $this->id;
 
-        if (empty($this->data)) {
+        if (empty($this->data))
             $this->load_data();
-        }
+
         if (empty($this->meta))
             $this->load_meta();
 
@@ -80,10 +96,15 @@ abstract class WPCData {
             return $this->meta[$attribute];
 
         if (isset($this->meta[$attribute])) {
-            if (is_array($this->meta[$attribute]) && ! empty($this->meta[$attribute]))
-                return $this->meta[$attribute][0];
+            $field_type = $this->get_field_type($attribute);
+            $content    = $this->meta[$attribute];
 
-            return $this->meta[$attribute];
+            if ($field_type == "RichTextField") {
+                $content = apply_filters('the_content', $content);
+                $content = str_replace(']]>', ']]&gt;', $content);
+            }
+
+            return $content;
         }
 
         if (isset($this->data[$attribute]))
@@ -157,6 +178,7 @@ abstract class WPCData {
     abstract function commit($write_ro=false);
     abstract protected function load_data();
     abstract protected function load_meta();
+    abstract protected function get_field_type($field_key);
 
     protected function get_connected($other_type, $reverse) {
         $cahce_id = ($reverse ? "reverse_" : "") . "$other_type";
@@ -247,7 +269,7 @@ abstract class WPCData {
 ?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php echo substr($val, 0, 100); if (strlen($val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
         break;
       default:
-?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$value; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
+?><tr><td><span class="var_name"><?php echo $key ?></span> <span class="var_type"><?php echo $type ?></span></td><td><?php $str_val = (string)$val; echo substr($str_val, 0, 100); if (strlen($str_val) > 100) echo "<span class='var_ellipsis'>...</span>" ?></td></tr><?php
         break;
     }
   }

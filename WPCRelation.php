@@ -18,7 +18,7 @@ abstract class WPCRelation extends WPCData {
         global $wpc_content_types, $wpc_relationships;
 
         $this->id = $id;
-        $this->to_type = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_to_id];
+        $this->to_type  = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_to_id];
         $this->from_type = $wpc_content_types[$wpc_relationships[$this->typeslug]->post_type_from_id];
         $this->meta_keys = array_keys($wpc_relationships[$this->typeslug]->fields);
 
@@ -95,6 +95,15 @@ abstract class WPCRelation extends WPCData {
         $this->meta = null;
 
         return $this;
+    }
+
+    protected function get_field_type ($field_key) {
+        $ret = "";
+
+        if ( !empty($wpc_relationships[$this->typeslug]->fields[$field_key]) )
+            $ret = $wpc_relationships[$this->typeslug]->fields[$field_key]->type;
+
+        return $ret;
     }
 
     protected function load_data() {

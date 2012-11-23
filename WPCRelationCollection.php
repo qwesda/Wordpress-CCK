@@ -76,7 +76,6 @@ class WPCRelationCollection extends WPCCollection {
 
 
         if (!empty($next_relation)) {
-
             if ($this->db_is_reverse)   $ret = $next_relation->record_from;
             else                        $ret = $next_relation->record_to;
 
@@ -85,6 +84,28 @@ class WPCRelationCollection extends WPCCollection {
                     return $this->next();
                 }
             }
+        }
+
+        return $ret;
+    }
+
+    function next_relation () {
+        $next_relation = parent::next();
+        $item   = null;
+        $ret    = null;
+
+
+        if (!empty($next_relation)) {
+            if ($this->db_is_reverse)   $item = $next_relation->record_from;
+            else                        $item = $next_relation->record_to;
+
+            if(!empty($item)) {
+                if ($item->post_status != "publish") {
+                    return $this->next_relation();
+                }
+            }
+
+            $ret = $next_relation;
         }
 
         return $ret;
