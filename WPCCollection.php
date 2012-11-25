@@ -201,7 +201,6 @@ abstract class WPCCollection {
     function filter($key, $val, $op="=", $printf = "%s") {
         $new = clone($this);
         $new->add_filter_($key, $val, $op, $printf);
-        _log($printf);
 
         return $new;
     }
