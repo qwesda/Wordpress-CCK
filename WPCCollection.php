@@ -198,9 +198,10 @@ abstract class WPCCollection {
     /**
      * returns a new instance, filtered by the filter. see add_filter_ for documentation.
      */
-    function filter($key, $val, $op="=") {
+    function filter($key, $val, $op="=", $printf = "%s") {
         $new = clone($this);
-        $new->add_filter_($key, $val, $op);
+        $new->add_filter_($key, $val, $op, $printf);
+        _log($printf);
 
         return $new;
     }
@@ -215,13 +216,13 @@ abstract class WPCCollection {
      *
      * Note: for negative queries on the meta table, it will not list records w/o the key set.
      */
-    function add_filter_($key, $val, $op="=") {
+    function add_filter_($key, $val, $op="=", $printf = "%s") {
         if ($key == 'id')
-            $this->where[] = $this->where_clause("t.$this->table_pk", $val, $op);
+            $this->where[] = $this->where_clause("t.$this->table_pk", $val, $op, $printf);
         elseif (in_array($key, $this->table_cols))
-            $this->where[] = $this->where_clause("t.$key", $val, $op);
+            $this->where[] = $this->where_clause("t.$key", $val, $op, $printf);
         else {
-            $this->where[] = $this->where_clause("m.$key", $val, $op);
+            $this->where[] = $this->where_clause("m.$key", $val, $op, $printf);
         }
 
         // invalidate iterate_results
@@ -255,6 +256,8 @@ abstract class WPCCollection {
                 $sql.= "OFFSET $this->offset";
         }
         $sql.= ";";
+
+        _log($sql);
 
         $res = array();
 
@@ -290,7 +293,7 @@ abstract class WPCCollection {
     /**
      * returns a where clause (without "WHERE")
      */
-    protected function where_clause($key, $val, $op) {
+    protected function where_clause($key, $val, $op, $printf = "%s") {
         global $wpdb;
 
         $filter = "$key $op ";
@@ -307,7 +310,7 @@ abstract class WPCCollection {
                 return;
             }
             $c = count($val);
-            $filter = $wpdb->prepare($filter."( ".str_repeat("%s, ", $c-1)."%s )", $val);
+            $filter = $wpdb->prepare($filter."( ".str_repeat("%s, ", $c-1)."$printf )", $val);
             break;
         case "BETWEEN":
         case "NOT BETWEEN":
@@ -315,7 +318,7 @@ abstract class WPCCollection {
                 ButterLog::warn("$op needs an array of length 2. '".print_r($val)."' given");
                 return;
             }
-            $filter = $wpdb->prepare($filter."%s AND %s", $val);
+            $filter = $wpdb->prepare($filter."$printf AND $printf", $val);
             break;
         case "IS":
         case "IS NOT":
@@ -325,6 +328,9 @@ abstract class WPCCollection {
                 return;
             }
             $filter.= $val;
+            break;
+        case "!==":
+            $filter = $wpdb->prepare("$key != $printf OR $key IS NULL", $val);
             break;
         case "LIKE":
         case "NOT LIKE":
@@ -339,7 +345,7 @@ abstract class WPCCollection {
                 ButterLog::warn("operator is not valid: $op");
                 return;
             }
-            $filter = $wpdb->prepare($filter."%s", $val);
+            $filter = $wpdb->prepare($filter."$printf", $val);
         }
         return $filter;
     }

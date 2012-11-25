@@ -47,7 +47,7 @@ class WPCRecordCollection extends WPCCollection {
 
         $records = new $classname();
 
-		$records = $records->filter("post_type", $type);
+    $records = $records->filter("post_type", $type);
 
         if ($id !== null)
             $records = $records->id_is($id);
@@ -74,9 +74,9 @@ class WPCRecordCollection extends WPCCollection {
         return $this->filter("id", $id);
     }
 
-    function add_filter_($key, $val, $op="=") {
+    function add_filter_($key, $val, $op="=", $printf = "%s") {
         $key = strtolower($key);
-        parent::add_filter_($key, $val, $op);
+        parent::add_filter_($key, $val, $op, $printf);
     }
 }
 ?>
