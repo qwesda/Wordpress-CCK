@@ -111,8 +111,7 @@ abstract class WPCRecord extends WPCData {
         if ($this->id === null)
             return;
 
-        // do not return self, but whether it worked or not.
-        return $this->type->delete_post($this->id);
+        return (bool) wp_delete_post($this->id, true);
     }
 
     function commit ($write_ro = null) {
