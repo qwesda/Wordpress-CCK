@@ -44,11 +44,13 @@ function _ping ($amount = 1){
         $parent_scope->line     = isset($parent_scope->line)        ? $parent_scope->line       : '';
         $parent_scope->file     = isset($parent_scope->file)        ? $parent_scope->file       : '';
 
-        _log("$parent_scope->class::$parent_scope->function ($parent_scope->line -> $parent_scope->file)");
+        $msg = "$parent_scope->class::$parent_scope->function ($parent_scope->line -> $parent_scope->file)";
+
+        _log($msg);
     }
 }
 
-function _log (&$var){
+function _log ($var){
     if (WP_DEBUG === true){
         if (is_array($var) || is_object($var)){
             error_log(print_r($var, true));
