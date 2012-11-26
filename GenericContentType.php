@@ -341,16 +341,24 @@ abstract class GenericContentType {
         $post_type      = $this->id;
         $post_parent    = 0;
 
-        if ( empty($to_update["post_slug"]) && !empty($this->generated_values["post_title"]) ) {
-            $to_update["post_name"]     = wp_unique_post_slug(
-                                            sanitize_title(str_replace("/", "-", $to_update["post_title"])),
-                                            $post_id,
-                                            $post_status,
-                                            $post_type,
-                                            $post_parent
-                                        );
-            $field_formats["post_name"] = "%s";
+        if ( empty($to_update["post_title"]) ) {
+            if ( !empty($this->generated_values["post_name"]) )         $unsanatized_post_slug = $to_update["post_name"];
+            elseif ( !empty($this->generated_values["post_title"]) )    $unsanatized_post_slug = $to_update["post_title"];
+
+            if ( !empty($unsanatized_post_slug) ) {
+                $to_update["post_name"]     = wp_unique_post_slug(
+                                                sanitize_title(str_replace("/", "-", $unsanatized_post_slug)),
+                                                $post_id,
+                                                $post_status,
+                                                $post_type,
+                                                $post_parent
+                                            );
+
+                $field_formats["post_name"] = "%s";
+                _log($to_update["post_name"]);
+            }
         }
+
         $this->update_dbs($post_id, $to_update, $field_formats);
     }
 
