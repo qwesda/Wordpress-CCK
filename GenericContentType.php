@@ -325,12 +325,8 @@ abstract class GenericContentType {
         $to_update = array_filter(array_intersect_key(wp_parse_args(
             array_filter($wpcpost), $field_defaults), $candidate_fields));
 
-        if (empty($to_update)) {
-            #ButterLog::debug("Nothing to save for post $post_id.");
-            return;
-        }
-
-        $this->update_dbs($post_id, $to_update, $field_formats);
+        if (! empty($to_update))
+            $this->update_dbs($post_id, $to_update, $field_formats);
 
         // regenerate GeneratedValues
         $to_update = array_map(function ($field) use ($post_id) {
