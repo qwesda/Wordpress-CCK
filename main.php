@@ -466,7 +466,7 @@ class WPCustom {
 
         $post_type = get_post_type();
 
-        if ( !empty($post_type) && !empty($wpc_content_types[$post_type]) ){
+        if ( !empty($post_type) && !is_archive() && !empty($wpc_content_types[$post_type]) ){
             $type = $wpc_content_types[$post_type];
 
             if ( !empty($type->menu_item_url) ) {
