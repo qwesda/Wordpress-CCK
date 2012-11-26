@@ -256,7 +256,7 @@ abstract class WPCCollection {
         }
         $sql.= ";";
 
-        _log($sql);
+        #_log($sql);
 
         $res = array();
 
