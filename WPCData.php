@@ -179,7 +179,7 @@ abstract class WPCData {
     }
 
     abstract function delete();
-    abstract function commit($write_ro=false);
+    abstract function commit($write_ro=false, $write_wo_change=false);
     abstract protected function load_data();
     abstract protected function load_meta();
     abstract protected function get_field_type($field_key);

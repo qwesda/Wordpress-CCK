@@ -114,7 +114,7 @@ abstract class WPCRecord extends WPCData {
         return (bool) wp_delete_post($this->id, true);
     }
 
-    function commit ($write_ro = null) {
+    function commit ($write_ro = null, $write_wo_change=false) {
         global $wpc_content_types;
 
         $write_ro = $write_ro === null? $this->write_ro : $write_ro;
@@ -125,14 +125,14 @@ abstract class WPCRecord extends WPCData {
             $this->data_to_update = array();
             $this->meta_to_update = array();
         } else {
-            if (! empty($this->data_to_update)) {
+            if (! empty($this->data_to_update) || $write_wo_change) {
                 $post_data = array('ID' => $this->id) + $this->data_to_update;
                 wp_update_post($post_data);
 
                 $this->data_to_update = array();
             }
 
-            if (! empty($this->meta_to_update)) {
+            if (! empty($this->meta_to_update) || $write_wo_change) {
                 $this->type->update_post($this->id, array(),
                     $this->meta_to_update, $write_ro);
 
