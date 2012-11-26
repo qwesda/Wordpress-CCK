@@ -104,6 +104,12 @@ abstract class WPCData {
                 $content = str_replace(']]>', ']]&gt;', $content);
             }
 
+            if ($field_type == "TextAreaField") {
+                $content = preg_replace('/[\n\r]+/', '<br>', $content);
+
+                _log($content);
+            }
+
             return $content;
         }
 
