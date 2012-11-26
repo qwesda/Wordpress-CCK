@@ -258,8 +258,6 @@ abstract class WPCCollection {
 
         #_log($sql);
 
-        $res = array();
-
         $dbres = mysql_query($sql);
         if (! $dbres) {
             // XXX: this should display an error (_error function needed?)
@@ -271,6 +269,9 @@ abstract class WPCCollection {
 
     function results() {
         $dbres = $this->sql_results();
+        if (! $dbres)
+            return array();
+
         $res = array();
         $table_cols = array_flip($this->table_cols);
         while ($row = mysql_fetch_assoc($dbres))
