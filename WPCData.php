@@ -106,8 +106,6 @@ abstract class WPCData {
 
             if ($field_type == "TextAreaField") {
                 $content = preg_replace('/[\n\r]+/', '<br>', $content);
-
-                _log($content);
             }
 
             return $content;
