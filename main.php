@@ -425,7 +425,7 @@ class WPCustom {
     static function nav_menu_set_current($items, $menu, $args) {
         global $post;
 
-        if (! $post)
+        if ( !$post )
             return $items;
 
         $post_type = get_post_type();
@@ -433,11 +433,11 @@ class WPCustom {
         if ($post_type == 'page')
             return $items;
 
-        $ancestor_ids = array();
-        $parent_ids = array();
+        $ancestor_ids   = array();
+        $parent_ids     = array();
 
         foreach ($items as &$nav_item)
-            if (self::menu_is_current_nav_item ($nav_item->ID)) {
+            if (self::menu_is_current_nav_item ($nav_item)) {
                 $nav_item->classes[] = 'current-menu-item';
                 $nav_item->classes[] = 'current-menu-item';
                 $ancestor_id = $nav_item->ID;
@@ -449,6 +449,7 @@ class WPCustom {
                 $parent_ids[] = (int) $nav_item->menu_item_parent;
             }
 
+
         if (! empty($ancestor_ids))
             foreach ($items as &$nav_item)
                 if (in_array($nav_item->ID, $ancestor_ids)) {
@@ -456,26 +457,26 @@ class WPCustom {
                     if (in_array($nav_item->ID, $parent_ids))
                         $nav_item->classes[] = 'current-menu-parent';
                 }
+
         return $items;
     }
-    static function menu_is_current_nav_item($nav_item_id) {
+    static function menu_is_current_nav_item($nav_item) {
         global $post;
+        global $wpc_content_types;
 
         $post_type = get_post_type();
 
-        // the options to look for the nav_page for. first comes first.
-        $nav_page_for_options = array ();
+        if ( !empty($post_type) && !empty($wpc_content_types[$post_type]) ){
+            $type = $wpc_content_types[$post_type];
 
-        if(!empty($post))       array_push($nav_page_for_options, 'wpc_nav_page_for_post_'.$post->ID);
-        if(!empty($post_type))  array_push($nav_page_for_options, 'wpc_nav_page_for_type_'.$post_type);
+            if ( !empty($type->menu_item_url) ) {
+                $type_menu_url  = home_url($type->menu_item_url);
+                $nav_item_url   = preg_replace("/\/$/", "", $nav_item->url);
 
-
-        foreach ($nav_page_for_options as $option) {
-            $the_nav_id = get_option($option);
-
-            if ($nav_item_id == $the_nav_id)
-                return true;
+                return $type_menu_url == $nav_item_url;
+            }
         }
+
         return false;
     }
 

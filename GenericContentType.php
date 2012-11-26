@@ -18,6 +18,8 @@ abstract class GenericContentType {
     public $menu_position       = 5;
     public $show_in_menu        = true;
 
+    public $menu_item_url       = "";
+
     protected $is_first_metabox   = true;
 
     // is this still neccessary?
