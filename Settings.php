@@ -134,7 +134,7 @@ class Settings extends GenericBackendPage {
                     ->filter('id', $last_id, '>')
                     ->limit($limit)
                     ->each(function ($rec) {
-                        $rec->commit();
+                        $rec->commit(null, true);
                     })->last_record();
                 $ret['last_id'] = intval($record? $record->id : -1);
             } else
