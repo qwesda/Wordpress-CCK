@@ -80,7 +80,7 @@ class WPCRelationCollection extends WPCCollection {
             else                        $ret = $next_relation->record_to;
 
             if(!empty($ret)) {
-                if ($ret->post_status != "publish") {
+                if ($ret->post_status != "publish" && $ret->post_status != "without_public_page") {
                     return $this->next();
                 }
             }
@@ -100,7 +100,7 @@ class WPCRelationCollection extends WPCCollection {
             else                        $item = $next_relation->record_to;
 
             if(!empty($item)) {
-                if ($item->post_status != "publish") {
+                if ($item->post_status != "publish" && $item->post_status != "without_public_page") {
                     return $this->next_relation();
                 }
             }

@@ -42,6 +42,8 @@ class WPCustom {
         add_filter('the_content',           array($this, 'the_content') );
         add_action('wp_insert_post_data',   array($this, 'wp_insert_post_data'), 10, 2);
 
+        add_filter('display_post_states',   array($this, 'display_post_states') );
+
         new Settings();
     }
 
@@ -66,7 +68,14 @@ class WPCustom {
             //add_action('admin_enqueue_styles',  array($this, "admin_enqueue_styles") );
         }
 
-
+        register_post_status( 'without_public_page', array(
+            'label' => "Without Public Page",
+            'public' => false,
+            'exclude_from_search' => true,
+            'show_in_admin_all_list' => true,
+            'show_in_admin_status_list' => true,
+            'label_count'               => _n_noop( 'Without Public Page <span class="count">(%s)</span>', 'Without Public Page <span class="count">(%s)</span>' ),
+        ) );
 
 //  LOAD HELPERS
         foreach (glob($theme_dir . "/helpers/*.php") as $filename) {
@@ -146,6 +155,16 @@ class WPCustom {
         }
     }
 
+    function display_post_states( $states ) {
+        global $post;
+
+        if ( get_post_status($post->ID) == "without_public_page" ) {
+            $states[] = "without public page";
+        }
+
+        return $states;
+    }
+
     function save_post ($post_id, $post) {
         global $_POST;
         global $wpc_content_types;
@@ -156,9 +175,13 @@ class WPCustom {
         $type = $wpc_content_types[$post->post_type];
 
         $postmeta = array();
-        foreach ($_POST as $key => $value)
+        foreach ($_POST as $key => $value) {
             if (strpos($key, 'wpc_') === 0)
                 $postmeta[substr($key, 4)] = $value;
+            if ($key == "post_status")
+                $postmeta[$key] = $value;
+
+        }
 
         if ($this->post_is_updated) {
             $this->post_is_updated = false;
