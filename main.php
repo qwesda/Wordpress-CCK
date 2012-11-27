@@ -492,8 +492,15 @@ class WPCustom {
         if ( !empty($post_type) && !is_archive() && !empty($wpc_content_types[$post_type]) ){
             $type = $wpc_content_types[$post_type];
 
-            if ( !empty($type->menu_item_url) ) {
-                $type_menu_url  = home_url($type->menu_item_url);
+            if ( !empty($type->menu_item_url) )
+                $type_menu_url  = $type->menu_item_url;
+            else {
+                $r = the_record();
+                $type_menu_url  = $r->menu_item_url;
+            }
+
+            if ( !empty($type_menu_url) ) {
+                $type_menu_url  = home_url($type_menu_url);
                 $nav_item_url   = preg_replace("/\/$/", "", $nav_item->url);
 
                 return $type_menu_url == $nav_item_url;
