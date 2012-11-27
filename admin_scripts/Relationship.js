@@ -42,7 +42,7 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var itemEditBox             = htmlspecialchars_decode(relation_data.itemNewEditBox);
 
             var info_text               =
-              "<h3>Add new " + relation_data.srcSingularLabel + "</h3>" + (editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
+              "<h3>Add new " + relation_data.dstSingularLabel + "</h3>" + (editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
             + ( itemEditBox != ""   ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
             + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
             + "</div>" : "");
