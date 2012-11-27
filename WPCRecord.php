@@ -159,7 +159,7 @@ abstract class WPCRecord extends WPCData {
 
         $this->meta = $wpdb->get_row($stmt, 'ARRAY_A');
 
-        foreach ($this->meta as $meta_key => $value) {
+        if ($this->meta) foreach ($this->meta as $meta_key => $value) {
             $this->meta[$meta_key] = stripslashes($value);
         }
     }
