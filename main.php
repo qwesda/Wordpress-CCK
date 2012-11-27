@@ -70,7 +70,7 @@ class WPCustom {
 
         register_post_status( 'without_public_page', array(
             'label' => "Without Public Page",
-            'public' => false,
+            'public' => true,
             'exclude_from_search' => true,
             'show_in_admin_all_list' => true,
             'show_in_admin_status_list' => true,
