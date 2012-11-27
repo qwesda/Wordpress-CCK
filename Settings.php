@@ -130,7 +130,6 @@ class Settings extends GenericBackendPage {
 
             if ($collection = $this->collection_for_slug($type)) {
                 $record = $collection
-                    ->filter('post_status', 'publish')
                     ->filter('id', $last_id, '>')
                     ->limit($limit)
                     ->each(function ($rec) {
