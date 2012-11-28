@@ -81,6 +81,10 @@ div.wpc_relation_helptext {
 	color: #777;
 }
 
+div.relation_connect_new_metadata_box {
+	min-height: 400px;
+}
+
 div.relation_edit_box div.status-update {
 	position: absolute;
 	padding: 4px 8px;

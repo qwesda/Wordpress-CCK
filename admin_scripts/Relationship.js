@@ -42,10 +42,10 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             var itemEditBox             = htmlspecialchars_decode(relation_data.itemNewEditBox);
 
             var info_text               =
-              "<h3>Add new " + relation_data.dstSingularLabel + "</h3>" + (editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( itemEditBox != ""   ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
-            + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
-            + "</div>" : "");
+              "<h3>Add new " + relation_data.dstSingularLabel + "</h3>" + "<div class='padding_box'>"
+            + ( itemEditBox != ""   ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>No Editable Item Metadata</label></div>")
+            + ( editBox != ""       ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>No Editable Relation Metadata</label></div>")
+            + "</div>";
 
             jQuery(base_id + '.relation_connect_new_metadata_box').empty().append(info_text);
 
@@ -80,10 +80,10 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.find(".relation_buttons_box").appendTo(base_id + ".relation_add_search_box th");
             item_metabox.show();
 
-            var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
-            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
-            + "</div>" : "";
+            var info_text               = "<div class='padding_box'>"
+            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>No Editable Item Metadata</label></div>")
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>No Editable Relation Metadata</label></div>")
+            + "</div>";
 
             var data = {
                     action  : "get_post_metadata",
@@ -121,8 +121,10 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                     for (var metadata_key in item_metadata){
                         var input_id    = '#wpc_'+relation_data.srcId+'_field_'+metadata_key;
                         var input_val   = item_metadata[metadata_key];
+                        var input       = jQuery(input_id);
 
-                        jQuery(input_id).val(input_val);
+                        if ( !input.is(':checkbox'))    input.val(input_val);
+                        else                            input.attr('checked', (input_val == true || input_val == 1 || input_val == "1" || input_val == "true" || input_val == 1) );
                     }
 
                     move_wpc_labels_to_rows();
@@ -152,10 +154,10 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
             item_metabox.find(".relation_buttons_box").appendTo(base_id + ".relation_connected_box th");
             item_metabox.show();
 
-            var info_text               = editBox != "" || itemEditBox != "" ? "<div class='padding_box'>"
-            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
-            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "")
-            + "</div>" : "";
+            var info_text               = "<div class='padding_box'>"
+            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>No Editable Item Metadata</label></div>")
+            + ( editBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + editBox + "</div>" : "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>No Editable Relation Metadata</label></div>")
+            + "</div>";
 
             var data = {
                     action  : "get_post_metadata",
@@ -181,7 +183,6 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                 success: function (data) {
                     var item_metadata = data.results;
 
-
                     item_metabox.find('.relation_edit_connected_metadata_box').empty().append(info_text);
 
                     jQuery("<table class='relation_metadata'>"
@@ -195,15 +196,19 @@ function goto_box (relation_data, to_box_id, from_box_id, direction) {
                     for (var metadata_key in selected_item_data.data.relation_metadata){
                         var input_id    = '#wpc_'+relation_data.relId+'_field_'+metadata_key;
                         var input_val   = selected_item_data.data.relation_metadata[metadata_key];
+                        var input       = jQuery(input_id);
 
-                        jQuery(input_id).val(input_val);
+                        if ( !input.is(':checkbox'))    input.val(input_val);
+                        else                            input.attr('checked', (input_val == true || input_val == 1 || input_val == "1" || input_val == "true" || input_val == 1) );
                     }
 
                     for (var metadata_key in item_metadata){
                         var input_id    = '#wpc_'+relation_data.srcId+'_field_'+metadata_key;
                         var input_val   = item_metadata[metadata_key];
+                        var input       = jQuery(input_id);
 
-                        jQuery(input_id).val(input_val);
+                        if ( !input.is(':checkbox'))    input.val(input_val);
+                        else                            input.attr('checked', (input_val == true || input_val == 1 || input_val == "1" || input_val == "true" || input_val == 1) );
                     }
 
                     move_wpc_labels_to_rows();
@@ -264,21 +269,8 @@ function relation_edit_connected_update (relation_data) {
             item_metadata       : {}
         };
 
-    for (var i = relation_metadata_fields.length - 1; i >= 0; i--) {
-        var relation_metadata_field = jQuery(relation_metadata_fields[i]);
-
-        metadata_key = relation_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
-
-        data.relation_metadata[metadata_key] = htmlspecialchars( relation_metadata_field.val(), 3);
-    };
-
-    for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
-        var item_metadata_field = jQuery(item_metadata_fields[i]);
-
-        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
-
-        data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
-    };
+    data.relation_metadata  = getInputData(relation_data, relation_metadata_fields);
+    data.item_metadata      = getInputData(relation_data, item_metadata_fields);
 
     jQuery.ajax({
         url: ajaxurl,
@@ -364,22 +356,8 @@ function relation_connect_existing_add (relation_data) {
             item_metadata       : {}
         };
 
-    for (var i = relation_metadata_fields.length - 1; i >= 0; i--) {
-        var relation_metadata_field = jQuery(relation_metadata_fields[i]);
-
-        metadata_key = relation_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
-
-        data.relation_metadata[metadata_key] = htmlspecialchars( relation_metadata_field.val(), 3);
-    };
-
-    for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
-        var item_metadata_field = jQuery(item_metadata_fields[i]);
-
-        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
-
-        data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
-    };
-
+    data.relation_metadata  = getInputData(relation_data, relation_metadata_fields);
+    data.item_metadata      = getInputData(relation_data, item_metadata_fields);
 
     jQuery.ajax({
         url: ajaxurl,
@@ -517,8 +495,6 @@ function set_connected_items (relation_data) {
                     result.item_metadata.post_title  = "<i>untitled</i>";
                 }
 
-
-
                 var fieldsToShowInListString    = "";
                 var fieldsToShowInListValues    = [];
 
@@ -528,8 +504,15 @@ function set_connected_items (relation_data) {
                      for (var j=0; j < fieldsToShowInList.length; j++) {
                         var field = fieldsToShowInList[j];
 
-                        if (result.relation_metadata[field] != undefined && result.relation_metadata[field] != "") {
-                            fieldsToShowInListValues.push( result.relation_metadata[field] );
+                        if (field.substr(0,11) != "other-item-") {
+                            if (result.relation_metadata[field] != undefined && result.relation_metadata[field] != "") {
+                                fieldsToShowInListValues.push( result.relation_metadata[field] );
+                            }
+                        } else {
+                            field = field.substr(11);
+                            if (result.item_metadata[field] != undefined && result.item_metadata[field] != "") {
+                                fieldsToShowInListValues.push( result.item_metadata[field] );
+                            }
                         }
                     }
 
@@ -602,6 +585,23 @@ function set_connected_items (relation_data) {
         }
     });
 }
+
+
+function getInputData (relation_data, input_elements) {
+    var data = {};
+
+    for (var i=0; i < input_elements.length; i++) {
+        var input_element = jQuery(input_elements[i]);
+
+        data_key = input_element.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
+
+        if( !input_element.is(':checkbox') )    data[data_key] = htmlspecialchars( input_element.val(), 3);
+        else                                    data[data_key] = input_element.is(':checked') ? 1 : 0;
+    };
+
+    return data;
+}
+
 function relation_connect_new_add (relation_data) {
     var base_id             = ".relation_edit_box." + relation_data.relId + " ";
 
@@ -622,22 +622,8 @@ function relation_connect_new_add (relation_data) {
         data.to_id = relation_data.postId;
     }
 
-    for (var i = relation_metadata_fields.length - 1; i >= 0; i--) {
-        var relation_metadata_field = jQuery(relation_metadata_fields[i]);
-
-        metadata_key = relation_metadata_field.attr('id').replace(relation_data.relId+"_", "").replace("wpc_field_", "");
-
-        data.relation_metadata[metadata_key] = htmlspecialchars( relation_metadata_field.val(), 3);
-    };
-
-    for (var i = item_metadata_fields.length - 1; i >= 0; i--) {
-        var item_metadata_field = jQuery(item_metadata_fields[i]);
-
-        metadata_key = item_metadata_field.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
-
-        data.item_metadata[metadata_key] = htmlspecialchars( item_metadata_field.val(), 3);
-    };
-
+    data.relation_metadata  = getInputData(relation_data, relation_metadata_fields);
+    data.item_metadata      = getInputData(relation_data, item_metadata_fields);
 
     jQuery.ajax({
         url: ajaxurl,
@@ -650,11 +636,15 @@ function relation_connect_new_add (relation_data) {
         success: function (data) {
             goto_box(relation_data, 'relation_connected_box', 'relation_connect_existing_box', 'back');
             show_status_message(relation_data, "new " + relation_data.srcLabel + " added");
+
+            relation_data_connect_existing = relation_data_edit_connected = relation_data_connect_new = null;
         }
     });
 }
 function relation_connect_new_cancel (relation_data) {
     goto_box(relation_data, 'relation_connected_box', 'relation_connect_new_box', 'back');
+
+    relation_data_connect_existing = relation_data_edit_connected = relation_data_connect_new = null;
 }
 function relation_init_metabox (relation_data) {
     goto_box(relation_data, 'relation_connected_box', '', '');
@@ -805,7 +795,7 @@ jQuery(document).mouseup(function (e) {
     var src          = jQuery(e.srcElement);
     var is_outside   = jQuery(src).closest("tr.selected, .relation_buttons_box, .relation_connect_new_metadata_box").length == 0;
 
-    console.log("is_outside: %s", is_outside);
+    //console.log("is_outside: %s", is_outside);
 
     if ( is_outside && relation_data_connect_existing != null ) {
         relation_connect_existing_cancel(relation_data_connect_existing);

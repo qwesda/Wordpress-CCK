@@ -281,6 +281,7 @@ abstract class GenericRelationship {
     }
 
     static function get_connected_items ($req) {
+
         global $wpdb;
         global $wpc_relationships;
 
@@ -318,7 +319,6 @@ abstract class GenericRelationship {
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id));
 
             foreach ($sql_result as $relation_row) {
-
                 $row_ret = new stdClass();
                 $row_ret->item_metadata     = array();
                 $row_ret->relation_metadata = array();
@@ -331,9 +331,23 @@ abstract class GenericRelationship {
                 $row_ret->post_from_id  = $relation_row->post_from_id;
                 $row_ret->post_to_id    = $relation_row->post_to_id;
 
+                $other_record = the_record($row_ret->$othercol);
 
+                $row_ret->item_metadata["post_title"]   = $other_record->post_title;
+                $row_ret->item_metadata["post_status"]  = $other_record->post_status;
+
+                $field_keys = explode(",", $rel->field_to_show_in_list);
+
+                foreach ($field_keys as $field_key) {
+                    if (substr($field_key, 0, 11) == "other-item-") {
+                        $field_key = substr($field_key, 11);
+
+                        $row_ret->item_metadata[$field_key] = $other_record->get($field_key);
+                    }
+                }
+
+                /*
                 $sql = "SELECT post_title, post_status FROM wp_posts WHERE ID = %d";
-
                 $sql_result = $wpdb->get_results($wpdb->prepare($sql, $row_ret->$othercol));
 
                 foreach ($sql_result as &$relation_item_row) {
@@ -341,7 +355,7 @@ abstract class GenericRelationship {
                         $row_ret->item_metadata[$key] = $value;
                     }
                 }
-
+                */
                 array_push($ret->results, $row_ret);
             }
         }
