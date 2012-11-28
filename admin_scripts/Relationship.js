@@ -593,7 +593,7 @@ function getInputData (relation_data, input_elements) {
     for (var i=0; i < input_elements.length; i++) {
         var input_element = jQuery(input_elements[i]);
 
-        data_key = input_element.attr('id').replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
+        data_key = input_element.attr('id').replace(relation_data.relId+"_", "").replace(relation_data.srcId+"_", "").replace("wpc_field_", "");
 
         if( !input_element.is(':checkbox') )    data[data_key] = htmlspecialchars( input_element.val(), 3);
         else                                    data[data_key] = input_element.is(':checked') ? 1 : 0;
