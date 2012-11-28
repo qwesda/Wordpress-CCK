@@ -223,7 +223,7 @@ abstract class GenericRelationship {
             "results" => array (),
         );
 
-        ButterLog::debug("update_relation ", $req);
+        #ButterLog::debug("update_relation ", $req);
 
         if ($req->from_id <= 0) {
             $ret->errors[] = "from_id has invalid value '$req->from_id'";
@@ -281,7 +281,6 @@ abstract class GenericRelationship {
     }
 
     static function get_connected_items ($req) {
-
         global $wpdb;
         global $wpc_relationships;
 
