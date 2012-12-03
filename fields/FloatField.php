@@ -11,7 +11,7 @@ class FloatField extends GenericField {
 
     function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
+        $value  = $record && $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
      ?>
         <input type="text"
                id="wpc_field_<?php echo $this->id; ?>"

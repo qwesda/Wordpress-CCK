@@ -1,6 +1,6 @@
-/* @override 
-	http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
-	http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
+/* @override
+  http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
+  http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
 
 
 ul.relation_src_list,
@@ -14,93 +14,94 @@ div.relation_add_search_box,
 div.relation_connected_box {
     margin: 0px;
     padding: 0px;
- 
- 	position: relative;
+
+   position: relative;
 }
 div.relation_connect_new_box {
-	border: 1px solid #dfdfdf;
-	background: #f9f9f9;
+  border: 1px solid #dfdfdf;
+  background: #f9f9f9;
 }
 
 div.padding_box {
-	margin: -10px;
-	margin-top: 25px;
-	margin-bottom: -2px;
-	
-	border-top: 1px solid #ccc;
-	padding: 0px;
-	
-	background-color: rgba(256, 256, 256, 0.3);
+  margin: -10px;
+  margin-top: 25px;
+  margin-bottom: -2px;
+
+  border-top: 1px solid #ccc;
+  padding: 0px;
+
+  background-color: rgba(256, 256, 256, 0.3);
 }
 
 label.relation_edit_label {
-	margin-left: 4px;
-	margin-top: 10px;
-	display: block;
-	font-style: italic;
+  margin-left: 4px;
+  margin-top: 10px;
+  display: block;
+  font-style: italic;
 }
 
 tr.selected.selected.selected {
-	background-color: rgba(256, 224, 0, 0.2);
+  background-color: rgba(256, 224, 0, 0.2);
 }
 
 div.relation_connect_new_metadata_box div.padding_box {
-	margin: 0;
-	background-color: #fff;
+  margin: 0;
+  background-color: #fff;
+    min-height: 380px;
 }
 
 div.relation_item_metadata_edit_box + div.relation_metadata_edit_box {
-	border-top: 1px solid rgba(0, 0, 0, 0.2);
-	margin-top: 18px;
-	padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  margin-top: 18px;
+  padding-top: 12px;
 }
 
 div.relation_table_container {
-	overflow-y: scroll;
-	height: 400px;
+  overflow-y: scroll;
+  height: 400px;
 }
 
 table.relation_connected_list tr div.connected_item_info {
-	text-align: riglht;
-	top: 25px;
-	font-style: italic;
+  text-align: riglht;
+  top: 25px;
+  font-style: italic;
 }
 
 div.relation_edit_box {
-	padding-bottom: 25px;
-	position: relative;
+  padding-bottom: 25px;
+  position: relative;
 }
 
 div.padding_box {
-	padding: 10px;
+  padding: 10px;
 }
 
 div.wpc_relation_helptext {
-	padding: 6px;
-	font-style: italic;
-	color: #777;
+  padding: 6px;
+  font-style: italic;
+  color: #777;
 }
 
 div.relation_connect_new_metadata_box {
-	min-height: 400px;
+  min-height: 400px;
 }
 
 div.relation_edit_box div.status-update {
-	position: absolute;
-	padding: 4px 8px;
-	border-radius: 6px;
-	margin-right: 10px;
-	right: 0;
-	top: -20px;
-	font-style: italic;
-	
-	color: darkgreen;
+  position: absolute;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-right: 10px;
+  right: 0;
+  top: -20px;
+  font-style: italic;
+
+  color: darkgreen;
 }
 table.relation_connected_list_header,
 table.relation_src_list_header {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-	border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
 }
 table.relation_connected_list,
 table.relation_connected_list > tbody > tr,
@@ -108,13 +109,13 @@ table.relation_connected_list > tbody > tr > td,
 table.relation_src_list,
 table.relation_src_list > tbody > tr,
 table.relation_src_list > tbody > tr > td {
-	border: none;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+  border: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 table.relation_src_list > tbody > tr > td,
 table.relation_connected_list > tbody > tr > td {
-	border-bottom: 1px solid #DFDFDF;
+  border-bottom: 1px solid #DFDFDF;
 }
 table.relation_src_list > tbody > tr,
 table.relation_src_list > tbody > tr > td,
@@ -125,9 +126,9 @@ table.relation_connected_list > tbody > tr > td  {
 }
 
 div.relation_table_container {
-	border: 1px solid #DFDFDF;
-	border-top: none;
-	background: #f9f9f9;
+  border: 1px solid #DFDFDF;
+  border-top: none;
+  background: #f9f9f9;
 }
 
 label.wpc_label_left {
@@ -137,10 +138,11 @@ label.wpc_label_left {
     display: inline-block;
 }
 
+table.relation_src_list > tbody > tr a.relation_source_item,
 table.relation_connected_list > tbody > tr a.relation_connected_item,
 table.relation_connected_list > tbody > tr span.relation_connected_item {
-	font-weight: bold;
-	text-decoration: none;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 table.relation_src_list > tbody > tr:nth-child(odd),
@@ -149,12 +151,12 @@ table.relation_connected_list > tbody > tr:nth-child(odd) {
 }
 
 div.relation_add_existing_metadata_box {
-    margin: 10px 0px;   
+    margin: 10px 0px;
     width: 100%;
 
     overflow: scroll;
 
-    border: 1px solid rgba(0,0,0,0.15);	
+    border: 1px solid rgba(0,0,0,0.15);
 }
 
 ul.relation_connected_list li.odd {
@@ -166,7 +168,7 @@ div.relation_nav_bar {
 
     padding: 4px;
     padding-left: 0;
-    
+
     height: 16px;
 
     background-color: rgba(0,0,0,0.05);
@@ -186,10 +188,10 @@ div.relation_nav_bar div {
     padding: 4px;
     padding-left: 10px;
     padding-right: 16px;
-	
+
     font-weight: bold;
     color: white;
-    
+
     margin-top: -4px;
 
     background-image: -ms-linear-gradient(bottom, #6d6d6d, #808080); /* IE10 */
@@ -215,7 +217,7 @@ div.relation_nav_bar div:last-child {
     font-weight: normal;
 }
 div.relation_nav_bar div:before {
-	
+
 }
 div.relation_edit_boxes {
     height: 255px;
@@ -304,53 +306,53 @@ input.relation_src_search {
 
 div.relation_buttons_box {
     margin: 10px 0;
-    
+
     right: 0;
     top: 0;
-    
+
     padding-right: ;
-    
+
     position: absolute;
-    
+
     font-family: sans-serif;
 }
 
 
 div.relation_buttons_box label,
 div.relation_buttons_box input {
-	font-size: 12px;
-	
-	height: 20px;
+  font-size: 12px;
+
+  height: 20px;
 }
 
 table.relation_connected_list_header thead tr th,
 table.relation_src_list_header thead tr th,
 div.relation_connect_new_metadata_box h3  {
-	height: 20px;
+  height: 20px;
 }
 
 div.relation_buttons_box_bottom {
-	padding-right: 6px;
-	margin-top: 0;
-	height: 22px;
+  padding-right: 6px;
+  margin-top: 0;
+  height: 22px;
 }
 
 table.relation_metadata {
-	float: right;
-	margin-bottom: 10px;
+  float: right;
+  margin-bottom: 10px;
 }
 
-table.relation_metadata > tbody > tr, 
+table.relation_metadata > tbody > tr,
 table.relation_metadata > tbody > tr > td {
-	padding: 0;
-	margin: 0;
-	height: 10px;
-	border: none;
-	background-color: none;
+  padding: 0;
+  margin: 0;
+  height: 10px;
+  border: none;
+  background-color: none;
 }
 table.relation_metadata > tbody > tr > td.table_label {
-	font-weight: bold;
-	text-align: right;
+  font-weight: bold;
+  text-align: right;
 }
 
 

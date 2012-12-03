@@ -117,25 +117,39 @@ abstract class GenericContentType {
     public function echo_update_relation_item_metabox_str () {
         ob_start();
 
+        global $post;
+        $old_post = $post;
+        $post = null;
+
         $this->echo_update_relation_item_metabox();
 
         $html_str = ob_get_clean();
         $html_str = preg_replace("/(id|for|name)\=('|\")wpc_/", "$1=$2wpc_".$this->id."_", $html_str);
         $html_str = htmlspecialchars($html_str);
+        $html_str = preg_replace("/\n/", "\\\n", $html_str);
 
-        return htmlspecialchars($html_str);
+        $post = $old_post;
+
+        return $html_str;
     }
 
     public function echo_new_relation_item_metabox_str () {
         ob_start();
+
+        global $post;
+        $old_post = $post;
+        $post = null;
 
         $this->echo_new_relation_item_metabox();
 
         $html_str = ob_get_clean();
         $html_str = preg_replace("/(id|for|name)\=('|\")wpc_/", "$1=$2wpc_".$this->id."_", $html_str);
         $html_str = htmlspecialchars($html_str);
+        $html_str = preg_replace("/\n/", "\\\n", $html_str);
 
-        return htmlspecialchars($html_str);
+        $post = $old_post;
+
+        return $html_str;
     }
 
     /**
