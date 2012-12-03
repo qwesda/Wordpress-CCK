@@ -28,7 +28,7 @@ class MonthField extends GenericField {
 
     function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
+        $value  = $record && $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
     ?>
         <select id="<?php echo "wpc_field_$this->id" ?>" class="wpc_input wpc_input_select"   name="<?php echo "wpc_$this->id" ?>" width="100%">
             <option value='' <?php if ( empty($value) ) echo 'selected'; ?>></option>

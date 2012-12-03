@@ -11,7 +11,7 @@ class LabelField extends GenericField {
 
     function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
+        $value  = $record && $this->parent->id == $record->post_type && !$with_default_value ? $record->__get($this->id) : "";
     ?>
         <label class="wpc_input_label"><?php if ( !empty($value) ) echo $value; ?></label>
     <?php }

@@ -10,6 +10,7 @@ abstract class GenericRelationship {
     public $generated_fields      = array();
 
     public $label                 = "";
+    public $label_reverse         = "";
 
     public $post_type_from_id     = "";
     public $post_type_from        = NULL;
@@ -27,12 +28,13 @@ abstract class GenericRelationship {
         global $wpc_content_types;
 
 //  SET DEFAULTS
-        if ( empty($this->id) )             $this->id       = strtolower( get_class_name($this) );
+        if ( empty($this->id) )             $this->id               = strtolower( get_class_name($this) );
 
-        if ( empty($this->label) )          $this->label    = $this->id;
-        if ( empty($this->table) )          $this->table    = "wp_wpc__$this->id";
+        if ( empty($this->label) )          $this->label            = $this->id;
+        if ( empty($this->label_reverse) )  $this->label_reverse    = $this->label;
+        if ( empty($this->table) )          $this->table            = "wp_wpc__$this->id";
 
-        if ( !empty($params->helptext) )    $this->helptext = $params->helptext;
+        if ( !empty($this->helptext) )      $this->helptext         = $this->helptext;
 
 
         if ( !in_array( $this->post_type_from_id, get_post_types() ) ) {
@@ -65,6 +67,8 @@ abstract class GenericRelationship {
         }
     }
 
+    static private $is_first_metabox = false;
+
     protected function get_field_type ($field_key) {
         $ret = "";
 
@@ -90,9 +94,9 @@ abstract class GenericRelationship {
         $html_str = preg_replace("/(id|for|name)\=('|\")wpc_/", "$1=$2wpc_".$this->id."_", $html_str);
 
         $html_str = htmlspecialchars($html_str);
+        $html_str = preg_replace("/\n/", "\\\n", $html_str);
 
-
-        return htmlspecialchars($html_str);
+        return $html_str;
     }
 
     static function hookup_ajax_functions () {
@@ -126,16 +130,18 @@ abstract class GenericRelationship {
             $relation = $wpc_relationships[$req->rel_id];
 
             if ( !isset($req->to_id) ) {
+                $new_post_title     = !empty($req->item_metadata) && !empty($req->item_metadata["post_title"]) ? $req->item_metadata["post_title"] : "New ".ucwords($relation->post_type_to->singular_label);
                 $new_post_id = wp_insert_post (
-                    array('post_type' => $relation->post_type_to_id)
+                    array('post_type' => $relation->post_type_to_id, 'post_title' => $new_post_title)
                 );
 
                 $req->to_id     = $new_post_id;
                 $req->item_id   = $new_post_id;
                 $req->item_type = $relation->post_type_to_id;
             } else {
+                $new_post_title     = !empty($req->item_metadata) && !empty($req->item_metadata["post_title"]) ? $req->item_metadata["post_title"] : "New ".ucwords($relation->post_type_from->singular_label);
                 $new_post_id = wp_insert_post (
-                    array('post_type' => $relation->post_type_from_id)
+                    array('post_type' => $relation->post_type_from_id, 'post_title' => $new_post_title)
                 );
 
                 $req->from_id   = $new_post_id;
@@ -233,7 +239,7 @@ abstract class GenericRelationship {
             $ret->errors[] = "rel_id has invalid value '$req->rel_id'";
         } else if (empty($req->id)) {
             $ret->errors[] = "id has invalid value";
-        } else if ( !empty($req->relation_metadata) && !empty($req->item_metadata) ) {
+        } else if ( empty($req->relation_metadata) && empty($req->item_metadata) ) {
             $ret->errors[] = "cannot update without anything to update.";
         } else {
             $rel = $wpc_relationships[$req->rel_id];
@@ -304,7 +310,7 @@ abstract class GenericRelationship {
                 $id         = $req->to_id;
                 $col        = 'post_to_id';
                 $othercol   = 'post_from_id';
-                $othertable = $rel->post_type_form->table;
+                $othertable = $rel->post_type_from->table;
             } else {
                 $ret->errors[] = "neither from_id nor to_id were specified";
             }
@@ -345,16 +351,6 @@ abstract class GenericRelationship {
                     }
                 }
 
-                /*
-                $sql = "SELECT post_title, post_status FROM wp_posts WHERE ID = %d";
-                $sql_result = $wpdb->get_results($wpdb->prepare($sql, $row_ret->$othercol));
-
-                foreach ($sql_result as &$relation_item_row) {
-                    foreach ($relation_item_row as $key => $value){
-                        $row_ret->item_metadata[$key] = $value;
-                    }
-                }
-                */
                 array_push($ret->results, $row_ret);
             }
         }
@@ -529,7 +525,7 @@ $prepared_sql_limit" );
 
                 $ret->results       = $results;
             } else {
-                $ret->errors[]      = "Specified post_type '$req->post_type' is invalid.\nRegistered post_types are: " . implode(", ", array_keys( $valid_posttypes ) );
+                $ret->errors[]      = "Specified post_type '$req->post_type' is invalid.";
             }
         } else {
             $ret->errors[] = "No post_type was specified";
@@ -548,57 +544,89 @@ $prepared_sql_limit" );
         die();
     }
 
-    function echo_relationship($post, $reverse_direction = false){
+    static public function echo_relationship_tabs($rel_ids, $post) {
+        global $wpc_relationships;
+
+        if ( !is_array($rel_ids) )
+            $rel_ids = explode(",", $rel_ids);
+
+        $rels = array();
+
+        foreach ($rel_ids as $rel_id) {
+            $reverse = substr($rel_id, 0, 8) == "reverse_";
+
+            if ($reverse) $rel_id_clean = substr($rel_id, 8);
+            else $rel_id_clean = $rel_id;
+
+            if ( !empty($wpc_relationships[$rel_id_clean]) ) {
+                $rels[$rel_id] = $wpc_relationships[$rel_id_clean];
+            }
+        }
+
+
+        if ( !empty($rels) ) { ?>
+            <div class="wpc_form_tabs">
+                <ul class="wpc_form_tabs_header"><?php foreach ($rels as $rel_id => $rel): ?>
+                    <li><a href="#tab_rel_<?php echo $rel_id ?>"><?php echo $rel->label; ?></a></li>
+                <?php endforeach ?>
+                </ul>
+                <?php foreach ($rels as $rel_id => $rel){
+                    $reverse = substr($rel_id, 0, 8) == "reverse_";
+
+                    if ($reverse) $rel_id_clean = substr($rel_id, 8);
+                    else $rel_id_clean = $rel_id;
+                ?>
+                    <div id="tab_rel_<?php echo $rel_id ?>">
+                        <div class="wpc_subform" id="rel_<?php echo $rel_id ?>">
+                            <div class="wpc_form_row">
+                                <div class="wpc_form_row"><?php
+                                    $rel->echo_relationship($post, $reverse);
+                                ?></div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php }
+
+    }
+
+    function echo_relationship($post, $reverse_direction){
         global $wpc_content_types;
 
-        $rel_direction  = $reverse_direction ? "from_to" : "to_from";
+        $relID = ($reverse_direction ? "reverse_" : "") . $this->id;
 
-        $src_id         = $rel_direction == "to_from" ? $this->post_type_to_id   : $this->post_type_from_id;
-        $dst_id         = $rel_direction == "to_from" ? $this->post_type_from_id : $this->post_type_to_id;
+        if (GenericRelationship::$is_first_metabox == false){
+            GenericRelationship::$is_first_metabox = true; ?>
+        <script type="text/javascript" charset="utf-8">
+            var admin_url_wpspin_light  = "<?php echo admin_url('images/wpspin_light.gif'); ?>";
+            var admin_url_post_php      = "<?php echo admin_url('post.php'); ?>";
+            var nonce_relations_ajax    = "<?php echo wp_create_nonce('relations_ajax'); ?>";
 
-        $src            = $rel_direction == "from_to" ? $this->post_type_to      : $this->post_type_from;
-        $dst            = $rel_direction == "from_to" ? $this->post_type_from    : $this->post_type_to;
+            relations_data          = {};
 
-        $item_update_data_box   = $rel_direction == "from_to" ? $this->post_type_from->echo_update_relation_item_metabox_str()  : $this->post_type_to->echo_update_relation_item_metabox_str();
-        $item_new_data_box      = $rel_direction == "from_to" ? $this->post_type_from->echo_new_relation_item_metabox_str()     : $this->post_type_to->echo_new_relation_item_metabox_str();
-    ?>
-        <div      class ="relation_edit_box <?php echo $this->id ?>"
+            jQuery(document).ready(function(){
+                jQuery(".wpc_form_tabs").tabs();
 
-           data-rel-dir = "<?php echo $rel_direction ?>"
+                for (var relation_id in relations_data) {
+                    init_relation(relations_data[relation_id]);
+                };
+            });
+        </script>
+        <?php } ?>
 
-            data-rel-id = "<?php echo $this->id ?>"
-            data-src-id = "<?php echo $src_id ?>"
-            data-dst-id = "<?php echo $dst_id ?>"
-
-data-fields-to-show-in-list = "<?php echo $this->field_to_show_in_list ?>"
-data-fields-to-put-as-class = "<?php echo $this->field_to_put_as_class ?>"
-data-field-to-lock-relation = "<?php echo $this->field_to_lock_relation ?>"
-
-         data-src-label = "<?php echo $src->label ?>"
-         data-dst-label = "<?php echo $dst->label ?>"
-          data-edit-box = "<?php echo $this->echo_item_metabox_str() ?>"
-          data-item-update-edit-box = "<?php echo $item_update_data_box ?>"
-          data-item-new-edit-box = "<?php echo $item_new_data_box ?>"
-
-data-src-singular-label = "<?php echo $src->singular_label ?>"
-data-dst-singular-label = "<?php echo $dst->singular_label ?>"
-           data-post-id = "<?php echo $post->ID ?>">
-           <?php if ( !empty($this->helptext) ): ?>
-           <div class="wpc_relation_helptext">
-               <?php echo $this->helptext ?>
-           </div>
-           <?php endif ?>
-
+        <div class ="relation_edit_box <?php echo $relID ?>">
             <div class="relation_connected_box" style="display: block;">
                 <table class="relation_connected_list_header wp-list-table widefat fixed posts">
                     <thead>
                         <tr><th>
-                            <?php echo $this->label; ?>
+                            <?php echo $reverse_direction ? $this->label_reverse : $this->label; ?>
 
                             <div class="relation_buttons_box">
-                                <a class="button relation_connected_add" href='#'>add existing</a>
-                                <a class="relation_connected_add_new button" href='#'>add new</a>
-                                <a class="relation_open_all_connected button" href='#'>open all</a>
+                                <a class="button relation_connect_existing_search" href='#'>add existing</a>
+                                <a class="relation_connect_new_input button" href='#'>add new</a>
                             </div>
                         </th></tr>
                     </thead>
@@ -617,11 +645,11 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                     <thead>
                         <tr><th>
                             Search results
-                            <div class="relation_buttons_box">
-                                <label for="relation_src_search">search</label>
+                            <div class="relation_buttons_box relation_connect_existing_search_buttons_box">
+                                <label>search</label>
                                 <input type="text" class="wpc_input_text relation_src_search"/>
 
-                                <a class="button relation_add_search_cancel" href='#'>cancel</a>
+                                <a class="button relation_connect_existing_search_cancel" href='#'>cancel</a>
                             </div>
                         </th></tr>
                     </thead>
@@ -669,20 +697,29 @@ data-dst-singular-label = "<?php echo $dst->singular_label ?>"
                 </div>
             </div>
 
-
             <div class="status-update" style="display:none"></div>
         </div>
 
         <script type="text/javascript" charset="utf-8">
-            var admin_url_wpspin_light  = "<?php echo admin_url('images/wpspin_light.gif'); ?>";
-            var admin_url_post_php      = "<?php echo admin_url('post.php'); ?>";
-            var nonce_relations_ajax     = "<?php echo wp_create_nonce('relations_ajax'); ?>";
-
-            jQuery(document).ready(function() {
-                var relation_metabox_id = ".relation_edit_box.<?php echo $this->id ?>";
-
-                relation_setup_delegates(relation_metabox_id);
-            });
+            relations_data["<?php echo $relID ?>"] = {
+                relId                   : "<?php echo $relID; ?>",
+                relIdClean              : "<?php echo $this->id; ?>",
+                postId                  : "<?php echo $post->ID; ?>",
+                label                   : "<?php echo $reverse_direction ? $this->label_reverse : $this->label; ?>",
+                toId                    : "<?php echo $this->post_type_to_id; ?>",
+                toLabel                 : "<?php echo $this->post_type_to->label ?>",
+                toSingularLabel         : "<?php echo $this->post_type_to->singular_label ?>",
+                fromId                  : "<?php echo $this->post_type_from_id; ?>",
+                fromLabel               : "<?php echo $this->post_type_from->label ?>",
+                fromSingularLabel       : "<?php echo $this->post_type_from->singular_label ?>",
+                relDir                  : "<?php echo $reverse_direction ? "from_to" : "to_from"; ?>",
+                fieldToLockRelation     : "<?php echo $this->field_to_lock_relation; ?>",
+                fieldsToPutAsClass      : "<?php echo $this->field_to_put_as_class; ?>",
+                fieldsToShowInList      : "<?php echo $this->field_to_show_in_list; ?>",
+                relationEditBox         : "<?php echo $this->echo_item_metabox_str($post); ?>",
+                itemUpdateEditBox       : "<?php echo $reverse_direction ? $this->post_type_from->echo_update_relation_item_metabox_str() : $this->post_type_to->echo_update_relation_item_metabox_str(); ?>",
+                itemNewEditBox          : "<?php echo $reverse_direction ? $this->post_type_from->echo_new_relation_item_metabox_str() : $this->post_type_to->echo_new_relation_item_metabox_str(); ?>"
+            }
 
         </script>
     <?php }

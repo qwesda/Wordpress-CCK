@@ -11,7 +11,7 @@ class TextAreaField extends GenericField {
 
     function echo_field_core ($with_default_value = false) {
         $record = the_record();
-        $value  = $this->parent->id == $record->post_type && !$with_default_value ? $record->get_plain($this->id) : "";
+        $value  = $record && $this->parent->id == $record->post_type && !$with_default_value ? $record->get_plain($this->id) : "";
     ?>
         <textarea rows="3" id="<?php echo "wpc_field_$this->id" ?>"
             class="wpc_input wpc_input_textarea <?php if ($this->localized) echo "wpc_localized_input"; ?>"
