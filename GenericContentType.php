@@ -336,7 +336,7 @@ abstract class GenericContentType {
         // weed out invalid fields, add defaults
         // XXX: handle unsetting fields
         // see https://core.trac.wordpress.org/ticket/15158
-        $to_update = array_intersect_key( $wpcpost, $candidate_fields);
+        $to_update = array_intersect_key($wpcpost, $candidate_fields);
 
         if (! empty($to_update))
             $this->update_dbs($post_id, $to_update, $field_formats);
