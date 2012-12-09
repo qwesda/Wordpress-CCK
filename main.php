@@ -3,7 +3,7 @@
 /*
 Plugin Name: Wordpress-CCK
 Description: Wordpress Plugin to manage content-types and relations
-Author: Daniel Schwarz (qwesda@live.com), Tobias Florek (tob@bytesandbutter.de) and the ._______.
+Author: Daniel Schwarz (dan@bytesandbutter.de), Tobias Florek (tob@bytesandbutter.de) and the ._______.
 Version: 1.0
 */
 
