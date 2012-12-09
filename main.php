@@ -13,7 +13,7 @@ require_once "helper.php";
 global $wpc_version;
 global $wpc_db_version;
 
-$wpc_version    = "1.0";
+$wpc_version    = "1.1";
 $wpc_db_version = "1.1";
 
 class WPCustom {
