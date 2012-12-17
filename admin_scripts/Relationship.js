@@ -180,6 +180,7 @@ function show_connected_items_box (relation_data) {
 
                 html_to_append =
                 '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'" class="' + fieldsToPutAsClassString + '"><td>'
+                + "<a class='source_item_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a>"
                 + ( !lockRelation ?
                     "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> " :
                     "<span class='relation_connected_item'>"+result.item_metadata.post_title+"</span> "
@@ -187,7 +188,6 @@ function show_connected_items_box (relation_data) {
                 +    (result.item_metadata.post_status != "publish" ? " (<i>" + result.item_metadata.post_status + ")</i>" : "")
                 +    (fieldsToShowInListString != "" ? "<div class='connected_item_info'>"+fieldsToShowInListString+"</div>" : "")
 
-                + "<a class='source_item_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a>"
 
                 + "</td></tr>\n" + html_to_append;
             }
