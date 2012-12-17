@@ -319,12 +319,12 @@ input.relation_src_search {
 }
 
 div.relation_buttons_box {
-    margin: 10px 0;
+    margin: 8px 0;
 
     right: 0;
     top: 0;
 
-    padding-right: ;
+    padding-right: 5px;
 
     position: absolute;
 
@@ -346,9 +346,8 @@ div.relation_connect_new_metadata_box h3  {
 }
 
 div.relation_buttons_box_bottom {
-  padding-right: 6px;
-  margin-top: 0;
-  height: 22px;
+  padding: 0px;
+  margin: 0px;
 }
 
 table.relation_metadata {
