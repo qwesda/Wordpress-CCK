@@ -1,6 +1,7 @@
 /* @override
   http://dev.zjs.bytesandbutter.de/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
-  http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2 */
+  http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.4.2
+	https://www.zentrum-juedische-studien.dev/wp-content/plugins/Wordpress-CCK/admin_styles/Relationship.css?ver=3.5 */
 
 
 ul.relation_src_list,
@@ -117,6 +118,19 @@ table.relation_src_list > tbody > tr > td,
 table.relation_connected_list > tbody > tr > td {
   border-bottom: 1px solid #DFDFDF;
 }
+
+table.relation_connected_list > tbody > tr > td .source_item_edit_link {
+  display: none;
+  font-style: italic;
+  float: right;
+}
+table.relation_connected_list > tbody > tr > td:hover .source_item_edit_link {
+  display: inline;
+}
+table.relation_connected_list > tbody > tr.selected > td .source_item_edit_link {
+  display: none;
+}
+
 table.relation_src_list > tbody > tr,
 table.relation_src_list > tbody > tr > td,
 table.relation_connected_list > tbody > tr,
