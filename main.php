@@ -43,6 +43,7 @@ class WPCustom {
         add_action('wp_insert_post_data',   array($this, 'wp_insert_post_data'), 10, 2);
 
         add_filter('display_post_states',   array($this, 'display_post_states') );
+        add_filter('query_vars',            array($this, 'query_vars') );
 
         new Settings();
     }
@@ -277,7 +278,6 @@ class WPCustom {
         }
         */
     }
-
     function the_content ($input_content) {
         global $post, $content;
         global $wpc_content_types;
@@ -457,8 +457,8 @@ class WPCustom {
 
         $post_type = get_post_type();
 
-        if ($post_type == 'page')
-            return $items;
+//        if ($post_type == 'page')
+//            return $items;
 
         $ancestor_ids   = array();
         $parent_ids     = array();
@@ -491,9 +491,10 @@ class WPCustom {
         global $post;
         global $wpc_content_types;
 
-        $post_type = get_post_type();
+        $type_menu_url  = get_query_var("current_menu_item_url");
+        $post_type      = get_post_type();
 
-        if ( !empty($post_type) && !is_archive() && !empty($wpc_content_types[$post_type]) ){
+        if ( empty($type_menu_url) && !empty($post_type) && !is_archive() && !empty($wpc_content_types[$post_type]) ){
             $type = $wpc_content_types[$post_type];
 
             if ( !empty($type->menu_item_url) )
@@ -502,17 +503,24 @@ class WPCustom {
                 $r = the_record();
                 $type_menu_url  = $r->menu_item_url;
             }
+        }
 
-            if ( !empty($type_menu_url) ) {
-                $type_menu_url  = home_url($type_menu_url);
-                $nav_item_url   = preg_replace("/\/$/", "", $nav_item->url);
+        if ( !empty($type_menu_url) ) {
+            $type_menu_url  = home_url($type_menu_url);
+            $nav_item_url   = preg_replace("/\/$/", "", $nav_item->url);
 
-                return $type_menu_url == $nav_item_url;
-            }
+            return $type_menu_url == $nav_item_url;
         }
 
         return false;
     }
+
+    function query_vars($vars) {
+        array_push($vars, 'current_menu_item_url');
+
+        return $vars;
+    }
+
 
     /**
      * autoload files in this directory as well as in fields/
