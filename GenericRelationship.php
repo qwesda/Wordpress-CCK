@@ -510,7 +510,7 @@ abstract class GenericRelationship {
                     $req->order_by  = str_replace(array("id",  "title", "date", "NULL"), array("$wpdb->posts.ID",  "$wpdb->posts.post_title",  "$wpdb->posts.post_date", "NULL"), $req->order_by);
                     $req->order     = ( isset($req->order) && $req->order == "desc" ) ? "DESC" : "ASC";
 
-                    $prepared_sql_order  = $wpdb->prepare("ORDER BY $req->order_by $req->order ");
+                    $prepared_sql_order  = $wpdb->prepare("ORDER BY %s %s ", $req->order_by, $req->order);
                 }
 
                 $available_count    = $wpdb->get_var    ( "SELECT COUNT(*) $prepared_sql_filter $prepared_sql_like" );
