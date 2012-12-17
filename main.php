@@ -424,6 +424,7 @@ class WPCustom {
         $theme_dir  = $theme["Stylesheet Dir"];
 
         loadStylesInPathWithIDPrefix    (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_styles",    "core_frontend_styles");
+        loadStylesInPathWithIDPrefix    ($theme_dir . "/backend_styles",       "theme_backend_styles");
         loadStylesInPathWithIDPrefix    ($theme_dir . "/metaboxes",       "metabox_styles");
     }
 
