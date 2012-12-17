@@ -405,6 +405,10 @@ class WPCustom {
 
         </script>
         <?php
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('jquery-ui-core');
+        wp_enqueue_script('jquery-ui-tabs');
+
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_libraries",    "core_admin_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/admin_scripts",      "core_admin_scripts");
 
