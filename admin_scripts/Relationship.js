@@ -255,10 +255,21 @@ function show_connected_item_edit_box (relation_data) {
             + "<tr><td class='table_label'>object id</td><td>" + object_id + " <a class='relation_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a></td></tr>"
             + "</table>").prependTo(relation_data.metaboxSelector + '.relation_connected_list tr.selected > td:first-child');
 
+            set_metabox_data(relation_data, item_metadata, selected_item_data.data.relation_metadata);
+
             item_metabox.find(".relation_edit_connected_metadata_box .wpc_input_text").each(check_text_input_value);
             item_metabox.find(".relation_edit_connected_metadata_box .wpc_input:first").focus();
 
-            set_metabox_data(relation_data, item_metadata, selected_item_data.data.relation_metadata);
+            item_metabox.find(".relation_edit_connected_metadata_box input").keydown(function(event) {
+                if (event.which == 27) {
+                    event.preventDefault();
+                    return handle_event("a.relation_edit_connected_cancel", event, relation_data);
+                }
+                if (event.which == 13) {
+                    event.preventDefault();
+                    return handle_event("a.relation_edit_connected_update", event, relation_data);
+                }
+            });
 
             move_wpc_labels_to_rows();
 
@@ -284,7 +295,7 @@ function set_metabox_data (relation_data, item_metadata, relation_metadata) {
     }
 
     for (var metadata_key in item_metadata){
-        var input_id    = relation_data.relDir == "from_to" ? '#wpc_'+relation_data.dstId+'_field_'+metadata_key : '#wpc_'+relation_data.srcId+'_field_'+metadata_key;
+        var input_id    = '#wpc_'+relation_data.dstId+'_field_'+metadata_key;
         var input_val   = item_metadata[metadata_key];
         var input       = jQuery(input_id);
 
@@ -410,10 +421,21 @@ function handle_event(event_id, event, relation_data) {
                     + "<tr><td class='table_label'>object id</td><td>" + object_id + " <a class='relation_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a></td></tr>"
                     + "</table>").prependTo(relation_data.metaboxSelector + '.relation_src_list tr.selected > td:first-child');
 
+                    set_metabox_data(relation_data, item_metadata, {});
+
                     item_metabox.find(".relation_connect_existing_metadata_box .wpc_input_text").each(check_text_input_value);
                     item_metabox.find(".relation_connect_existing_metadata_box .wpc_input:first").focus();
 
-                    set_metabox_data(relation_data, item_metadata, {});
+                    item_metabox.find(".relation_connect_existing_metadata_box input").keydown(function(event) {
+                        if (event.which == 27) {
+                            event.preventDefault();
+                            return handle_event("a.relation_connect_existing_cancel", event, relation_data);
+                        }
+                        if (event.which == 13) {
+                            event.preventDefault();
+                            return handle_event("a.relation_connect_existing_add", event, relation_data);
+                        }
+                    });
 
                     move_wpc_labels_to_rows();
 
@@ -486,7 +508,7 @@ function handle_event(event_id, event, relation_data) {
             var selected_item_label = selected_item.text();
 
             var object_id           = (selected_item_data.data.post_from_id != relation_data.postId ? selected_item_data.data.post_from_id : selected_item_data.data.post_to_id);
-            var object_type         = (selected_item_data.data.post_from_id != relation_data.postId ? relation_data.dstId : relation_data.srcId);
+            var object_type         = relation_data.dstId;
 
             var relation_metadata_fields = jQuery(relation_data.metaboxSelector + '.relation_edit_connected_metadata_box .relation_metadata_edit_box .wpc_input');
             var item_metadata_fields     = jQuery(relation_data.metaboxSelector + '.relation_edit_connected_metadata_box .relation_item_metadata_edit_box .wpc_input');
@@ -604,6 +626,19 @@ function handle_event(event_id, event, relation_data) {
 
             jQuery(relation_data.metaboxSelector + '.relation_connect_new_metadata_box').each(check_text_input_value);
             jQuery(relation_data.metaboxSelector + '.relation_connect_new_metadata_box input').first().focus();
+
+
+            jQuery(relation_data.metaboxSelector + '.relation_connect_new_metadata_box input').keydown(function(event) {
+                if (event.which == 27) {
+                    event.preventDefault();
+                    return handle_event("a.relation_connect_new_cancel", event, relation_data);
+                }
+                if (event.which == 13) {
+                    event.preventDefault();
+                    return handle_event("a.relation_connect_new_add", event, relation_data);
+                }
+            });
+
 
             show_box(relation_data, "relation_connect_new_box");
 
