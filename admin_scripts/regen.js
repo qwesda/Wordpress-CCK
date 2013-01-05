@@ -1,7 +1,7 @@
 var wpc_regen = wpc_regen || new function() {
-  var chunksize = 100;
+  var chunksize         = 100;
   var needed_iterations = {};
-  var abort = false;
+  var abort             = false;
   this.post_count;
 
   var update_progress = function(iteration) {
@@ -18,7 +18,7 @@ var wpc_regen = wpc_regen || new function() {
       'action': 'wpc_regen_fields',
       'limit': chunksize,
       'type': type,
-      'nonce': wpc_regen_nonce,
+      'nonce': wpc_settings_nonce,
       'last_id': last_id
     }
 
@@ -60,7 +60,7 @@ var wpc_regen = wpc_regen || new function() {
     ajaxargs = {
       'action': 'wpc_regen_post_count',
       'type': type,
-      'nonce': wpc_regen_nonce
+      'nonce': wpc_settings_nonce
     }
 
     // get count of published ids
