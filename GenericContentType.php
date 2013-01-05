@@ -393,17 +393,38 @@ abstract class GenericContentType {
         if (empty($to_update))
             return true;
 
-        $formats = array_intersect_key($field_formats, $to_update);
+        $formats    = array_intersect_key($field_formats, $to_update);
 
-        if ($wpdb->update($table,
-            $to_update,                         // col = val
-            array( ($table == $wpdb->posts ? "ID" : $this->wpid_col) => $post_id), // where
-            $formats,                           // printf formats for set
-            '%d'                                // printf format for where
-            ) === false) {
-                ButterLog::error("Could not update $table for post_id $post_id.");
-                return false;
+        $id_row             = $table == $wpdb->posts ? "ID" : $this->wpid_col;
+        $query              = "SELECT $id_row FROM $table WHERE $id_row = $post_id";
+        $table_entry_test   = $wpdb->get_var( $query );
+
+        if ( empty( $table_entry_test ) ) {
+            $formats[$id_row]   = "%d";
+            $to_update[$id_row] = $post_id;
+
+            if ($wpdb->insert($table,
+                $to_update,                         // col = val
+                $formats,                           // printf formats for set
+                '%d'                                // printf format for where
+                ) === false) {
+                    ButterLog::error("Could not update $table for post_id $post_id.");
+                    return false;
+            }
+        } else {
+            if ($wpdb->update($table,
+                $to_update,                         // col = val
+                array( ($table == $wpdb->posts ? "ID" : $this->wpid_col) => $post_id), // where
+                $formats,                           // printf formats for set
+                '%d'                                // printf format for where
+                ) === false) {
+                    ButterLog::error("Could not update $table for post_id $post_id.");
+                    return false;
+            }
         }
+
+
+
         return true;
     }
 }
