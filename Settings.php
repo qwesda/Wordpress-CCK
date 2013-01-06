@@ -27,36 +27,32 @@ class Settings extends GenericBackendPage {
     function __construct() {
         $this->label = 'CCK-Settings';
 
-        add_action('admin_init', array($this, 'admin_init'));
-        add_action('wp_ajax_wpc_regen_post_count', array($this, 'post_count'));
-        add_action('wp_ajax_wpc_regen_fields', array($this, 'regen_fields'));
+        add_action('admin_init',                    array($this, 'admin_init'));
+        add_action('wp_ajax_wpc_regen_post_count',  array($this, 'post_count'));
+        add_action('wp_ajax_wpc_regen_fields',      array($this, 'regen_fields'));
+
+        add_action('wp_ajax_wpc_db_migrate',        array($this, 'db_migrate'));
 
         parent::__construct();
     }
 
     function admin_init() {
-/*        wp_enqueue_style('jquery.ui.css-theme',
-            plugins_url('vendor/jquery-ui/smoothness.css', __FILE__),
-            array(),  '1.8.16');
-        wp_enqueue_script('jquery.ui.minimal',
-            plugins_url('/vendor/jquery-ui/jquery.ui.minimal.js', __FILE__),
-            array('jquery'), '1.8.16');*/
- /*       wp_enqueue_script('jquery-ui-progressbar');
-/*            plugins_url('vendor/jquery-ui/jquery.ui.progressbar.js', __FILE__),
-            array('jquery','jquery.ui.minimal'), '1.8.16');
-            */
+
     }
 
     function echo_backend_page() {
         global $wpc_content_types, $wpc_relationships;
 
         $icon ='options-general';
+
         $filter = function($type) {
             return !empty($type->generated_values);
         };
         $all_types_options = join("\n", array_map(function ($type) {
             return "<option value='$type->id'>$type->label</option>";
         }, array_filter($wpc_content_types + $wpc_relationships, $filter)));
+
+        if ( !empty($all_types_options) ) {
     ?>
         <div class='wrap'>
             <div id='icon-$icon' class='icon32'><br /></div>
@@ -65,6 +61,7 @@ class Settings extends GenericBackendPage {
             <h3>Regenerate generated fields</h3>
             <hgroup>
                 <select id='wpc_regen_content_type'>
+                    <option value='all'>All</option>
                     <?php echo $all_types_options ?>
                 </select>
                 <a href='#' class='button' id='wpc_regen_start'>Regenerate</a>
@@ -78,11 +75,188 @@ class Settings extends GenericBackendPage {
                 <h4>Log</h4>
                 <ul id='wpc_regen_log' style="font-family: menlo,monaco,consolas,monospace"></ul>
             </div>
+    <?php } ?>
+            <h3>Migrate DB</h3>
+            <hgroup>
+                <a href='#' class='button' id='wpc_db_migrate_start'>migrate</a>
+            </hgroup>
         </div>
         <script type="text/javascript">
-            var wpc_regen_nonce = "<?php echo wp_create_nonce('wpc_regen') ?>";
+            var wpc_settings_nonce  = "<?php echo wp_create_nonce('wpc_settings_nonce') ?>";
         </script>
             <?php
+    }
+
+    function db_migrate(){
+        function create_column_sql_for_field($field, $table, $parent_id, $wpc_type) {
+            global $wpdb;
+
+            $sql = "";
+
+            if ( !empty($field) ) switch ($field->type) {
+                case 'TextField':
+                case 'SelectField':
+                case 'TextAreaField':
+                case 'RichTextField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` text DEFAULT NULL;";
+                    break;
+                case 'CheckBoxField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` tinyint(1) DEFAULT NULL;";
+                    break;
+                case 'TimeField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` time DEFAULT NULL;";
+                    break;
+                case 'DateField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` date DEFAULT NULL;";
+                    break;
+                case 'YearField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` YEAR DEFAULT NULL;";
+                    break;
+                case 'FileField':
+                case 'ImageField':
+                    $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` int(11) DEFAULT NULL;";
+                    break;
+                case 'FormattedString':
+                    break;
+                default:
+                    _log("unhandeled field type '$field->type' for $field->id / $parent_id");
+                    break;
+            }
+
+            if (!empty($sql) ) {
+                $wpdb->query($sql);
+
+                if ($wpc_type == "post_type") {
+                    $sql = "SELECT wp_posts.ID, wp_postmeta.meta_value FROM wp_postmeta
+                            INNER JOIN wp_posts on wp_posts.ID = wp_postmeta.post_id
+                            WHERE wp_posts.post_type = '$parent_id'
+                            AND wp_postmeta.meta_key = '$field->id'
+                            AND wp_postmeta.post_id IN (
+                              SELECT wp_posts.ID FROM wp_posts
+                              WHERE wp_posts.post_type = '$parent_id'
+                            )";
+
+                    $rows = $wpdb->get_results($sql);
+
+                    foreach ($rows as $row) {
+                        $sql = "";
+
+                        switch ($field->type) {
+                            case 'CheckBoxField':
+                                $sql = "UPDATE $table SET `$field->id` = ('$row->meta_value' = 'true') WHERE `post_id` = $row->ID";
+                                //_log($sql);
+                                break;
+
+                                case 'TextField':
+                                case 'SelectField':
+                                case 'TextAreaField':
+                                case 'RichTextField':
+                                $val = preg_replace("/([^\\\])'/", "$1\\'", $row->meta_value);
+
+                                $sql = "UPDATE $table SET `$field->id` = '$val' WHERE `post_id` = $row->ID";
+                                break;
+
+                            default:
+                                $sql = "UPDATE $table SET `$field->id` = '$row->meta_value' WHERE `post_id` = $row->ID";
+                                break;
+                        }
+
+                        if ( !empty($sql) )
+                            $wpdb->query($sql);
+                    }
+                }
+                if ($wpc_type == "relation")  {
+                    $sql = "SELECT wp_wpc_relations.relation_id AS id, wp_wpc_relations.post_from_id, wp_wpc_relations.post_to_id, wp_wpc_relations_meta.meta_key AS 'key', wp_wpc_relations_meta.meta_value AS value FROM wp_wpc_relations
+                            INNER JOIN wp_wpc_relations_meta ON wp_wpc_relations_meta.relation_id = wp_wpc_relations.relation_id
+                            WHERE wp_wpc_relations.relationship_id = '$parent_id'
+                            AND wp_wpc_relations_meta.meta_key = '$field->id'";
+
+                    $rows = $wpdb->get_results($sql);
+
+                    foreach ($rows as $row) {
+                        $sql = "INSERT INTO $table (`id`, `post_from_id`, `post_to_id`, `$row->key`) VALUES ($row->id, $row->post_from_id, $row->post_to_id, '$row->value') ON DUPLICATE KEY UPDATE `$row->key` = '$row->value'";
+                        #_log($sql);
+                        $wpdb->query($sql);
+                    }
+                }
+            }
+
+            return ;
+        }
+        global $wpdb, $wpc_content_types, $wpc_relationships;
+
+        $ret = array('errors' => array());
+
+        if (! empty($_POST) || check_admin_referer('wpc_settings_nonce', 'nonce')) {
+            $ret['new_nonce'] = wp_create_nonce('wpc_settings_nonce');
+
+            _log("\n\nSTARTING MIGRATION");
+
+            foreach ($wpc_content_types as $content_type) {
+                $sql = "DROP TABLE IF EXISTS `$content_type->table`";
+                $wpdb->query($sql);
+
+                $sql = "CREATE TABLE `$content_type->table` (
+                          `post_id` int(11) unsigned NOT NULL DEFAULT '0',
+                          PRIMARY KEY (`post_id`),
+                          UNIQUE KEY `id_wp` (`post_id`)
+                        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;";
+                $wpdb->query($sql);
+
+
+                $sql = "SELECT wp_posts.ID FROM wp_posts
+                        WHERE wp_posts.post_type = '$content_type->id'";
+
+                $posts = $wpdb->get_results($sql);
+
+                foreach ($posts as $post) {
+                    $sql = "INSERT INTO $content_type->table (`post_id`) VALUES ($post->ID)";
+                    $wpdb->query($sql);
+                }
+
+                foreach ($content_type->fields as $fields) {
+                    create_column_sql_for_field($fields, $content_type->table, $content_type->id, "post_type");
+                }
+            }
+            foreach ($wpc_relationships as $relation) {
+                $sql = "DROP TABLE IF EXISTS `$relation->table`";
+                $wpdb->query($sql);
+
+                $sql = "CREATE TABLE `$relation->table` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `post_from_id` int(11) unsigned DEFAULT NULL,
+                          `post_to_id` int(11) unsigned DEFAULT NULL,
+                          PRIMARY KEY (`id`)
+                        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;";
+
+                $wpdb->query($sql);
+
+                $sql = "SELECT wp_wpc_relations.relation_id AS id, wp_wpc_relations.post_from_id, wp_wpc_relations.post_to_id FROM wp_wpc_relations
+                        WHERE wp_wpc_relations.relationship_id = '$relation->id'";
+
+                $rows = $wpdb->get_results($sql);
+                #_log($sql);
+
+                foreach ($rows as $row) {
+                    $sql = "INSERT INTO $relation->table (`id`, `post_from_id`, `post_to_id`) VALUES ($row->id, $row->post_from_id, $row->post_to_id)";
+                    #_log($sql);
+                    $wpdb->query($sql);
+                }
+
+                foreach ($relation->fields as $fields) {
+                    create_column_sql_for_field($fields, $relation->table, $relation->id, "relation");
+                }
+            }
+
+            //_log("\n\nADDING NEW COLUMNS");
+            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN semester TEXT");
+            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN notice TEXT");
+            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN semester_year YEAR");
+        } else
+            array_push($ret['errors'], 'U can\'t touch this!');
+
+        echo json_encode($ret);
+        die();
     }
 
     function collection_for_slug($type) {
@@ -121,8 +295,8 @@ class Settings extends GenericBackendPage {
         $ret = array('errors' => array());
         $defaults = array('last_id' => -1, 'limit'=>100, 'type'=>'');
 
-        if (! empty($_POST) || check_admin_referer('wpc_nonce', 'nonce')) {
-            $ret['new_nonce'] = wp_create_nonce('wpc_nonce');
+        if (! empty($_POST) || check_admin_referer('wpc_settings_nonce', 'nonce')) {
+            $ret['new_nonce'] = wp_create_nonce('wpc_settings_nonce');
             $args = (object) wp_parse_args($_POST, $defaults);
             $type = $args->type;
             $limit = $args->limit;
