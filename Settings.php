@@ -33,6 +33,10 @@ class Settings extends GenericBackendPage {
 
         add_action('wp_ajax_wpc_db_migrate',        array($this, 'db_migrate'));
 
+        add_action('wp_ajax_wpc_patch',             array($this, 'ajax_patch'));
+        add_action('wp_ajax_wpc_patch_all',         array($this, 'ajax_patch_all'));
+
+        $this->core_patch_dir = dirname(__FILE__).'/core-patches';
         parent::__construct();
     }
 
@@ -80,6 +84,27 @@ class Settings extends GenericBackendPage {
             <hgroup>
                 <a href='#' class='button' id='wpc_db_migrate_start'>migrate</a>
             </hgroup>
+
+            <h3>Patch core Wordpress</h3>
+            <?php
+                $all_patches = $this->core_patches();
+                if (empty($all_patches))
+                    echo "<p>There are no patches to apply.</p>\n";
+                else {
+                    $patchlink = function($patch) {
+                        return "<li><a href='#' class='wpc_patch' id='wpc_patch_$patch'>".
+                                basename($patch, '.patch').
+                            "</a></li>";
+                    };
+                    echo "<p>Select patch to apply.\n";
+                    echo "<ul>".join("\n", array_map($patchlink, $all_patches) )."</ul>\n";
+                    echo 'Or <a href="#" id="wpc_patch_all">apply all patches</a>.</p>';
+                }
+            ?>
+            <div id="wpc_patch_log_div" style='display: none;'>
+                <h4>Log</h4>
+                <ul id='wpc_patch_log' style="font-family: menlo,monaco,consolas,monospace"></ul>
+            </div>
         </div>
         <script type="text/javascript">
             var wpc_settings_nonce  = "<?php echo wp_create_nonce('wpc_settings_nonce') ?>";
@@ -255,6 +280,73 @@ class Settings extends GenericBackendPage {
         } else
             array_push($ret['errors'], 'U can\'t touch this!');
 
+        echo json_encode($ret);
+        die();
+    }
+
+    function core_patches() {
+        return array_map('basename', glob("$this->core_patch_dir/*.patch"));
+    }
+
+    /**
+     * @return array associative array with slugs of failed patches
+     */
+    function core_patch_many($patches) {
+        return array_keys(array_filter(
+            array_map(array($this, 'core_patch'), array_combine($patches, $patches)),
+            function($success) {return ! $success;}
+        ));
+    }
+
+    /**
+     * patch wordpress core with a specific patch
+     * @return bool whether the patch was successfully applied
+     */
+    function core_patch($patchslug) {
+        $wp_basedir = ABSPATH;
+        $patchfile = $this->core_patch_dir."/$patchslug";
+        // sanity check
+        if (! file_exists($patchfile))
+            return false;
+
+        _log('start');
+
+        $patch_cmd = 'patch -fs -d '.escapeshellarg($wp_basedir).' -p0 < '.
+            escapeshellarg($patchfile);
+        $test_cmd  = $patch_cmd.' --dry-run';
+
+        if ($this->_core_patch_run_cmd($test_cmd))
+            return $this->_core_patch_run_cmd($patch_cmd);
+        else
+            return false;
+    }
+
+    protected function _core_patch_run_cmd($cmd) {
+        $out = array();
+        $ret;
+        _log($cmd);
+        exec($cmd, $out, $ret);
+        _log($out);
+
+        return $ret === 0;
+    }
+
+    function ajax_patch_all() {
+        $this->ajax_do_patch($this->core_patches());
+    }
+
+    function ajax_patch() {
+        if (! empty($_POST['id']))
+            $this->ajax_do_patch(array($_POST['id']));
+    }
+    protected function ajax_do_patch($patches) {
+        $ret = array('errors' => array());
+
+        if (! empty($_POST) || check_admin_referer('wpc_settings_nonce', 'nonce')) {
+            $ret['new_nonce'] = wp_create_nonce('wpc_settings_nonce');
+
+            $ret['errors'] = $this->core_patch_many($patches);
+        }
         echo json_encode($ret);
         die();
     }
