@@ -701,7 +701,7 @@ var last_relation_data  = null;
 var last_filter_value   = "";
 
 jQuery(document).mouseup(function (e) {
-    var src          = jQuery(e.srcElement);
+    var src          = jQuery(e.target);
     var is_outside   = jQuery(src).closest("tr.selected, .relation_buttons_box, .relation_connect_new_metadata_box, .relation_src_list").length == 0;
 
     if (is_outside && last_relation_data != null) {
