@@ -52,9 +52,14 @@ class Settings extends GenericBackendPage {
         $filter = function($type) {
             return !empty($type->generated_values);
         };
+
+        $types_and_relations    = array();
+        if ( is_array($wpc_content_types) ) $types_and_relations    = array_merge($types_and_relations, $wpc_content_types);
+        if ( is_array($wpc_relationships) ) $types_and_relations    = array_merge($types_and_relations, $wpc_relationships);
+
         $all_types_options = join("\n", array_map(function ($type) {
             return "<option value='$type->id'>$type->label</option>";
-        }, array_filter($wpc_content_types + $wpc_relationships, $filter)));
+        }, array_filter($types_and_relations, $filter)));
 
         if ( !empty($all_types_options) ) {
     ?>
@@ -217,7 +222,7 @@ class Settings extends GenericBackendPage {
 
             _log("\n\nSTARTING MIGRATION");
 
-            foreach ($wpc_content_types as $content_type) {
+            if (is_array($wpc_content_types)) foreach ($wpc_content_types as $content_type) {
                 $sql = "DROP TABLE IF EXISTS `$content_type->table`";
                 $wpdb->query($sql);
 
@@ -243,7 +248,7 @@ class Settings extends GenericBackendPage {
                     create_column_sql_for_field($fields, $content_type->table, $content_type->id, "post_type");
                 }
             }
-            foreach ($wpc_relationships as $relation) {
+            if (is_array($wpc_relationships)) foreach ($wpc_relationships as $relation) {
                 $sql = "DROP TABLE IF EXISTS `$relation->table`";
                 $wpdb->query($sql);
 
@@ -272,11 +277,6 @@ class Settings extends GenericBackendPage {
                     create_column_sql_for_field($fields, $relation->table, $relation->id, "relation");
                 }
             }
-
-            //_log("\n\nADDING NEW COLUMNS");
-            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN semester TEXT");
-            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN notice TEXT");
-            //$wpdb->query("ALTER TABLE `wp_wpc_event` ADD COLUMN semester_year YEAR");
         } else
             array_push($ret['errors'], 'U can\'t touch this!');
 
