@@ -106,7 +106,7 @@ class FileField extends GenericField {
 
         return $ret;
     }
-    function get_field_core ($with_default_value) {
+    function get_field_core ($with_default_value = false) {
         $ret    = "";
         $record = the_record();
 
