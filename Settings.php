@@ -128,6 +128,7 @@ class Settings extends GenericBackendPage {
                 case 'SelectField':
                 case 'TextAreaField':
                 case 'RichTextField':
+                case 'TaxonomyField':
                     $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` text DEFAULT NULL;";
                     break;
                 case 'CheckBoxField':
