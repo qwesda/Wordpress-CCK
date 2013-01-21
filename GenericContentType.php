@@ -229,6 +229,18 @@ abstract class GenericContentType {
             <script type="text/javascript">
                 var postID = <?php the_ID(); ?>;
 
+                function disable_posttitle () {
+                    if ( <?php echo (!empty($this->generated_values['post_title']) ? "true" : "false"); ?> ) {
+
+                        jQuery('input#title').attr("disabled", "disabled");
+                    }
+                    if ( <?php echo (!empty($this->generated_values['post_name']) ? "true" : "false"); ?> ) {
+                        jQuery('#edit-slug-buttons a').attr("disabled", "disabled");
+                        jQuery('#edit-slug-buttons a').removeAttr("onclick");
+                        jQuery('#editable-post-name').unbind("click");
+                    }
+                }
+
                 function check_text_input_value(event) {
                     var input = jQuery(this);
                     var label = jQuery("label.wpc_hint[for='" + input.attr('id') + "']");
@@ -245,6 +257,8 @@ abstract class GenericContentType {
                 jQuery(document).ready(function () {
                     jQuery("body").delegate(".wpc_input_text", "focus keydown keyup change", check_text_input_value);
                     jQuery(".wpc_input_text").each(check_text_input_value);
+
+                    disable_posttitle();
                 });
 
             </script>
