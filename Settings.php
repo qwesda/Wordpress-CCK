@@ -148,6 +148,7 @@ class Settings extends GenericBackendPage {
                     $sql = "ALTER TABLE `$table` ADD COLUMN `$field->id` int(11) DEFAULT NULL;";
                     break;
                 case 'FormattedString':
+                case 'GeneratedValue':
                     break;
                 default:
                     _log("unhandeled field type '$field->type' for $field->id / $parent_id");
@@ -182,8 +183,8 @@ class Settings extends GenericBackendPage {
                                 case 'SelectField':
                                 case 'TextAreaField':
                                 case 'RichTextField':
-                                $val = preg_replace("/([^\\\])'/", "$1\\'", $row->meta_value);
-
+                                #$val = preg_replace("/([^\\\])'/", "$1\\'", $row->meta_value);
+                                $val = mysql_real_escape_string($row->meta_value);
                                 $sql = "UPDATE $table SET `$field->id` = '$val' WHERE `post_id` = $row->ID";
                                 break;
 
