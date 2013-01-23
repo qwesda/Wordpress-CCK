@@ -233,8 +233,6 @@ abstract class GenericContentType {
                     if ( <?php echo (!empty($this->generated_values['post_title']) ? "true" : "false"); ?> ) {
 
                         jQuery('input#title').attr("disabled", "disabled");
-                    }
-                    if ( <?php echo (!empty($this->generated_values['post_name']) ? "true" : "false"); ?> ) {
                         jQuery('#edit-slug-buttons a').attr("disabled", "disabled");
                         jQuery('#edit-slug-buttons a').removeAttr("onclick");
                         jQuery('#editable-post-name').unbind("click");
