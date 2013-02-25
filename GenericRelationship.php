@@ -132,7 +132,11 @@ abstract class GenericRelationship {
             if ( !isset($req->to_id) ) {
                 $new_post_title     = !empty($req->item_metadata) && !empty($req->item_metadata["post_title"]) ? $req->item_metadata["post_title"] : "New ".ucwords($relation->post_type_to->singular_label);
                 $new_post_id = wp_insert_post (
-                    array('post_type' => $relation->post_type_to_id, 'post_title' => $new_post_title)
+                    array(
+                        'post_type' => $relation->post_type_to_id,
+                        'post_title' => $new_post_title,
+                        'post_status' => ( $relation->post_type_to->auto_publish_from_rel_edit ? "publish" : "draft" )
+                    )
                 );
 
                 $req->to_id     = $new_post_id;
@@ -141,7 +145,11 @@ abstract class GenericRelationship {
             } else {
                 $new_post_title     = !empty($req->item_metadata) && !empty($req->item_metadata["post_title"]) ? $req->item_metadata["post_title"] : "New ".ucwords($relation->post_type_from->singular_label);
                 $new_post_id = wp_insert_post (
-                    array('post_type' => $relation->post_type_from_id, 'post_title' => $new_post_title)
+                    array(
+                        'post_type' => $relation->post_type_from_id,
+                        'post_title' => $new_post_title,
+                        'post_status' => ( $relation->post_type_from->auto_publish_from_rel_edit ? "publish" : "draft" )
+                    )
                 );
 
                 $req->from_id   = $new_post_id;

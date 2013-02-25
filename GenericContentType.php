@@ -4,19 +4,20 @@ global $wpc_content_types;
 $wpc_content_types = array();
 
 abstract class GenericContentType {
-    public $id                  = NULL;
-    public $fields              = array();
-    public $generated_values    = array();
-    public $relationships       = array();
+    public $id                      = NULL;
+    public $fields                  = array();
+    public $generated_values        = array();
+    public $relationships           = array();
 
-    public $label               = "";
-    public $slug                = "";
-    public $singular_label      = "";
-    public $supports            = array('title','editor');
-    public $has_archive         = false;
-    public $hierarchical        = false;
-    public $menu_position       = 5;
-    public $show_in_menu        = true;
+    public $label                       = "";
+    public $slug                        = "";
+    public $singular_label              = "";
+    public $supports                    = array('title','editor');
+    public $has_archive                 = false;
+    public $hierarchical                = false;
+    public $menu_position               = 5;
+    public $show_in_menu                = true;
+    public $auto_publish_from_rel_edit  = false;
 
     public $menu_item_url       = "";
 
@@ -28,7 +29,6 @@ abstract class GenericContentType {
     public $table;
     public $id_col;
     public $wpid_col;
-
 
     public static $wp_keys = array('post_author', 'post_date',
         'post_date_gmt', 'post_content', 'post_content_filtered',
