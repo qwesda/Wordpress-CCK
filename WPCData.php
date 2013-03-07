@@ -108,6 +108,10 @@ abstract class WPCData {
                 $content = preg_replace('/[\n\r]+/', '<br>', $content);
             }
 
+            if ($field_type == "TextField") {
+                $content = stripcslashes($content);
+            }
+
             return $content;
         }
 
