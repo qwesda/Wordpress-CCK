@@ -4,7 +4,7 @@
  * The base class for records of a content type.
  */
 abstract class WPCRecord extends WPCData {
-    protected $type;
+    public $type;
 
     /**
      * constructor for a Record.
