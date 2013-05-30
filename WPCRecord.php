@@ -4,7 +4,7 @@
  * The base class for records of a content type.
  */
 abstract class WPCRecord extends WPCData {
-    public $type;
+    protected $type;
 
     /**
      * constructor for a Record.
@@ -30,6 +30,10 @@ abstract class WPCRecord extends WPCData {
         $this->id = $id;
 
         parent::__construct($post, $meta);
+    }
+
+    public function get_type() {
+        return $this->type;
     }
 
     function showlink() {

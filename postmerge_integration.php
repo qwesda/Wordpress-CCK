@@ -22,7 +22,7 @@ add_action('pm_save_post', function($id, $old_ids, $post, $meta) {
     global $wpdb;
 
     $rec = the_record($id);
-    $type = $rec->type;
+    $type = $rec->get_type();
     array_walk($meta, function($val, $key) use ($rec) {
         $rec->set($key, $val);
     });
