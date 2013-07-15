@@ -45,7 +45,7 @@ abstract class GenericContentType {
 //  SET DEFAULTS
         if ( empty($this->id) )             $this->id               = strtolower ( get_class_name($this) );
         if ( empty($this->table) )          $this->table            = "wp_wpc_$this->id";
-        if ( empty($this->id_col) )         $this->id_col           = 'meta_id';
+        if ( empty($this->id_col) )         $this->id_col           = 'post_id';
         if ( empty($this->wpid_col) )       $this->wpid_col         = 'post_id';
 
         if ( empty($this->label) )          $this->label            = $this->id . "s";

@@ -32,6 +32,10 @@ abstract class WPCRecord extends WPCData {
         parent::__construct($post, $meta);
     }
 
+    public function get_type() {
+        return $this->type;
+    }
+
     function showlink() {
         if (! $this->id)
             return "";
@@ -81,7 +85,7 @@ abstract class WPCRecord extends WPCData {
         return new $classname($id, $p, $m);
     }
 
-    protected function get_field_type ($field_key) {
+    protected function get_field_type($field_key) {
         $ret = "";
 
         if ( !empty($this->type->fields[$field_key]) )

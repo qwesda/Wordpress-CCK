@@ -182,6 +182,16 @@ abstract class WPCData {
         return $this;
     }
 
+    function as_array() {
+        if (! isset($this->data))
+            $this->load_data();
+
+        if (! isset($this->meta))
+            $this->load_meta();
+
+        return array_merge($this->meta, $this->data);
+    }
+
     abstract function delete();
     abstract function commit($write_ro=false, $write_wo_change=false);
     abstract protected function load_data();

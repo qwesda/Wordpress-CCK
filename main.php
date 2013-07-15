@@ -537,4 +537,6 @@ class WPCustom {
 }
 
 $WPCustom = new WPCustom();
+
+require_once "postmerge_integration.php";
 ?>
