@@ -221,8 +221,6 @@ function show_connected_items_box (relation_data) {
                         });
                     };
 
-                    console.log(order);
-
                     var data = {
                             action              : "update_relation_order",
                             nonce               : nonce_relations_ajax,
