@@ -5,19 +5,22 @@ global $wpc_relationships;
 $wpc_relationships = array();
 
 abstract class GenericRelationship {
-    public $id                    = "";
-    public $fields                = array();
-    public $generated_fields      = array();
+    public $id                      = "";
+    public $fields                  = array();
+    public $generated_fields        = array();
 
-    public $label                 = "";
-    public $label_reverse         = "";
+    public $label                   = "";
+    public $label_reverse           = "";
 
-    public $post_type_from_id     = "";
-    public $post_type_from        = NULL;
-    public $post_type_to_id       = "";
-    public $post_type_to          = NULL;
-    public $table                 = NULL;
-    public $helptext              = "";
+    public $ordered                 = false;
+    public $ordered_reverse         = false;
+
+    public $post_type_from_id       = "";
+    public $post_type_from          = NULL;
+    public $post_type_to_id         = "";
+    public $post_type_to            = NULL;
+    public $table                   = NULL;
+    public $helptext                = "";
 
     public $field_to_show_in_list   = "";
     public $field_to_put_as_class   = "";
@@ -105,6 +108,7 @@ abstract class GenericRelationship {
         add_action('wp_ajax_add_relation',                      array(__CLASS__, 'add_relation_ajax'));
         add_action('wp_ajax_add_relation_with_new_post',        array(__CLASS__, 'add_relation_ajax'));
         add_action('wp_ajax_update_relation',                   array(__CLASS__, 'update_relation_ajax'));
+        add_action('wp_ajax_update_relation_order',             array(__CLASS__, 'update_relation_order_ajax'));
         add_action('wp_ajax_get_connected_items',               array(__CLASS__, 'get_connected_items_ajax'));
         add_action('wp_ajax_delete_relation',                   array(__CLASS__, 'delete_relation_ajax'));
     }
@@ -293,6 +297,52 @@ abstract class GenericRelationship {
 
         die();
     }
+    static function update_relation_order ($req) {
+        global $wpdb;
+        global $wpc_relationships;
+        global $wpc_content_types;
+
+        if ( empty($req) )
+            $req = $_REQUEST;
+
+        $rel = $wpc_relationships[$req->rel_id];
+        $req = (object)$req;
+        $ret = (object)array(
+             "errors" => array (),
+             "status" => array (),
+            "results" => array (),
+        );
+
+        if ( !empty($req->order) ) {
+            foreach ($req->order as $order) {
+                $sql    = "UPDATE `$rel->table` SET `order` = %d WHERE `id` = %d;";
+                $query  = $wpdb->prepare($sql, $order['pos'], $order['id']);
+                $wpdb->query( $query );
+            }
+        }
+
+        #ButterLog::debug("update_relation ", $req);
+
+        return $ret;
+    }
+
+    static function update_relation_order_ajax () {
+        header('Content-type: text/javascript');
+
+        $req = (object)$_REQUEST;
+
+        if ( !wp_verify_nonce($req->nonce, 'relations_ajax') ) {
+            _ping();
+            ButterLog::info("wp_verify_nonce($req->nonce) failed.");
+            _die();
+        }
+
+        $ret = self::update_relation_order($req);
+
+        echo json_encode($ret);
+
+        die();
+    }
 
     static function get_connected_items ($req) {
         global $wpdb;
@@ -304,6 +354,8 @@ abstract class GenericRelationship {
                     "results" => array (),
                 );
 
+        $ordered = false;
+
         if ( empty($req->rel_id) ) {
             $ret->errors[] = "rel_id was not specified";
         } else {
@@ -314,11 +366,13 @@ abstract class GenericRelationship {
                 $col        = 'post_from_id';
                 $othercol   = 'post_to_id';
                 $othertable = $rel->post_type_to->table;
+                $ordered    = $rel->ordered == true;
             } else if ( !empty($req->to_id) ) {
                 $id         = $req->to_id;
                 $col        = 'post_to_id';
                 $othercol   = 'post_from_id';
                 $othertable = $rel->post_type_from->table;
+                $ordered    = $rel->ordered_reverse == true;
             } else {
                 $ret->errors[] = "neither from_id nor to_id were specified";
             }
@@ -328,6 +382,11 @@ abstract class GenericRelationship {
             $sql = "SELECT $rel->table.* FROM $rel->table ".
             "INNER JOIN wp_posts on wp_posts.ID = $rel->table.$othercol ".
             "WHERE $col = %d";
+
+            if ( $ordered )
+                $sql .= " ORDER BY `order`, `id`";
+            else
+                $sql .= " ORDER BY `id`";
 
             $sql_result = $wpdb->get_results($wpdb->prepare($sql, $id));
 
@@ -713,6 +772,8 @@ $prepared_sql_limit" );
                 relId                   : "<?php echo $relID; ?>",
                 relIdClean              : "<?php echo $this->id; ?>",
                 postId                  : "<?php echo $post->ID; ?>",
+                ordered                 : "<?php echo ($this->ordered && !$this->ordered_reverse) ? 'true' : 'false'; ?>",
+                ordered_reverse         : "<?php echo (!$this->ordered && $this->ordered_reverse) ? 'true' : 'false'; ?>",
                 label                   : "<?php echo $reverse_direction ? $this->label_reverse : $this->label; ?>",
                 toId                    : "<?php echo $this->post_type_to_id; ?>",
                 toLabel                 : "<?php echo $this->post_type_to->label ?>",

@@ -113,6 +113,8 @@ function show_connected_items_box (relation_data) {
         cache    : false,
         success  : function (ret) {
             var html_to_append = "";
+            var is_ordered = (relation_data.relDir == "to_from" && relation_data.ordered == "true") || (relation_data.relDir == "from_to" && relation_data.ordered_reverse == "true");
+
 
             for (var i = ret.results.length - 1; i >= 0; i--) {
                 var result = ret.results[i];
@@ -180,6 +182,7 @@ function show_connected_items_box (relation_data) {
 
                 html_to_append =
                 '<tr data-id="'+result.id+'" data-data="'+htmlspecialchars( json_encode(result), 3)+'" class="' + fieldsToPutAsClassString + '"><td>'
+                + (is_ordered == true ? "<div class='relation-drag-handle'>&nbsp;</div>" : "")
                 + "<a class='source_item_edit_link' target='_blank' href='" + admin_url_post_php + "?post=" + object_id + "&action=edit'>edit "+relation_data.dstSingularLabel+"</a>"
                 + ( !lockRelation ?
                     "<a href='#' class='relation_connected_item'>"+result.item_metadata.post_title+"</a> " :
@@ -201,6 +204,46 @@ function show_connected_items_box (relation_data) {
             }
 
             jQuery(relation_data.metaboxSelectorConnectedItems).empty().append(html_to_append);
+
+            if ( is_ordered ) jQuery( relation_data.metaboxSelectorConnectedItems ).sortable({
+                'handle':'.relation-drag-handle',
+                'placeholder': "ui-state-highlight",
+                'stop': function( event, ui ) {
+                    var children = jQuery(relation_data.metaboxSelectorConnectedItems).children("tr");
+                    var order = [];
+
+                    for (var i = 0; i < children.length; i++) {
+                        var child = jQuery(children[i]);
+
+                        order.push({
+                            'id'        : child.data('id'),
+                            'pos'       : i
+                        });
+                    };
+
+                    console.log(order);
+
+                    var data = {
+                            action              : "update_relation_order",
+                            nonce               : nonce_relations_ajax,
+                            rel_id              : relation_data.relIdClean,
+                            order               : order
+                        };
+
+                    jQuery.ajax({
+                        url: ajaxurl,
+                        dataType: "json",
+                        data : data,
+                        cache : false,
+                        context : {
+                            "data"                  : data
+                        },
+                        success: function (data) {
+
+                        }
+                    });
+                }
+            });
         }
     });
 }
