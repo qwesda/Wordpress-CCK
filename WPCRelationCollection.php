@@ -51,6 +51,10 @@ class WPCRelationCollection extends WPCCollection {
             $relations = $relations->id_is($id);
         }
 
+        if ( !$reverse &&  $wpc_relationships[$typeslug]->ordered ) {
+            $relations = $relations->order_by("order");
+        }
+
         return $relations;
     }
 
