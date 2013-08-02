@@ -692,8 +692,7 @@ $prepared_sql_limit" );
                             <?php echo $reverse_direction ? $this->label_reverse : $this->label; ?>
 
                             <div class="relation_buttons_box">
-                                <a class="button relation_connect_existing_search" href='#'>add existing</a>
-                                <a class="relation_connect_new_input button" href='#'>add new</a>
+                                <a class="button relation_connect_existing_search" href='#'>add</a>
                             </div>
                         </th></tr>
                     </thead>
@@ -716,6 +715,7 @@ $prepared_sql_limit" );
                                 <label>search</label>
                                 <input type="text" class="wpc_input_text relation_src_search"/>
 
+                                <a class="relation_connect_new_input button" href='#'>add new</a>
                                 <a class="button relation_connect_existing_search_cancel" href='#'>cancel</a>
                             </div>
                         </th></tr>
