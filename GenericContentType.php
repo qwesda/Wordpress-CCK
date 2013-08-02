@@ -17,7 +17,7 @@ abstract class GenericContentType {
     public $hierarchical                = false;
     public $menu_position               = 5;
     public $show_in_menu                = true;
-    public $auto_publish_from_rel_edit  = false;
+    public $auto_publish_from_rel_edit  = true;
 
     public $menu_item_url       = "";
 
