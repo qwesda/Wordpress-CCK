@@ -381,6 +381,7 @@ function handle_event(event_id, event, relation_data) {
             show_box(relation_data, "relation_add_search_box");
 
             jQuery(relation_data.metaboxSelector + '.relation_src_search').val('');
+            jQuery(relation_data.metaboxSelector + '.relation_src_search').focus();
 
             update_search_results(relation_data);
             break;
