@@ -1,8 +1,10 @@
-    var mapspicker_marker   = null;
-    var mapspicker_latLgn   = null;
-    var mapspicker_map      = null;
-    var mapspicker_geocoder = null;
 
+
+function setupMap (parent, filed_id_interfix) {
+    var mapspicker_marker       = null;
+    var mapspicker_latLgn       = null;
+    var mapspicker_map          = null;
+    var mapspicker_geocoder     = null;
     var mapspicker_postal_code  = "";
     var mapspicker_street       = "";
     var mapspicker_number       = "";
@@ -17,6 +19,7 @@
 
         return false;
     }
+
     function updateMarker(marker, latLng){
         if(mapspicker_geocoder){
             mapspicker_geocoder.geocode({'latLng': latLng}, function(results, status) {
@@ -34,24 +37,24 @@
                             if(contains(address_component.types, "country"))                        mapspicker_country      = address_component.long_name;
                         }
 
-                        jQuery("#map_canvas_data").html(results[0].formatted_address);
-                        jQuery("#map_canvas_data").append(" <a id='map_canvas_data_use'>use this address</a>");
-                        jQuery("#map_canvas_data_use").click(function() {
-                            jQuery("#wpc_field_street").val(mapspicker_street).trigger('change');
-                            jQuery("#wpc_field_number").val(mapspicker_number).trigger('change');
-                            jQuery("#wpc_field_postal_code").val(mapspicker_postal_code).trigger('change');
-                            jQuery("#wpc_field_city").val(mapspicker_city).trigger('change');
-                            jQuery("#wpc_field_state").val(mapspicker_state).trigger('change');
-                            jQuery("#wpc_field_country").val(mapspicker_country).trigger('change');
+                        parent.find(".map_canvas_data").html(results[0].formatted_address);
 
-                            jQuery("#wpc_field_latitude").val(mapspicker_latLgn.lat()).trigger('change');
-                            jQuery("#wpc_field_longitude").val(mapspicker_latLgn.lng()).trigger('change');
+                        jQuery(" <a class='map_canvas_data_use'> use this address</a> ").appendTo(parent.find(".map_canvas_data")).click(function() {
+                            parent.find("#wpc_"+filed_id_interfix+"field_street").val(mapspicker_street).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_number").val(mapspicker_number).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_postal_code").val(mapspicker_postal_code).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_city").val(mapspicker_city).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_state").val(mapspicker_state).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_country").val(mapspicker_country).trigger('change');
+
+                            parent.find("#wpc_"+filed_id_interfix+"field_latitude").val(mapspicker_latLgn.lat()).trigger('change');
+                            parent.find("#wpc_"+filed_id_interfix+"field_longitude").val(mapspicker_latLgn.lng()).trigger('change');
                         });
                     } else {
-                        jQuery("#map_canvas_data").html("No results found");
+                        parent.find(".map_canvas_data").html("No results found");
                     }
                 } else {
-                    jQuery("#map_canvas_data").html("Geocoder failed due to: " + status);
+                    parent.find(".map_canvas_data").html("Geocoder failed due to: " + status);
                 }
             });
         }
@@ -79,55 +82,65 @@
         updateMarker(mapspicker_marker, latLng);
     }
 
-    jQuery(function($) {
-        if(!document.getElementById("map_canvas"))
-            return ;
+    if ( filed_id_interfix === undefined )
+        filed_id_interfix = "";
+    else filed_id_interfix += "_";
 
-        var lat = jQuery("#wpc_field_latitude").val();
-        var lng = jQuery("#wpc_field_longitude").val();
+    parent.append(
+'        <div class="wpc_form_row">'+
+'            <div class="map_canvas_data"></div>'+
+'            <div class="map_canvas"></div>'+
 
-        if(isNaN(parseFloat(lat)) || lat == 0)  lat = 52.51456249417806;
-        if(isNaN(parseFloat(lng)) || lng == 0)  lng = 13.350002031326355;
+'            <div class="div-place-search_for_location float-left">'+
+'                <input class="wpc_input_text search_for_location"  type="text" value="" placeholder="search" />'+
+'                <label class="wpc_hint" for="search_for_location">search for location</label>'+
 
-        var latLng = new google.maps.LatLng(lat, lng);
+'                <ul class="search_for_location_results"></ul>'+
+'            </div>'+
+'        </div>');
 
-        var myOptions = {
-            zoom: 12,
-            center: latLng,
-            disableDefaultUI: true,
-            disableDoubleClickZoom: true,
-            navigationControl: true,
-            mapTypeControl: true,
-            navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
-            mapTypeId: google.maps.MapTypeId.TERRAIN
-        }
+    var lat = parent.find("#wpc_"+filed_id_interfix+"field_latitude").val();
+    var lng = parent.find("#wpc_"+filed_id_interfix+"field_longitude").val();
 
-        mapspicker_geocoder = new google.maps.Geocoder();
-        mapspicker_map      = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    if(isNaN(parseFloat(lat)) || lat === 0)  lat = 52.51456249417806;
+    if(isNaN(parseFloat(lng)) || lng === 0)  lng = 13.350002031326355;
 
-        setMarker(mapspicker_map, latLng);
+    var latLng = new google.maps.LatLng(lat, lng);
 
-        google.maps.event.addListener(mapspicker_map, 'dblclick', function(event) {
-            setMarker(this, event.latLng);
-        });
+    var myOptions = {
+        zoom: 12,
+        center: latLng,
+        disableDefaultUI: true,
+        disableDoubleClickZoom: true,
+        navigationControl: true,
+        mapTypeControl: true,
+        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+    };
 
-        setupReverseGeocoder();
+    mapspicker_geocoder = new google.maps.Geocoder();
+    mapspicker_map      = new google.maps.Map(parent.find(".map_canvas")[0], myOptions);
 
+    setMarker(mapspicker_map, latLng);
 
-        jQuery('#search-for-location-results').empty().hide();
+    google.maps.event.addListener(mapspicker_map, 'dblclick', function(event) {
+        setMarker(this, event.latLng);
     });
 
+
+    parent.find('.search_for_location_results').empty().hide();
 
     var geocoder            = null;
     var geocoder_query      = "";
     var geocoder_lastquery  = "";
     var geocoder_fired      = false;
 
+    setupReverseGeocoder();
 
     function setupReverseGeocoder() {
         geocoder = new google.maps.Geocoder();
 
-        jQuery('#search-for-location').bind('change keydown keyup', function(event) {
+        parent.find('.search_for_location').bind('change keydown keyup', function(event) {
             if(event.type == 'keydown' && event.keyCode == 13)
                 event.preventDefault();
 
@@ -135,11 +148,11 @@
 
             if(!geocoder_fired && (event.type == 'change' || event.type == 'keyup')) {
                 geocoder_fired = true;
-                window.setTimeout('sendGeocoderQuery()', 500);
+                window.setTimeout(sendGeocoderQuery, 500);
             }
         });
 
-        jQuery('#div-place-search-for-location').delegate('a.select_geocoder_result', 'click', function(event) {
+        parent.find('.div-place-search_for_location').delegate('a.select_geocoder_result', 'click', function(event) {
             event.preventDefault();
 
             var sourceElement   = jQuery(this);
@@ -158,31 +171,29 @@
         if(geocoder_lastquery != geocoder_query){
             geocoder_lastquery = geocoder_query;
 
-            if(geocoder_query != "" && geocoder_query.length >= 3){
-                geocoder.geocode( { 'address': geocoder_query}, function(results, status) {
-                    var jQ_results = jQuery('#search-for-location-results');
+            if(geocoder_query !== "" && geocoder_query.length >= 3){
+                geocoder.geocode( { 'address': geocoder_query, 'language':'de'}, function(results, status) {
+                    var jQ_results = parent.find('.search_for_location_results');
 
                     jQ_results.empty().show();
 
                     if (status == google.maps.GeocoderStatus.OK) {
                         for (var i = 0; i < results.length; i++){
-                            jQ_results.append(
-                                '<li>'+
+                            jQuery('<li>'+
                                     '<a href="#" class="select_geocoder_result" title="'+results[i]+'">'+results[i].formatted_address+'</a>'+
-                                '</li>'
-                            );
+                                '</li>').appendTo(jQ_results).data("address", results[i]);
 
-                            jQ_results.children().last().data("address", results[i]);
-
-                            if(i%2 == 0)
-                                jQ_results.children().last().addClass("odd");
+                            if(i%2 === 0)
+                                jQ_results.find().last().addClass("odd");
                         }
                     } else {
-                        jQuery('#search-for-location-results').append("<li><i>Geocode was not successful for the following reason: " + status + "</i></li>");
+                        parent.find('.search_for_location_results').append("<li><i>Geocode was not successful for the following reason: " + status + "</i></li>");
                     }
                 });
             } else {
-                jQuery('#search-for-location-results').empty().hide();
+                parent.find('.search_for_location_results').empty().hide();
             }
         }
     }
+}
+
