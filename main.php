@@ -507,8 +507,8 @@ class WPCustom {
         }
 
         if ( !empty($type_menu_url) ) {
-            $type_menu_url  = home_url($type_menu_url);
-            $nav_item_url   = preg_replace("/\/$/", "", $nav_item->url);
+            $type_menu_url  = preg_replace("/^https?:\/\//", "", preg_replace("/\/$/", "", home_url($type_menu_url) ) );
+            $nav_item_url   = preg_replace("/^https?:\/\//", "", preg_replace("/\/$/", "", $nav_item->url) );
 
             return $type_menu_url == $nav_item_url;
         }
