@@ -2,31 +2,31 @@
     jQuery(document).ready(function (){
         jQuery('input.wpc_input_file_select').live("click", function(event) {
             event.preventDefault();
-            
+
             tb_show('', 'media-upload.php?post_id='+postID+'&TB_iframe=true');
         });
     });
-    
+
     jQuery(document).ready(function (){
         jQuery('input.wpc_input_file_remove').live("click", function(event) {
             var win = window.dialogArguments || opener || parent || top;
 
             event.preventDefault();
-            
+
             var data = jQuery(this).data();
-            
+
             var args = {
-                action:'set-' + data.file_field_key, 
-                post_id: win.postID, 
-                file_id: -1, 
+                action:'set-' + data.file_field_key,
+                post_id: win.postID,
+                file_id: -1,
                 _ajax_nonce: data.nonce
-            
+
             };
-            
+
             link = jQuery('.wpc_input_file_remove_' + data.file_field_key);
-            
+
             link.val( "removing ..." );
-            
+
             jQuery.post(ajaxurl, args, function(html){
                 var win = window.dialogArguments || opener || parent || top;
 
@@ -39,7 +39,7 @@
                         link.hide();
                     });
 
-                    win.WPCFileFieldSetContainer(data.file_field_key, html);
+                    WPCFileFieldSetContainer(data.file_field_key, html);
                 }
             }
             );
@@ -52,22 +52,22 @@ function WPCFileFiedSet(file_field_key, post_id, file_id, nonce) {
     var win = window.dialogArguments || opener || parent || top;
 
     var link = jQuery('#' + file_field_key + "-" + file_id);
-    
+
     var args = {
-        action:'set-' + file_field_key, 
-        post_id: win.postID, 
-        file_id: file_id, 
+        action:'set-' + file_field_key,
+        post_id: win.postID,
+        file_id: file_id,
         _ajax_nonce: nonce
 
     };
-    
+
     link.val( "saving" );
 
     jQuery.post(ajaxurl, args, function(html){
         var win = window.dialogArguments || opener || parent || top;
-        
+
         link.val( "done" );
-        
+
         if ( html == '0' ) {
             alert( "failed to set field " + file_field_key);
         } else {
@@ -76,7 +76,7 @@ function WPCFileFiedSet(file_field_key, post_id, file_id, nonce) {
             link.parents("tr").fadeOut( 500, function() {
                 link.parents("tr").hide();
             });
-            
+
             win.WPCFileFieldSetContainer(file_field_key, html);
         }
     }
