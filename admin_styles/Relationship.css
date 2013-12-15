@@ -4,9 +4,9 @@
 
 div.relation-drag-handle {
 	display: block;
-	
+
 	opacity: 0.5;
-	
+
 	width: 15px;
 	height: 40px;
 	background: #dddddd; /* Old browsers */
@@ -17,11 +17,11 @@ div.relation-drag-handle {
 	background: -ms-linear-gradient(top,  #dddddd 0%,#bbbbbb 100%); /* IE10+ */
 	background: linear-gradient(to bottom,  #dddddd 0%,#bbbbbb 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#bbbbbb',GradientType=0 ); /* IE6-9 */
-	
+
 	border-radius: 4px;
-	
+
 	box-shadow: 0px 0px 1px #222;
-	
+
 	float: left;
 	margin-right: 5px;
 }
@@ -87,6 +87,10 @@ div.relation_table_container {
   height: 400px;
 }
 
+table.relation_connected_list.relation_connected_list.relation_connected_list {
+  border: none;
+}
+
 table.relation_connected_list tr div.connected_item_info {
   text-align: riglht;
   top: 25px;
@@ -123,8 +127,8 @@ div.relation_edit_box div.status-update {
 
   color: darkgreen;
 }
-table.relation_connected_list_header,
-table.relation_src_list_header {
+table.relation_connected_list_header.relation_connected_list_header,
+table.relation_src_list_header.relation_src_list_header {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: none;
@@ -142,6 +146,10 @@ table.relation_src_list > tbody > tr > td {
 table.relation_src_list > tbody > tr > td,
 table.relation_connected_list > tbody > tr > td {
   border-bottom: 1px solid #DFDFDF;
+}
+table.relation_src_list.relation_src_list > tbody > tr:nth-child(even) > td,
+table.relation_connected_list.relation_connected_list > tbody > tr:nth-child(even) > td {
+  background-color: #f8f8f8;
 }
 
 table.relation_connected_list > tbody > tr > td .source_item_edit_link {
@@ -167,7 +175,7 @@ table.relation_connected_list > tbody > tr > td  {
 div.relation_table_container {
   border: 1px solid #DFDFDF;
   border-top: none;
-  background: #f9f9f9;
+  background: #fff;
 }
 
 label.wpc_label_left {
@@ -364,10 +372,21 @@ div.relation_buttons_box input {
   height: 20px;
 }
 
+table.relation_connected_list_header ,
+table.relation_src_list_header  {
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+table.relation_connected_list_header thead tr th,
+table.relation_src_list_header thead tr th {
+  background-color: #eee;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
 table.relation_connected_list_header thead tr th,
 table.relation_src_list_header thead tr th,
 div.relation_connect_new_metadata_box h3  {
-  height: 20px;
+  height: 26px;
 }
 
 div.relation_buttons_box_bottom {
