@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/CheckBoxField.css?ver=3.5.2
 	http://www.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/CheckBoxField.css?ver=3.5.2 */
 
@@ -13,4 +13,8 @@ div.wpc_form_field_CheckBoxField {
 input[type='checkbox'] {
     margin-top: 2px;
     margin-right: 4px;
+}
+
+input.wpc_input.wpc_input_checkbox + label {
+  font-size: 12px;
 }

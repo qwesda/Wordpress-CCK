@@ -7,3 +7,6 @@ a.wpc_input_date_edit_link {
 span.wpc_input_date_edit_container {
 
 }
+input.wpc_input.wpc_input_text {
+  font-size: 13px;
+}
