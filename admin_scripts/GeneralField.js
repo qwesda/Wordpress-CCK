@@ -13,7 +13,7 @@ function move_wpc_labels_to_rows (argument) {
     jQuery(document).ready(function (){
         move_wpc_labels_to_rows();
 
-        jQuery('.wpc_input').live("focusin", function(event) {
+        jQuery('body').on('focusin', ".wpc_input", function(event){
             event.preventDefault();
 
             jQuery('label.wpc_helptext').fadeOut(100);
@@ -23,7 +23,7 @@ function move_wpc_labels_to_rows (argument) {
 
             label.fadeIn(200);
         });
-        jQuery('.wpc_input').live("focusout", function(event) {
+        jQuery('body').on('focusout', ".wpc_input", function(event){
             event.preventDefault();
 
             jQuery('label.wpc_helptext').hide();
