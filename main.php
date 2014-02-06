@@ -415,6 +415,7 @@ class WPCustom {
         $theme  = wp_get_theme();
         $theme_dir  = $theme["Stylesheet Dir"];
 
+        loadScriptsInPathWithIDPrefix   ($theme_dir . "/admin_libraries", "theme_backend_libraries");
         loadScriptsInPathWithIDPrefix   ($theme_dir . "/admin_scripts",   "theme_backend_scripts");
 
     }
