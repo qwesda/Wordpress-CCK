@@ -1,18 +1,10 @@
-/* @override
-    https://dev.topoi.hu-berlin.de/fdcl/*
-    http://dev.topoi.hu-berlin.de/fdcl/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
-    http://dev.fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.3.1
-    http://fdcl.bytesandbutter.de:8080/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.4.1
-    http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/backend_styles.css?ver=3.4.2
-*/
-
 div.wpc_form_row_header {
     clear: both;
 
     font-weight: bold;
 
-    padding: 4px;
-    padding-top: 12px;
+    padding: 0 4px;
+    margin-top: 8px;
 }
 div.wpc_form_row_header.center {
     text-align: center;
@@ -131,13 +123,12 @@ input:hover + label.wpc_hint {
 }
 
 div.wpc_subform {
+    border: 1px solid #cfcfcf;
     border-top: 1px solid #aaa;
     border-bottom: 1px solid #aaa;
-
-    padding: 10px 20px 10px 20px;
-    margin: 10px -10px 0px -10px;
-
-    background: rgba(255,255,128,0.04);
+    padding: 0 10px 10px 10px;
+    margin: 10px -13px 0px -13px;
+    background: rgba(244,244,244,1);
 }
 
 div.wpc_form_row {

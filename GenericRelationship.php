@@ -644,7 +644,7 @@ $prepared_sql_limit" );
                     else $rel_id_clean = $rel_id;
                 ?>
                     <div id="tab_rel_<?php echo $rel_id ?>">
-                        <div class="wpc_subform" id="rel_<?php echo $rel_id ?>">
+                        <div class="" id="rel_<?php echo $rel_id ?>">
                             <div class="wpc_form_row">
                                 <div class="wpc_form_row"><?php
                                     $rel->echo_relationship($post, $reverse);

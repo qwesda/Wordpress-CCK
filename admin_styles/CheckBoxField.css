@@ -1,13 +1,7 @@
-/* @override
-	http://foo.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/CheckBoxField.css?ver=3.5.2
-	http://www.topoi.dev/wp-content/plugins/Wordpress-CCK/admin_styles/CheckBoxField.css?ver=3.5.2 */
-
-
-div.wpc_form_field_CheckBoxField {
+.wpc_form_field_CheckBoxField {
     margin-right: 10px;
-    margin-top: 4px;
-    margin-bottom: 6px;
-    margin-left: 10px;
+    margin-left: 5px;
+    display: inline-block;
 }
 
 input[type='checkbox'] {
@@ -15,6 +9,7 @@ input[type='checkbox'] {
     margin-right: 4px;
 }
 
-input.wpc_input.wpc_input_checkbox + label {
+.wpc_input_checkbox + label {
   font-size: 12px;
+  vertical-align: bottom;
 }

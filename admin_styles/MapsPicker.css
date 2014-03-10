@@ -1,5 +1,5 @@
 .map_canvas {
-    height:300px;
+    height:250px;
     border:1px solid #999;
     margin-top: 10px;
 }
@@ -10,16 +10,25 @@
     text-align: right;
 }
 
+.div-place-search_for_location {
+    position: relative;
+}
+
 input.search_for_location.search_for_location {
-    width: 100%;
+    margin-top: 20px;
+    width: 200px;
     margin-left: 0px;
 }
 
 ul.search_for_location_results {
-    margin: 10px 0px;
     width: 100%;
+    z-index: 1;
+    margin: 1px;
+    margin-top: 11px;
 
-    border: 1px solid rgba(0,0,0,0.15);
+    background-color: rgba(255, 255, 255, 0.6);
+
+    position: absolute;
 }
 .search_for_location_results li {
     background-color: rgba(0,0,0,0.01);
