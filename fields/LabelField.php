@@ -16,7 +16,7 @@ class LabelField extends GenericField {
         <label class="wpc_input_label"><?php if ( !empty($value) ) echo $value; ?></label>
     <?php }
 
-    function may_write () {
+    function may_write ($post_id = NULL) {
         return false;
     }
 }

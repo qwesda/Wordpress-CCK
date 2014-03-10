@@ -13,7 +13,7 @@ class FormattedString extends GenericField {
         add_filter($filter_id, $callback, 10, 2);
     }
 
-    function may_write () {
+    function may_write ($post_id = NULL) {
         return false;
     }
 

@@ -147,13 +147,13 @@ class WPCRelationCollection extends WPCCollection {
     /**
      * this performs some magic to (re)order from and to to the expected order.
      */
-    function add_filter_($key, $val, $op="=") {
+    function add_filter_($key, $val, $op = '=', $printf = '%s') {
         if ($key == "post_from_id")
             $key = $this->db_is_reverse ? "post_to_id" : "post_from_id";
         else if ($key == "post_to_id")
             $key = $this->db_is_reverse ? "post_from_id" : "post_to_id";
 
-        parent::add_filter_($key, $val, $op);
+        parent::add_filter_($key, $val, $op, $printf);
     }
 
 }

@@ -11,7 +11,7 @@ class GeneratedValue extends FormattedString {
         $parent->generated_values[$this->id] = $this;
     }
 
-    function may_write () {
+    function may_write ($post_id = NULL) {
         return true;
     }
 
