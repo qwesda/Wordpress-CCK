@@ -261,10 +261,10 @@ function show_connected_item_edit_box (relation_data) {
     item_metabox.find(".relation_buttons_box").appendTo(relation_data.metaboxSelector + ".relation_connected_box th");
     item_metabox.show();
 
-    var info_text               = "<div class='padding_box'>"
-        + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>No Editable Item Metadata</label></div>")
-        + ( relationEditBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + relationEditBox + "</div>" : "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>No Editable Relation Metadata</label></div>")
-        + "</div>";
+    var info_text               = itemEditBox != "" || relationEditBox != "" ? "<div class='padding_box'>"
+        + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
+        + ( relationEditBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + relationEditBox + "</div>" : "")
+        + "</div>" : "";
 
     var data = {
             action  : "get_post_metadata",
@@ -429,10 +429,10 @@ function handle_event(event_id, event, relation_data) {
             item_metabox.find(".relation_buttons_box").appendTo(relation_data.metaboxSelector + ".relation_add_search_box th");
             item_metabox.show();
 
-            var info_text               = "<div class='padding_box'>"
-            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>No Editable Item Metadata</label></div>")
-            + ( relationEditBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + relationEditBox + "</div>" : "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>No Editable Relation Metadata</label></div>")
-            + "</div>";
+            var info_text               = itemEditBox != "" || relationEditBox != "" ? "<div class='padding_box'>"
+            + ( itemEditBox != "" ? "<div class='relation_item_metadata_edit_box'><label class='relation_edit_label'>Item Metadata</label>" + itemEditBox + "</div>" : "")
+            + ( relationEditBox != "" ? "<div class='relation_metadata_edit_box'><label class='relation_edit_label'>Relation Metadata</label>" + relationEditBox + "</div>" : "")
+            + "</div>" : "";
 
             var data = {
                     action  : "get_post_metadata",
