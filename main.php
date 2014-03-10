@@ -405,6 +405,7 @@ class WPCustom {
 
         </script>
         <?php
+
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-tabs');
@@ -430,7 +431,7 @@ class WPCustom {
     }
 
     function wp_enqueue_scripts () {
-        wp_enqueue_script("jquery");
+        // wp_enqueue_script("jquery");
 
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_libraries", "core_frontend_libraries");
         loadScriptsInPathWithIDPrefix   (WP_PLUGIN_DIR . "/Wordpress-CCK/frontend_scripts",   "core_frontend_scripts");
