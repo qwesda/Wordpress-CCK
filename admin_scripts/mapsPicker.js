@@ -88,19 +88,19 @@ function setupMap (parent, filed_id_interfix) {
 
     parent.append(
 '        <div class="wpc_form_row">'+
-'            <div class="map_canvas_data"></div>'+
-'            <div class="map_canvas"></div>'+
 
-'            <div class="div-place-search_for_location float-left">'+
-'                <input class="wpc_input_text search_for_location"  type="text" value="" placeholder="search" />'+
-'                <label class="wpc_hint" for="search_for_location">search for location</label>'+
+'            <div class="div-place-search_for_location">'+
+'                <input class="wpc_input_text search_for_location"  type="text" value="" placeholder="search for location" />'+
 
 '                <ul class="search_for_location_results"></ul>'+
 '            </div>'+
+
+'            <div class="map_canvas"></div>'+
+'            <div class="map_canvas_data"></div>'+
 '        </div>');
 
-    var lat = parent.find("#wpc_"+filed_id_interfix+"field_latitude").val();
-    var lng = parent.find("#wpc_"+filed_id_interfix+"field_longitude").val();
+    var lat = jQuery("#wpc_"+filed_id_interfix+"field_latitude").val();
+    var lng = jQuery("#wpc_"+filed_id_interfix+"field_longitude").val();
 
     if(isNaN(parseFloat(lat)) || lat === 0)  lat = 52.51456249417806;
     if(isNaN(parseFloat(lng)) || lng === 0)  lng = 13.350002031326355;
@@ -110,9 +110,11 @@ function setupMap (parent, filed_id_interfix) {
     var myOptions = {
         zoom: 12,
         center: latLng,
-        disableDefaultUI: true,
+        disableDefaultUI: false,
+        streetViewControl: false,
         disableDoubleClickZoom: true,
         navigationControl: true,
+        scrollwheel: false,
         mapTypeControl: true,
         navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
         mapTypeId: google.maps.MapTypeId.TERRAIN
@@ -128,7 +130,7 @@ function setupMap (parent, filed_id_interfix) {
     });
 
 
-    parent.find('.search_for_location_results').empty().hide();
+    parent.find('.search_for_location_results').empty();
 
     var geocoder            = null;
     var geocoder_query      = "";
@@ -175,7 +177,7 @@ function setupMap (parent, filed_id_interfix) {
                 geocoder.geocode( { 'address': geocoder_query, 'language':'de'}, function(results, status) {
                     var jQ_results = parent.find('.search_for_location_results');
 
-                    jQ_results.empty().show();
+                    jQ_results.empty();
 
                     if (status == google.maps.GeocoderStatus.OK) {
                         for (var i = 0; i < results.length; i++){
@@ -191,7 +193,7 @@ function setupMap (parent, filed_id_interfix) {
                     }
                 });
             } else {
-                parent.find('.search_for_location_results').empty().hide();
+                parent.find('.search_for_location_results').empty();
             }
         }
     }
