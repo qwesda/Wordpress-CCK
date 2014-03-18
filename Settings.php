@@ -213,7 +213,7 @@ class Settings extends GenericBackendPage {
 
     function regen_fields() {
         $ret = array('errors' => array());
-        $defaults = array('last_id' => -1, 'limit'=>100, 'type'=>'');
+        $defaults = array('last_id' => -1, 'limit'=>25, 'type'=>'');
 
         if (! empty($_POST) || check_admin_referer('wpc_settings_nonce', 'nonce')) {
             $ret['new_nonce'] = wp_create_nonce('wpc_settings_nonce');
