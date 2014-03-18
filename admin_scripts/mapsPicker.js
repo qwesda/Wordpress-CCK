@@ -49,6 +49,8 @@ function setupMap (parent, filed_id_interfix) {
 
                             parent.find("#wpc_"+filed_id_interfix+"field_latitude").val(mapspicker_latLgn.lat()).trigger('change');
                             parent.find("#wpc_"+filed_id_interfix+"field_longitude").val(mapspicker_latLgn.lng()).trigger('change');
+
+                            parent.find('.search_for_location_results').empty();
                         });
                     } else {
                         parent.find(".map_canvas_data").html("No results found");
