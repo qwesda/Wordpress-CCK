@@ -15,6 +15,7 @@ abstract class GenericContentType {
     public $supports                    = array('title','editor');
     public $has_archive                 = false;
     public $hierarchical                = false;
+    public $exclude_from_search         = false;
     public $menu_position               = 5;
     public $show_in_menu                = true;
     public $auto_publish_from_rel_edit  = true;
@@ -63,6 +64,7 @@ abstract class GenericContentType {
                 'capability_type'       => 'post',
                 'hierarchical'          => $this->hierarchical,
                 'menu_position'         => $this->menu_position,
+                'exclude_from_search'   => $this->exclude_from_search,
                 'show_in_menu'          => $this->show_in_menu,
                 '_builtin'              => false,
                 'rewrite'               => array("slug" => $this->slug),
