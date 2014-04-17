@@ -87,9 +87,9 @@ abstract class WPCCollection {
         if (isset($this->iterate_results))
             return count($this->iterate_results);
 
-        $count = $this->sql_results('COUNT(*)')[0]['COUNT(*)'];
+        $count = $this->sql_results('COUNT(*)');
 
-        return $count;
+        return $count[0]['COUNT(*)'];
     }
 
     /**
