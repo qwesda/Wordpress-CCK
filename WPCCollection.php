@@ -232,8 +232,6 @@ abstract class WPCCollection {
      * returns all filtered records as array.
      */
     function sql_results($selectstr="*") {
-        global $wpdb;
-
         $sql = "SELECT $selectstr FROM $this->table AS t\n";
 
         if (! empty($this->meta_table))
@@ -260,26 +258,23 @@ abstract class WPCCollection {
 
         #_log($sql);
 
-        $dbres = $wpdb->dbh->query($sql);
+        $dbres = mysql_query($sql);
         if (! $dbres) {
             // XXX: this should display an error (_error function needed?)
-            ButterLog::error("Could not execute the following SQL.\n$sql\nmysqli_error:\n".mysqli_error());
+            ButterLog::error("Could not execute the following SQL.\n$sql\nmysql_error:\n".mysql_error());
             return array();
         }
-
         return $dbres;
     }
 
     function results() {
-        global $wpdb;
-
         $dbres = $this->sql_results();
         if (! $dbres)
             return array();
 
         $res = array();
         $table_cols = array_flip($this->table_cols);
-        while ($row = $dbres->fetch_assoc())
+        while ($row = mysql_fetch_assoc($dbres))
             $res[] = array(
                 'id' => $row[$this->table_pk],
                 't'  => array_intersect_key($row, $table_cols),
