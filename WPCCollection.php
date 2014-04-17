@@ -81,13 +81,15 @@ abstract class WPCCollection {
      * returns the count
      */
     function count () {
+        global $wpdb;
+
         // shortcut, if there are already fetched results
         if (isset($this->iterate_results))
             return count($this->iterate_results);
 
-        $dbres = $this->sql_results('COUNT(*)');
-        $row = $dbres->fetch_array();
-        return intval($row[0]);
+        $count = $this->sql_results('COUNT(*)')[0]['COUNT(*)'];
+
+        return $count;
     }
 
     /**
@@ -234,7 +236,6 @@ abstract class WPCCollection {
     function sql_results($selectstr="*") {
         global $wpdb;
 
-
         $sql = "SELECT $selectstr FROM $this->table AS t\n";
 
         if (! empty($this->meta_table))
@@ -261,23 +262,20 @@ abstract class WPCCollection {
 
         #_log($sql);
 
-        $dbres = $wpdb->dbh->query($sql);
-        if (! $dbres) {
-            // XXX: this should display an error (_error function needed?)
-            ButterLog::error("Could not execute the following SQL.\n$sql\nmysql_error:\n".mysqli_error());
-            return array();
-        }
-        return $dbres;
+        $results = $wpdb->get_results($sql, 'ARRAY_A');
+
+        return $results;
     }
 
     function results() {
-        $dbres = $this->sql_results();
-        if (! $dbres)
+        $sql_results = $this->sql_results();
+
+        if (! $sql_results)
             return array();
 
         $res = array();
         $table_cols = array_flip($this->table_cols);
-        while ($row = $dbres->fetch_assoc())
+        foreach ($sql_results as $row)
             $res[] = array(
                 'id' => $row[$this->table_pk],
                 't'  => array_intersect_key($row, $table_cols),
