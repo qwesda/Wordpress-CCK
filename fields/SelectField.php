@@ -23,9 +23,9 @@ class SelectField extends GenericField {
     ?>
         <select id='<?php echo "wpc_field_$this->id" ?>' class="wpc_input wpc_input_select"   name='<?php echo "wpc_$this->id" ?>' width="100%">
             <option value='' <?php if ( empty($value) ) echo 'selected'; ?>></option>
-            <?php foreach ($this->options as $option): ?>
+            <?php foreach ($this->options as $name => $option): ?>
                 <option value="<?php echo $option; ?>" <?php
-                    if ( $value == $option ) echo 'selected'; ?>><?php echo $option ?></option>
+                    if ( $value == $option ) echo 'selected'; ?>><?php echo is_int($name) ? $option : $name ?></option>
             <?php endforeach ?>
         </select>
         <label class="wpc_helptext" for="wpc_field_<?php echo $this->id; ?>" style="display:none"><?php echo $this->helptext; ?></label>
