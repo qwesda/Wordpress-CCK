@@ -47,7 +47,7 @@ class WPCRecordCollection extends WPCCollection {
 
         $records = new $classname();
 
-    $records = $records->filter("post_type", $type);
+        $records = $records->filter("post_type", $type);
 
         if ($id !== null)
             $records = $records->id_is($id);
