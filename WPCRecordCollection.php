@@ -61,6 +61,33 @@ class WPCRecordCollection extends WPCCollection {
     function results() {
         return array_map(array($this, "row_to_record"), parent::results());
     }
+
+    function to_json() {
+        return json_encode($this->to_arrays());
+    }
+
+    function to_arrays() {
+        $results = array();
+
+        $this->iterate();
+        while ($record = $this->next()) {
+            array_push($results, $record->to_array());
+        }
+
+        return $results;
+    }
+
+    function to_objects() {
+        $results = array();
+
+        $this->iterate();
+        while ($record = $this->next()) {
+            array_push($results, $record->to_object());
+        }
+
+        return $results;
+    }
+
     function row_to_record($record) {
         return WPCRecord::new_record($record['id'], $record['t'], $record['m'])
             ->write_ro($this->write_ro);

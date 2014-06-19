@@ -94,6 +94,22 @@ abstract class WPCRecord extends WPCData {
         return $ret;
     }
 
+    function to_array() {
+        $ret = array();
+
+        foreach ($this->type->fields as $field_key => $field) {
+            $ret[$field_key] = $this->get($field_key);
+        }
+
+         $ret['ID'] = $this->id;
+
+        return $ret;
+    }
+
+    function to_object() {
+        return (object) $this->to_array();
+    }
+
     protected function connected_for_type($other_type, $reverse) {
         return WPCRelationCollection::relations_for_types($this->typeslug, $reverse, $other_type, $this->id);
     }
