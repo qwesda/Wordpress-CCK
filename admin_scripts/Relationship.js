@@ -742,16 +742,16 @@ function init_relation (relation_data) {
 var last_relation_data  = null;
 var last_filter_value   = "";
 
-jQuery(document).mouseup(function (e) {
-    var src          = jQuery(e.target);
-    var is_outside   = jQuery(src).closest("tr.selected, .relation_buttons_box, .relation_connect_new_metadata_box, .relation_src_list").length == 0;
+// jQuery(document).mouseup(function (e) {
+//     var src          = jQuery(e.target);
+//     var is_outside   = jQuery(src).closest("tr.selected, .relation_buttons_box, .relation_connect_new_metadata_box, .relation_src_list").length == 0;
 
-    if (is_outside && last_relation_data != null) {
-        remove_state();
-        show_box(last_relation_data, 'relation_connected_box');
+//     if (is_outside && last_relation_data != null) {
+//         remove_state();
+//         show_box(last_relation_data, 'relation_connected_box');
 
-        last_relation_data = null
-    };
+//         last_relation_data = null
+//     };
 
-});
+// });
 
