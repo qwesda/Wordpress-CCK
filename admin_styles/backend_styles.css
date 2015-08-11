@@ -192,7 +192,7 @@ input.validationError.validationError {
     border-color : rgba(255,50,50,0.2);
 }
 
-ul.wpc_form_tabs_header {
+ul.wpc_form_tabs_header.ui-tabs-nav {
     margin-top: 0px;
     list-style: none;
     margin-bottom: 4px;
@@ -202,7 +202,7 @@ ul.wpc_form_tabs_header {
     border-bottom: 1px solid #aaa;
 }
 
-ul.wpc_form_tabs_header li {
+ul.wpc_form_tabs_header.ui-tabs-nav > li {
     display: inline-block;
 
     padding: 10px;
@@ -217,26 +217,26 @@ ul.wpc_form_tabs_header li {
 
 
 
-ul.wpc_form_tabs_header li.ui-state-disabled {
+ul.wpc_form_tabs_header.ui-tabs-nav > li.ui-state-disabled {
     opacity: 0.3;
 }
-ul.wpc_form_tabs_header li.ui-state-active {
+ul.wpc_form_tabs_header.ui-tabs-nav > li.ui-state-active {
     border-bottom: 1px solid #ddd;
     background: #ffffff;
 }
 
 
-ul.wpc_form_tabs_header li:first-child {
+ul.wpc_form_tabs_header.ui-tabs-nav > li:first-child {
     border-top-left-radius: 6px;
 
     padding-left: 10px;
 }
-ul.wpc_form_tabs_header li:last-child {
+ul.wpc_form_tabs_header.ui-tabs-nav > li:last-child {
     border-top-right-radius: 6px;
 
     padding-right: 10px;
 }
 
-ul.wpc_form_tabs_header li a {
+ul.wpc_form_tabs_header.ui-tabs-nav > li a {
     text-decoration: none;
 }
