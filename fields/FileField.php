@@ -8,10 +8,14 @@ class FileField extends GenericField {
     function __construct ($parent, $params) {
         parent::__construct ($parent, $params);
 
-        $this->key    = "$parent->id-$this->id";
+        $this->key    = $parent->id."-".$this->id;
 
         add_filter('attachment_fields_to_edit',  array(&$this, 'add_tb_button'), 20, 2);
         add_action("wp_ajax_set-$this->key",     array(&$this, 'ajax_set'));
+
+        wp_enqueue_style('thickbox');
+        wp_enqueue_script('thickbox');
+        wp_enqueue_script('media-upload');
     }
 
     public function ajax_set () {
@@ -54,7 +58,7 @@ class FileField extends GenericField {
 
              if ( !empty($wpc_content_types[$post_type]) && $this->parent->id == $post_type) {
                  foreach ($wpc_content_types[$post_type]->fields as $field_key => $field_def) {
-                    if ($field_def->type == "FileField" || $field_def->type == "ImageField") {
+                    if ($field_def->type == "FileField") {
                         $ajax_nonce    = wp_create_nonce("set-$this->key");
                         $link          = "<input class='wpc_input_file_set $this->key button' id='$this->key-$file->ID' href='#' type='button' onclick='WPCFileFiedSet(\"$this->key\", \"$post_id\", \"$file->ID\", \"$ajax_nonce\") ' value='Set as $this->label' /";
 

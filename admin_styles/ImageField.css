@@ -1,4 +1,4 @@
-div.wpc_file_field_preview img {
+div.wpc_image_field_preview img {
     float: left;
     margin-right: 10px;
 
@@ -7,4 +7,33 @@ div.wpc_file_field_preview img {
 
 div.wpc_form_field_ImageField {
     width: 100%;
+}
+
+a.wpc_image_field_image_name,
+span.wpc_image_field_mime_type,
+span.wpc_image_field_date {
+    font-style: italic;
+}
+
+
+span.wpc_image_field_not_set {
+    font-style: italic;
+}
+
+
+a.wpc_image_field_image_name,
+span.wpc_image_field_mime_type,
+span.wpc_image_field_date {
+    display: block;
+}
+
+div.wpc_image_field_preview {
+    margin: 8px 0;
+    padding: 8px;
+
+    border: 1px solid #bbb;
+    background: #ffffff;
+
+    overflow: hidden;
+
 }

@@ -1,14 +1,12 @@
 (function($) {
     jQuery(document).ready(function (){
-        jQuery('body').on('input.wpc_input_file_select', "click", function(){
+        jQuery('body').on("click", 'input.wpc_input_file_select', function(){
             event.preventDefault();
 
             tb_show('', 'media-upload.php?post_id='+postID+'&TB_iframe=true');
         });
-    });
 
-    jQuery(document).ready(function (){
-        jQuery('body').on('input.wpc_input_file_remove', "click", function(){
+        jQuery('body').on("click", 'input.wpc_input_file_remove', function(){
             var win = window.dialogArguments || opener || parent || top;
 
             event.preventDefault();
@@ -81,10 +79,6 @@ function WPCFileFiedSet(file_field_key, post_id, file_id, nonce) {
         }
     }
     );
-}
-
-function WPCFileFieldSetPreview (file_field_key, html) {
-    jQuery('#wpc_file_field_preview_' + file_field_key).html(html);
 }
 
 function WPCFileFieldSetContainer (file_field_key, html) {
