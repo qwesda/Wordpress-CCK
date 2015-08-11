@@ -537,7 +537,7 @@ abstract class GenericRelationship {
 
                 $prepared_sql_filter    = $wpdb->prepare(
                     "  FROM $wpdb->posts \n".
-                    " WHERE $wpdb->posts.post_type  = %s \n".
+                    " WHERE $wpdb->posts.post_type  = %s AND $wpdb->posts.post_status NOT IN ('trash', 'auto-draft') \n".
                     "", $req->post_type
                 );
 
