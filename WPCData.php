@@ -100,11 +100,13 @@ abstract class WPCData {
             $content    = $this->meta[$attribute];
 
             if ($field_type == "RichTextField") {
+                $content = stripcslashes($content);
                 $content = apply_filters('the_content', $content);
                 $content = str_replace(']]>', ']]&gt;', $content);
             }
 
             if ($field_type == "TextAreaField") {
+                $content = stripcslashes($content);
                 $content = preg_replace('/[\n\r]+/', '<br>', $content);
             }
 
