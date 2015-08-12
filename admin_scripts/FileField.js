@@ -1,12 +1,12 @@
 (function($) {
     jQuery(document).ready(function (){
-        jQuery('body').on("click", 'input.wpc_input_file_select', function(){
+        jQuery('body').on("click", 'input.wpc_input_file_select', function(event){
             event.preventDefault();
 
             tb_show('', 'media-upload.php?post_id='+postID+'&TB_iframe=true');
         });
 
-        jQuery('body').on("click", 'input.wpc_input_file_remove', function(){
+        jQuery('body').on("click", 'input.wpc_input_file_remove', function(event){
             var win = window.dialogArguments || opener || parent || top;
 
             event.preventDefault();
