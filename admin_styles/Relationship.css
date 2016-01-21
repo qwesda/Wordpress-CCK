@@ -1,3 +1,9 @@
+.relation_connect_new_metadata_box H3 {
+    margin-left: 14px;
+    font-size: 13px;
+    margin-bottom: 0;
+}
+
 div.relation-drag-handle {
 	display: block;
 
