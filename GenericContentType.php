@@ -308,6 +308,7 @@ abstract class GenericContentType {
         #ButterLog::debug("creating new $this->id");
 
         $post['post_type'] = $this->id;
+        $post['post_title'] = 'new $this->id';
 
         $post_id = intval( wp_insert_post($post) );
 
