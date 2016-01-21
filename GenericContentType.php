@@ -12,6 +12,7 @@ abstract class GenericContentType {
     public $label                       = "";
     public $slug                        = "";
     public $singular_label              = "";
+    public $menu_label                  = "";
     public $supports                    = array('title','editor');
     public $has_archive                 = false;
     public $hierarchical                = false;
@@ -51,6 +52,7 @@ abstract class GenericContentType {
 
         if ( empty($this->label) )          $this->label            = $this->id . "s";
         if ( empty($this->singular_label) ) $this->singular_label   = $this->id;
+        if ( empty($this->menu_label) )     $this->menu_label       = $this->label;
         if ( empty($this->slug) )           $this->slug             = $this->id;
         if ( empty($this->taxonomies) )     $this->taxonomies       = array ();
 
@@ -58,7 +60,11 @@ abstract class GenericContentType {
         if(!post_type_exists($this->id)) {
             register_post_type ($this->id, array(
                 'label'                 => ucfirst($this->label),
-                'singular_label'        => ucfirst($this->singular_label),
+                'labels'                => array(
+                    'name'                  => ucfirst($this->label),
+                    'singular_name'         => ucfirst($this->singular_label),
+                    'menu_name'             => ucfirst($this->menu_label)
+                ),
                 'public'                => true,
                 'show_ui'               => true,
                 'capability_type'       => 'post',
